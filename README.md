@@ -17,3 +17,15 @@ npm run build
 ## Struktur
 - `docs/` — Skript/Handout in Markdown
 - `slides/` — Marp-Markdown-Folien
+
+
+ 
+   ## Students
+
+   ### Christa Gattringer
+   - **GitHub:** @christa101201
+   (https://github.com/christa101201)
+   - **Program:** Master Mechanical Engineering
+   - **Interests:** Python, Version control
+   - **Background:** HTL Neufelden for business informatics
+   ```
