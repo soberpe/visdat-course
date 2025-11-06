@@ -39,6 +39,14 @@ coverage/
 *.swo
 *~
 
+# venv directory
+venv/
+**/*venv*/
+**/venv/
+.venv/
+**/*.venv*/
+**/.venv/
+
 # OS generated files
 .DS_Store
 .DS_Store?

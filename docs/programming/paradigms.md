@@ -1001,7 +1001,7 @@ Understanding programming paradigms helps you:
 4. **Communicate better** with other developers about design decisions
 
 Continue with:
-- **[Tools and Workflow](../tools-and-workflow)** - Learn development tools and processes
+- **[Tools and Workflow](../tools-workflow/tools-workflow-overview)** - Learn development tools and processes
 - **[Python Programming](../python/python-overview)** - Deep dive into Python
 - **[C++ Programming](../cpp/cpp-overview)** - Explore C++ for performance-critical tasks
 

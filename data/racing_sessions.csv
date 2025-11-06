@@ -1,0 +1,9 @@
+session_id,driver_name,car_make,car_model,car_year,engine_power_hp,session_type,date,track_name,track_length_m,weather,temperature_c,humidity_percent,track_condition,tire_compound,skill_factor,car_factor,total_laps
+1,Sébastien Loeb,Mitsubishi,Lancer Evo VI,1999,320,practice,2025-11-05,Nova Paka Autocross,930,sunny,20.483570765056164,74.2797576724562,wet,soft,0.99,1.08,10
+2,Walter Röhrl,Lancia,Delta S4,1986,480,practice,2025-11-05,Nova Paka Autocross,930,overcast,17.308678494144075,68.94633936788146,dry,medium,0.98,0.92,10
+3,Petter Solberg,Toyota,Celica GT-Four,1990,380,practice,2025-11-05,Nova Paka Autocross,930,light_rain,19.39520646100069,73.32290311184181,dry,soft,1.0209213048309707,1.02,10
+4,Juha Kankkunen,Audi,Quattro S1,1986,500,practice,2025-11-05,Nova Paka Autocross,930,overcast,23.052576424032633,83.79639408647978,damp,medium,1.0114409146007062,0.9,10
+5,Carlos Sainz,Subaru,Impreza WRX,1995,300,practice,2025-11-05,Nova Paka Autocross,930,cloudy,15.095609329882425,52.33618039413735,dry,medium,1.0682709848560297,1.1,10
+6,Richard Burns,Renault,5 Turbo,1985,360,practice,2025-11-05,Nova Paka Autocross,930,sunny,15.374150964109262,65.99025726528951,dry,medium,1.0312969570071677,1.04,10
+7,Markku Alén,Volkswagen,Polo R WRC,2013,315,practice,2025-11-05,Nova Paka Autocross,930,sunny,22.082225404756635,50.57975442608167,damp,medium,1.040236151304948,1.085,10
+8,Tommi Mäkinen,MG,Metro 6R4,1986,410,practice,2025-11-05,Nova Paka Autocross,930,light_rain,10.380620011920696,56.685785941408724,dry,hard,0.99,0.99,10

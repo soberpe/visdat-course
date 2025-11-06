@@ -3,18 +3,30 @@ module.exports = {
     'index',
     'organization',
     {
-      type: 'category',
-      label: 'Tools & Workflow',
-      items: [
-        'tools-and-workflow',
-        'kickoff-assignment',
-      ],
-    },
-    {
       type: 'category', 
       label: 'Programming Fundamentals',
       items: [
         'programming/paradigms',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Tools & Workflow',
+      items: [
+        'tools-workflow/tools-workflow-overview',
+        'tools-workflow/kickoff-assignment',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'C++ Programming',
+      items: [
+        'cpp/cpp-overview',
+        'cpp/cpp-fundamentals',
+        'cpp/cpp-control-flow',
+        'cpp/cpp-oop', 
+        'cpp/cpp-memory-management',
+        'cpp/cpp-best-practices',
       ],
     },
     {
@@ -31,14 +43,13 @@ module.exports = {
     },
     {
       type: 'category',
-      label: 'C++ Programming',
+      label: 'Data Processing',
       items: [
-        'cpp/cpp-overview',
-        'cpp/cpp-fundamentals',
-        'cpp/cpp-control-flow',
-        'cpp/cpp-oop', 
-        'cpp/cpp-memory-management',
-        'cpp/cpp-best-practices',
+        'data-processing/data-processing-overview',
+        'data-processing/pandas-fundamentals',
+        'data-processing/hdf5-storage',
+        'data-processing/advanced-operations',
+        'data-processing/racing-case-study',
       ],
     },
   ],

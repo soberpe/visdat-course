@@ -38,9 +38,9 @@ By the end of this course, students will be able to:
 
 ### Weekly Topics Overview
 
-1. **Week 1:** Introduction & Tools (Git, Markdown, Python/C++ basics)
-2. **Week 2:** Data formats, Pandas/Polars, HDF5
-3. **Week 3:** 2D Visualization (Matplotlib/Plotly)
+1. **Week 1-3:** Introduction & Tools (Git, Markdown, Python/C++ basics)
+2. **Week 4:** Data formats, Pandas/Polars, HDF5
+3. **Week 5:** 2D Visualization (Matplotlib/Plotly)
 4. **Upcoming weeks:** 3D content, interactive UIs, advanced topics
 
 ### Learning Approach

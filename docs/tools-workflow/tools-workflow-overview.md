@@ -193,6 +193,22 @@ marp presentation.md --html --output presentation.html
 3. **Python:** Download from [python.org](https://python.org/) (version 3.8+)
 4. **Node.js:** Download from [nodejs.org](https://nodejs.org/) (for documentation tools)
 
+### Git Configuration (First Time Setup)
+
+⚠️ **IMPORTANT:** Before making your first commit, configure Git with your identity:
+
+```bash
+# Set your name and email (required for commits)
+git config --global user.name "Your Full Name"
+git config --global user.email "your.email@example.com"
+
+# Verify configuration
+git config --global user.name
+git config --global user.email
+```
+
+> **Note:** Use the same email address associated with your GitHub account. This ensures your commits are properly linked to your GitHub profile.
+
 ### VS Code Extensions
 
 Install these extensions for the best development experience:
@@ -309,6 +325,16 @@ git commit -m "changes"
 - **Be Patient:** Remember that everyone is learning
 
 ## Troubleshooting Common Issues
+
+### Git Configuration Issues
+
+**Problem:** `git commit` fails with error: "Please tell me who you are"
+
+**Solution:** Configure your Git identity first:
+```bash
+git config --global user.name "Your Full Name"
+git config --global user.email "your.email@example.com"
+```
 
 ### Git Problems
 
