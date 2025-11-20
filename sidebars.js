@@ -48,8 +48,15 @@ module.exports = {
         'data-processing/data-processing-overview',
         'data-processing/pandas-fundamentals',
         'data-processing/hdf5-storage',
-        'data-processing/advanced-operations',
-        'data-processing/racing-case-study',
+        'data-processing/sample-datasets',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Visualization',
+      items: [
+        'visualization/introduction',
+        'visualization/matplotlib',
       ],
     },
   ],

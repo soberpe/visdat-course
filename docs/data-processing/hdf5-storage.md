@@ -4,22 +4,20 @@ title: High-Performance Data Storage with HDF5
 
 # High-Performance Data Storage with HDF5
 
+
 ## The Big Data Challenge in Engineering
 
-Modern engineering applications generate massive amounts of sensor data. Consider an autocross car's data acquisition system competing at the famous Nova Paka track in Czech Republic:
-
-- **Track specifications**: 930m length, clay-sandy surface, 37m elevation change
+Modern engineering applications generate massive amounts of sensor data. For example:
 - **Sampling rates**: 1000+ Hz per channel
-- **Channel count**: 60-80+ sensors (engine, suspension, steering, IMU, GPS, surface grip)
-- **Run duration**: Competition runs (60-90 sec for 930m track)
-- **Event duration**: European Championship event (2-3 days with practice and competition)
-- **Data volume**: ~800 million data points per championship event
+- **Channel count**: 60+ sensors (IMU, temperature, pressure, etc.)
+- **Run duration**: Hours of continuous measurement
+- **Data volume**: Hundreds of millions of data points per experiment
 
 **Storage Challenge Example:**
-- 75 channels × 1000 Hz × 25200 seconds (7 hours event) = 1.89 billion values
-- CSV format: ~28 GB per championship event
-- Memory requirements: 10-18 GB RAM for comparative analysis across runs
-- Query time: Minutes to find specific track sections or surface conditions
+- 60 channels × 1000 Hz × 3600 seconds (1 hour) = 216 million values
+- CSV format: ~3 GB per experiment
+- Memory requirements: Several GB RAM for analysis
+- Query time: Minutes to find specific time ranges
 
 ## Introduction to HDF5
 
@@ -61,23 +59,29 @@ import numpy as np
 import h5py
 ```
 
-### Basic HDF5 Operations with Pandas
+
+> **Info**
+> **Table format in HDF5 (with pandas):**
+> When saving a DataFrame to HDF5, you can choose `format='table'` or `format='fixed'` (the default). Table format enables advanced features:
+> - Row-wise access and partial reads
+> - Powerful `where` queries for filtering data during loading
+> - Appending new data to the file
+> Table format is slightly slower to write and uses more space than fixed format, but is essential for large datasets where you need flexible queries and efficient access to subsets of data.
+
 
 #### Writing Data to HDF5
 ```python
-# Create sample autocross racing data for Nova Paka track
+# Create sample sensor data
 np.random.seed(42)
-n_samples = 75000  # 75 seconds at 1000 Hz (typical run time for 930m track)
-timestamps = np.linspace(0, 75, n_samples)
+n_samples = 10000  # 10 seconds at 1000 Hz
+timestamps = np.linspace(0, 10, n_samples)
 
-# Generate realistic Nova Paka autocross telemetry data
-# Clay-sandy surface allows for different driving characteristics
-racing_data = pd.DataFrame({
+# Generate generic sensor measurements
+sensor_data = pd.DataFrame({
     'timestamp': timestamps,
-    'speed': 35 + 25 * np.sin(0.085 * timestamps) + np.random.normal(0, 4, n_samples),
-    'ax': 1.8 * np.sin(0.11 * timestamps) + np.random.normal(0, 1.2, n_samples),
-    'ay': np.random.normal(0, 2.5, n_samples),  # Higher lateral g's on clay-sand
-    'az': 9.81 + np.random.normal(0, 0.4, n_samples),
+    'sensor_1': np.random.normal(0, 1, n_samples),
+    'sensor_2': np.random.normal(10, 2, n_samples),
+    'sensor_3': np.random.normal(100, 5, n_samples),
     'steering_angle': 50 * np.sin(0.07 * timestamps) + np.random.normal(0, 8, n_samples),
     'throttle_position': np.clip(55 + 35 * np.sin(0.09 * timestamps) + np.random.normal(0, 12, n_samples), 0, 100),
     'brake_pressure': np.maximum(0, 25 * np.sin(0.13 * timestamps + np.pi) + np.random.normal(0, 6, n_samples)),
@@ -85,156 +89,152 @@ racing_data = pd.DataFrame({
     'suspension_travel_fr': 50 + 30 * np.sin(0.12 * timestamps + 0.1) + np.random.normal(0, 8, n_samples)  # Front right
 })
 
-# Ensure realistic speed limits for 930m clay-sand autocross track
-racing_data['speed'] = np.clip(racing_data['speed'], 0, 75)  # Max ~75 km/h for clay-sand surface
-racing_data['suspension_travel_fl'] = np.clip(racing_data['suspension_travel_fl'], 0, 100)  # 0-100mm travel
-racing_data['suspension_travel_fr'] = np.clip(racing_data['suspension_travel_fr'], 0, 100)
+sensor_data['speed'] = np.clip(sensor_data['sensor_1'], 0, 75)  # Example: limit speed to realistic range
+sensor_data['suspension_travel_fl'] = np.clip(sensor_data['suspension_travel_fl'], 0, 100)  # 0-100mm travel
+sensor_data['suspension_travel_fr'] = np.clip(sensor_data['suspension_travel_fr'], 0, 100)
 
 # Save to HDF5 with compression
-racing_data.to_hdf('data/racing_data.h5', 
+# Key arguments for pandas' to_hdf:
+#   - 'path_or_buf': filename to save to
+#   - 'key': name of the dataset/group in the HDF5 file
+#   - 'mode': file mode ('w' for write, 'a' for append, etc.)
+#   - 'format': 'fixed' (default, fast, no queries) or 'table' (slower, supports queries)
+#   - 'complib': compression library (e.g., 'zlib', 'lzf')
+#   - 'complevel': compression level (0-9, higher is more compressed)
+#   - 'data_columns': columns to make queryable (only for table format)
+sensor_data.to_hdf('data/sensor_data.h5', 
                   key='telemetry', 
                   mode='w',
                   complib='zlib',    # Compression algorithm
                   complevel=9)       # Maximum compression
 
-print(f"Saved {len(racing_data)} samples to HDF5")
+print(f"Saved {len(sensor_data)} samples to HDF5")
 ```
 
 #### Reading Data from HDF5
 ```python
+
 # Read entire dataset
-df_loaded = pd.read_hdf('data/racing_data.h5', 'telemetry')
+df_loaded = pd.read_hdf('data/sensor_data.h5', 'telemetry')
 print(f"Loaded {len(df_loaded)} samples")
 
 # Method 1: Filter after loading (works with fixed format)
-high_speed_data = df_loaded[df_loaded['speed'] > 40]
-print(f"Found {len(high_speed_data)} high-speed samples")
+high_value_data = df_loaded[df_loaded['sensor_1'] > 40]
+print(f"Found {len(high_value_data)} samples with sensor_1 > 40")
 
 # Read time range (using actual column names)
-time_segment = df_loaded[(df_loaded['timestamp'] >= 30) & (df_loaded['timestamp'] <= 60)]
-print(f"30-60 second segment: {len(time_segment)} samples")
+time_segment = df_loaded[(df_loaded['timestamp'] >= 3) & (df_loaded['timestamp'] <= 6)]
+print(f"3-6 second segment: {len(time_segment)} samples")
+
 
 # Method 2: Use table format for where queries (requires recreation)
 # First convert to table format with queryable columns
-df_loaded.to_hdf('data/racing_data_table.h5', 
+df_loaded.to_hdf('data/sensor_data_table.h5', 
                 key='telemetry', 
                 mode='w',
                 format='table',  # Enables where queries
-                data_columns=['speed', 'timestamp', 'throttle_position'],  # Specify queryable columns
+                data_columns=['sensor_1', 'timestamp', 'throttle_position'],  # Specify queryable columns
                 complib='zlib', 
                 complevel=9)
 
 # Now where queries work!
-high_speed_query = pd.read_hdf('data/racing_data_table.h5', 'telemetry', 
-                              where='speed > 40')
-print(f"Where query result: {len(high_speed_query)} high-speed samples")
+high_value_query = pd.read_hdf('data/sensor_data_table.h5', 'telemetry', 
+                              where='sensor_1 > 40')
+print(f"Where query result: {len(high_value_query)} samples with sensor_1 > 40")
 ```
 
-### Hierarchical Data Organization
 
-#### Race Weekend Structure
+> **Info**
+> **HDFStore in pandas:**
+> `HDFStore` is a high-level interface in pandas for reading, writing, and managing HDF5 files. It allows you to organize data in a hierarchical structure (like folders and files), store multiple DataFrames under different keys, and attach metadata. Use `HDFStore` when you need to:
+> - Save or load multiple datasets in one HDF5 file
+> - Organize data into logical groups (e.g., sessions, analysis results)
+> - Attach metadata or attributes to datasets
+> - List available datasets and manage file structure
+
+
+#### Hierarchical Data Organization Example
 ```python
-# Organize complete Nova Paka European Championship event data
-with pd.HDFStore('data/racing_data.h5', mode='w') as store:
-    # Practice sessions on different days
-    store['practice/friday_morning'] = friday_morning_practice
-    store['practice/friday_afternoon'] = friday_afternoon_practice
-    store['practice/saturday_warmup'] = saturday_warmup
+# Organize sensor experiment data in a hierarchical structure
+with pd.HDFStore('data/sensor_data.h5', mode='w') as store:
+    # Example sessions
+    store['experiment/session_001'] = session_001_data
+    store['experiment/session_002'] = session_002_data
+    store['experiment/session_003'] = session_003_data
     
-    # European Championship competition runs
-    store['championship/qualifying_run1'] = qualifying_run1_data
-    store['championship/qualifying_run2'] = qualifying_run2_data
-    store['championship/semifinal_run1'] = semifinal_run1_data
-    store['championship/semifinal_run2'] = semifinal_run2_data
-    store['championship/final_run'] = final_run_data
-    
-    # Different surface conditions (clay-sand changes with weather)
-    store['conditions/dry_clay'] = dry_conditions_runs
-    store['conditions/wet_clay'] = wet_conditions_runs
-    store['conditions/optimal_grip'] = optimal_grip_runs
-    
-    # Post-processed analysis results
-    store['analysis/run_times'] = run_analysis_df
-    store['analysis/sector_times'] = sector_analysis_df
-    store['analysis/surface_grip_analysis'] = grip_analysis_df
-    store['analysis/elevation_performance'] = elevation_analysis_df
+    # Analysis results
+    store['analysis/statistics'] = statistics_df
+    store['analysis/performance'] = performance_df
+    store['analysis/derived_parameters'] = derived_df
     
     # Setup and configuration data
-    store['metadata/vehicle_setup'] = setup_parameters_df
-    store['metadata/weather_conditions'] = weather_data_df
-    store['metadata/track_conditions'] = track_surface_df
-    store['metadata/european_championship_rules'] = championship_rules_df
+    store['metadata/device_setup'] = setup_parameters_df
+    store['metadata/environment_conditions'] = environment_data_df
+    store['metadata/experiment_notes'] = experiment_notes_df
 
-print("Nova Paka European Championship event data structure created")
+print("Sensor experiment data structure created")
 ```
 
 #### Querying the Hierarchical Structure
 ```python
 # List all available datasets
-with pd.HDFStore('data/racing_data.h5', mode='r') as store:
+with pd.HDFStore('data/sensor_data.h5', mode='r') as store:
     print("Available datasets:")
     for key in store.keys():
-        # For fixed format, we need to read the shape instead of using nrows
         try:
             nrows = store.get_storer(key).nrows
             if nrows is None:
-                # For fixed format, get the shape directly
                 data_shape = store[key].shape
                 nrows = data_shape[0]
             print(f"  {key}: {nrows} rows")
         except Exception as e:
             print(f"  {key}: Unable to get row count ({e})")
 
-# Load specific championship run data
-high_speed_sections = pd.read_hdf('data/racing_data.h5', 'telemetry')
-# Filter for high-speed sections (using actual column names)
-high_speed_sections = high_speed_sections[high_speed_sections['speed'] > 50]
+# Load specific session data
+session_data = pd.read_hdf('data/sensor_data.h5', 'telemetry')
+# Filter for high values (using actual column names)
+high_value_sections = session_data[session_data['sensor_1'] > 50]
 ```
 
 ### Advanced HDF5 Features
 
 #### Metadata and Attributes
 ```python
-# load telemetry out of racing data racing data
-telemetry = pd.read_hdf('data/racing_data.h5', 'telemetry')
+
+# Load telemetry out of sensor data
+telemetry = pd.read_hdf('data/sensor_data.h5', 'telemetry')
+
 
 # Add metadata to datasets
-with pd.HDFStore('data/racing_data.h5', mode='w') as store:
+with pd.HDFStore('data/sensor_data.h5', mode='w') as store:
     # Store the main telemetry data
     store['telemetry'] = telemetry
     
-    # Add comprehensive metadata
+    # Add comprehensive metadata (realistic example, but not required for analysis)
     store.get_storer('telemetry').attrs.metadata = {
-        'vehicle': 'Autocross Championship Car 2016',
-        'driver': 'Philipp Höglinger',
-        'track': 'Nova Paka Autocross Track',
-        'track_location': 'Štikovská rokle, Nova Paka, Czech Republic',
-        'track_length': 930,  # meters (official track length)
-        'track_width': '10-20m',  # variable width
-        'track_elevation_change': 37,  # meters (cant)
-        'track_surface': 'Clay-sandy (aluminous-sandy)',
-        'track_type': 'European Championship level',
-        'weather': 'Partly cloudy, 18°C, Wind: 8 km/h NE',
-        'tire_compound': 'All-terrain (suitable for clay-sand)',
-        'fuel_load': 'Competition level (15L)',
-        'session_type': 'European Championship Qualifying',
-        'session_date': '2016-07-03',
+        'device': 'Multi-sensor Logger 2022',
+        'operator': 'Data Acquisition Team',
+        'location': 'Test Facility, Example City',
+        'experiment_type': 'Sensor Calibration',
+        'experiment_date': '2022-05-15',
         'sampling_rate_hz': 1000,
-        'coordinate_system': 'vehicle_body_frame',
+        'coordinate_system': 'device_body_frame',
         'units': {
             'timestamp': 'seconds',
-            'speed': 'km/h',
-            'acceleration': 'm/s²',
-            'angular_velocity': 'rad/s',
-            'steering_angle': 'degrees'
+            'sensor_1': 'unitless',
+            'sensor_2': 'unitless',
+            'sensor_3': 'unitless',
+            'steering_angle': 'degrees',
+            'throttle_position': 'percent',
+            'brake_pressure': 'bar'
         },
-        'calibration_date': '2014-09-01',
+        'calibration_date': '2022-05-01',
         'sensor_serial_numbers': {
-            'imu': 'IMU-2014-007',
-            'gps': 'GPS-2014-008',
-            'wheel_speed': 'WS-2014-009'
+            'imu': 'IMU-2022-007',
+            'gps': 'GPS-2022-008',
+            'pressure': 'PR-2022-009'
         },
-        'track_notes': 'Unique European track in ravine terrain, clay-sandy surface, double barrier protection, FIA fence, asphalt start section'
+        'experiment_notes': 'Routine calibration and performance test.'
     }
     
     # Add processing metadata
@@ -256,13 +256,13 @@ with pd.HDFStore('data/racing_data.h5', mode='w') as store:
     }
 
 # Read metadata
-with pd.HDFStore('data/racing_data.h5', mode='r') as store:
+with pd.HDFStore('data/sensor_data.h5', mode='r') as store:
     metadata = store.get_storer('telemetry').attrs.metadata
     processing_info = store.get_storer('telemetry').attrs.processing
     
-    print("Vehicle:", metadata['vehicle'])
-    print("Track:", metadata['track'])
-    print("Location:", metadata['track_location'])
+    print("Device:", metadata['device'])
+    print("Location:", metadata['location'])
+    print("Experiment type:", metadata['experiment_type'])
     print("Processing date:", processing_info['processing_date'])
 ```
 
@@ -275,18 +275,18 @@ with pd.HDFStore('data/racing_data.h5', mode='r') as store:
 # For fixed format (default), use post-load filtering:
 df = pd.read_hdf('data/racing_data.h5', 'telemetry')
 
-# Complex filtering with multiple conditions for clay-sand surface
-cornering_data = df[(abs(df['steering_angle']) > 20) &  # More steering on clay-sand
-                   (df['speed'] > 35) &
-                   (df['timestamp'] >= 20)]
+# Generic filtering examples
+filtered_data = df[(abs(df['steering_angle']) > 20) &  # Example: large steering angles
+                   (df['sensor_1'] > 35) &
+                   (df['timestamp'] >= 2)]
 
-# Time-based filtering for 930m track
-run_start = 3.5   # seconds (after asphalt start section)
-run_end = 62.4    # seconds (typical completion time)
-run_data = df[(df['timestamp'] >= run_start) & (df['timestamp'] <= run_end)]
+# Time-based filtering for a session
+session_start = 3.5   # seconds
+session_end = 6.4     # seconds
+session_data = df[(df['timestamp'] >= session_start) & (df['timestamp'] <= session_end)]
 
-# Surface-specific filtering for clay-sand conditions
-high_grip_samples = df[abs(df['ay']) > 1.5]  # High lateral g on good grip sections
+# Value-specific filtering
+high_value_samples = df[abs(df['sensor_2']) > 1.5]  # Example: high values in sensor_2
 ```
 
 ### Performance Comparison
