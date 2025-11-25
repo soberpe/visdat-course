@@ -76,7 +76,6 @@ def validate_sensor_reading(value, min_val=-50, max_val=100, allow_none=False):
     # Check for None values
     if value is None:
         return allow_none
-    
     # Check if value is numeric
     if not isinstance(value, (int, float)):
         return False
