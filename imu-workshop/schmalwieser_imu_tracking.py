@@ -291,92 +291,29 @@ plt.savefig('04_global_acceleration.png', dpi=300)
 
 
 
-# # Calculate time step for each sample
-# dt_array = df['time'].diff().fillna(0).values
-
-# # Initialize velocity and position arrays
-# velocity = np.zeros((len(df), 3))
-# position = np.zeros((len(df), 3))
-
-# # Extract acceleration arrays for efficient indexing
-# accel_x = df['accel_motion_x'].values
-# accel_y = df['accel_motion_y'].values
-# accel_z = df['accel_motion_z'].values
-
-# # Numerical integration using trapezoidal rule
-# for i in range(1, len(df)):
-#     # First integration: Acceleration → Velocity (trapezoidal rule)
-#     accel_current = np.array([accel_x[i], accel_y[i], accel_z[i]])
-#     accel_previous = np.array([accel_x[i-1], accel_y[i-1], accel_z[i-1]])
-#     velocity[i] = velocity[i-1] + 0.5 * (accel_previous + accel_current) * dt_array[i]
-    
-#     # Second integration: Velocity → Position (trapezoidal rule)
-#     position[i] = position[i-1] + 0.5 * (velocity[i-1] + velocity[i]) * dt_array[i]
-
-# # Store results
-# df['vel_x'] = velocity[:, 0]
-# df['vel_y'] = velocity[:, 1]
-# df['vel_z'] = velocity[:, 2]
-
-# df['pos_x'] = position[:, 0]
-# df['pos_y'] = position[:, 1]
-# df['pos_z'] = position[:, 2]
-
-
-# --- Integration mit einfacher Driftkorrektur (ZUPT-artig) ---
-
-# Zeitdifferenzen
+# Calculate time step for each sample
 dt_array = df['time'].diff().fillna(0).values
-t = df['time'].values
 
-# Arrays vorbereiten
+# Initialize velocity and position arrays
 velocity = np.zeros((len(df), 3))
 position = np.zeros((len(df), 3))
 
-# Beschleunigung (bereits: global, gravitationsfrei)
+# Extract acceleration arrays for efficient indexing
 accel_x = df['accel_motion_x'].values
 accel_y = df['accel_motion_y'].values
 accel_z = df['accel_motion_z'].values
 
-# 1) Erste Integration: a -> v (wie bisher, trapezoidal)
+# Numerical integration using trapezoidal rule
 for i in range(1, len(df)):
-    a_curr = np.array([accel_x[i],   accel_y[i],   accel_z[i]])
-    a_prev = np.array([accel_x[i-1], accel_y[i-1], accel_z[i-1]])
-    velocity[i] = velocity[i-1] + 0.5 * (a_prev + a_curr) * dt_array[i]
-
-# 2) Stationäre Phasen detektieren (sehr grob, aber reicht hier)
-acc_norm = np.sqrt(accel_x**2 + accel_y**2 + accel_z**2)
-gyro_norm = np.linalg.norm(df[['gyro_x', 'gyro_y', 'gyro_z']].values, axis=1)
-
-# Schwellen kannst du bei Bedarf anpassen:
-acc_thresh = 0.1   # m/s²
-gyro_thresh = 0.05 # rad/s
-stationary = (acc_norm < acc_thresh) & (gyro_norm < gyro_thresh)
-
-print(f"Stationary samples: {stationary.sum()} / {len(df)}")
-
-# 3) Drift als v(t) = a*t + b aus den stationären Punkten schätzen und abziehen
-vel_corrected = velocity.copy()
-for axis in range(3):
-    v = velocity[:, axis]
-    t_stat = t[stationary]
-    v_stat = v[stationary]
-    if len(t_stat) > 2:
-        A = np.vstack([t_stat, np.ones_like(t_stat)]).T
-        a, b = np.linalg.lstsq(A, v_stat, rcond=None)[0]  # lineares Fit
-        drift = a * t + b
-        vel_corrected[:, axis] = v - drift
-    # In stationären Phasen Geschwindigkeit hart auf 0 setzen
-    vel_corrected[stationary, axis] = 0.0
-
-velocity = vel_corrected
-
-# 4) Zweite Integration: v -> s mit korrigierter Geschwindigkeit
-position = np.zeros_like(velocity)
-for i in range(1, len(df)):
+    # First integration: Acceleration → Velocity (trapezoidal rule)
+    accel_current = np.array([accel_x[i], accel_y[i], accel_z[i]])
+    accel_previous = np.array([accel_x[i-1], accel_y[i-1], accel_z[i-1]])
+    velocity[i] = velocity[i-1] + 0.5 * (accel_previous + accel_current) * dt_array[i]
+    
+    # Second integration: Velocity → Position (trapezoidal rule)
     position[i] = position[i-1] + 0.5 * (velocity[i-1] + velocity[i]) * dt_array[i]
 
-# Ergebnisse ins DataFrame schreiben
+# Store results
 df['vel_x'] = velocity[:, 0]
 df['vel_y'] = velocity[:, 1]
 df['vel_z'] = velocity[:, 2]
@@ -384,6 +321,9 @@ df['vel_z'] = velocity[:, 2]
 df['pos_x'] = position[:, 0]
 df['pos_y'] = position[:, 1]
 df['pos_z'] = position[:, 2]
+
+
+
 
 
 
@@ -507,3 +447,49 @@ print(f"End position: {end_pos}")
 # actual_distance = 1.0  # meters (your measurement)
 # error = abs(reconstructed_distance - actual_distance)
 # print(f"Error: {error:.3f} meters ({error/actual_distance*100:.1f}%)")
+
+
+
+
+# Calculate acceleration magnitude in global frame
+accel_magnitude = np.sqrt(
+    df['accel_motion_x']**2 + 
+    df['accel_motion_y']**2 + 
+    df['accel_motion_z']**2
+)
+
+# Define stationary threshold
+stationary_threshold = 0.2  # m/s²
+is_stationary = accel_magnitude < stationary_threshold
+
+# Apply ZUPT: reset velocity during stationary periods
+velocity_zupt = velocity.copy()
+for i in range(len(df)):
+    if is_stationary.iloc[i]:
+        velocity_zupt[i] = np.array([0.0, 0.0, 0.0])
+
+# Reintegrate position with ZUPT-corrected velocity using trapezoidal rule
+position_zupt = np.zeros((len(df), 3))
+for i in range(1, len(df)):
+    position_zupt[i] = position_zupt[i-1] + 0.5 * (velocity_zupt[i-1] + velocity_zupt[i]) * dt_array[i]
+
+# Compare trajectories
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
+
+ax1.plot(position[:, 0], position[:, 1], label='Without ZUPT')
+ax1.set_xlabel('X (m)')
+ax1.set_ylabel('Y (m)')
+ax1.set_title('Trajectory Without ZUPT')
+ax1.axis('equal')
+ax1.grid(True)
+
+ax2.plot(position_zupt[:, 0], position_zupt[:, 1], label='With ZUPT', color='orange')
+ax2.set_xlabel('X (m)')
+ax2.set_ylabel('Y (m)')
+ax2.set_title('Trajectory With ZUPT')
+ax2.axis('equal')
+ax2.grid(True)
+
+plt.tight_layout()
+plt.savefig('08_zupt_comparison.png', dpi=300)
+plt.show()
