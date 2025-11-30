@@ -13,25 +13,12 @@ Instructor: Stefan Oberpeilsteiner
 ---
 
 ## Today's Agenda
-- **Why data processing matters** 🏎️
-- **Pandas fundamentals** 🐼
-- **Vehicle dynamics case study** 📊
-- **IMU data analysis** 🚗
-- **Hands-on coding** ⚡
-- **Preview: Visualization pipeline** 👀
 
----
-
-## The Racing Data Challenge
-
-![bg right:40% 80%](https://img.redbull.com/images/c_crop,w_3039,h_1518,x_0,y_489/c_auto,w_1200,h_630/f_auto,q_auto/redbullcom/2015/08/19/1331772435696_4/wrc-legende-walter-rohrl)
-
-**Scenario:** Analyzing a racing car's cornering maneuver
-- **Raw sensor data:** 6-DOF IMU readings
-- **Goal:** Understand vehicle dynamics
-- **Challenge:** Transform noisy signals → meaningful motion
-
-> <sub> *„Wenn es nur ein Geheimnis beim Autofahren gibt, dann ist es, so wenig wie möglich zu lenken, Es geht um Linien und man muss begreifen, wann man zu lenken beginnen muss – eher früh als spät."* — Walter Röhrl</sub>
+- Why data processing matters
+- Pandas fundamentals
+- Data selection & transformation
+- Efficient storage (HDF5)
+- Hands-on coding
 
 ---
 
@@ -39,40 +26,45 @@ Instructor: Stefan Oberpeilsteiner
 
 ### From Sensors to Insights
 ```
-Raw IMU Data → Clean Data → Vehicle Motion → Performance Analysis
+Raw Sensor Data → Clean Data → Extract Features → Analyze Trends
 ```
 
-### Real Engineering Challenges
+### Common Data Challenges
 - **Sensor noise** and measurement errors
 - **Data drift** over time
 - **Missing values** and outliers
-- **Multiple coordinate systems**
+- **Multiple sensor types**
 - **High-frequency data** (1000+ Hz)
 
 ---
 
 ## Pandas: Your Data Swiss Army Knife
 
-### What is Pandas?
-- **Python library** for data manipulation and analysis
-- Built on **NumPy** for numerical operations
-- **DataFrame**: Excel-like data structure in code
-- **Series**: Single column of data
-
-### Why Pandas for Engineering?
-
 <style scoped>
 .small-list {
   font-size: 0.8em;
 }
 </style>
+### What is Pandas?
 
 <div class="small-list">
 
-- ✅ **Time series** analysis (perfect for sensor data)
+- **Python library** for data manipulation and analysis
+- Built on **NumPy** for numerical operations
+- **DataFrame**: Table-like structure for sensor data
+- **Series**: Single column of data
+
+</div>
+
+### Why Pandas for Sensor Data?
+
+<div class="small-list">
+
+- ✅ **Time series** analysis (ideal for sensor data)
 - ✅ **File I/O**: CSV, Excel, JSON, **HDF5**, Parquet
-- ✅ **Data cleaning** and transformation and built-in **Statistical operations**
-- ✅ **Memory efficient** for large datasets with **high-performance** binary formats for big data
+- ✅ **Data cleaning** and transformation
+- ✅ **Statistical operations** built-in
+- ✅ **Efficient storage** for large datasets
 
 </div>
 
@@ -101,26 +93,25 @@ imu_data = pd.DataFrame({
 
 ## High-Performance Data Storage
 
-### The Big Data Challenge in Racing
+### The Big Data Challenge in Sensor Experiments
 - **Data volume**: 1000 Hz × 50+ channels = 50,000 values/second
-- **Race duration**: 2-hour endurance race = 360 million data points
-- **File size**: CSV format ≈ 3.6 GB, **HDF5 format ≈ 0.7 GB**
-- **Access speed**: Random access to time ranges
+- **Experiment duration**: 2 hours = 360 million data points
+- **File size**: CSV ≈ 3.6 GB, **HDF5 ≈ 0.7 GB**
+- **Access speed**: Fast random access to time ranges
 
 ---
 
 ### HDF5: Hierarchical Data Format
 ```python
-# Store racing data efficiently
+# Store sensor data efficiently
 import pandas as pd
-import h5py
 
 # Save to HDF5 (compressed, fast access)
-df.to_hdf('data/racing_data.h5', key='telemetry', mode='w', 
+df.to_hdf('sensor_data.h5', key='experiment', mode='w', 
           complib='zlib', complevel=9)
 
 # Read specific time range (fast!)
-df_segment = pd.read_hdf('data/racing_data.h5', key='telemetry', where='time_s >= 30 & time_s <= 60')
+df_segment = pd.read_hdf('sensor_data.h5', key='experiment', where='timestamp >= 30 & timestamp <= 60')
 ```
 
 <style scoped>
@@ -146,23 +137,21 @@ df_segment = pd.read_hdf('data/racing_data.h5', key='telemetry', where='time_s >
 
 ### Multi-Level Data Organization
 ```python
-# Hierarchical structure for race weekend
-with pd.HDFStore('data/racing_data.h5') as store:
-    store['practice/session1'] = practice1_df
-    store['practice/session2'] = practice2_df
-    store['qualifying/q1'] = qualifying_df
-    store['race/stint1'] = race_stint1_df
-    store['race/stint2'] = race_stint2_df
+# Hierarchical structure for sensor experiments
+with pd.HDFStore('sensor_data.h5') as store:
+    store['experiment1'] = exp1_df
+    store['experiment2'] = exp2_df
+    store['calibration'] = calib_df
 
-# Query specific sessions
-q1_data = pd.read_hdf('data/racing_data.h5', 'sessions')
+# Query specific experiment
+exp1_data = pd.read_hdf('sensor_data.h5', 'experiment1')
 ```
 
 ---
 
 ### Time Series Indexing & Resampling
 ```python
-# Set timestamp as index for powerful time operations
+# Set timestamp as index for time-based operations
 df_time = df.set_index('timestamp')
 
 # Resample to different frequencies
@@ -170,29 +159,28 @@ df_100hz = df_time.resample('10ms').mean()  # 100 Hz
 df_10hz = df_time.resample('100ms').mean()  # 10 Hz
 
 # Rolling statistics for trend analysis
-df_time['lateral_g_rms'] = df_time['lateral_g'].rolling('1s').std()
+df_time['sensor_rms'] = df_time['sensor_value'].rolling('1s').std()
 ```
 
 ---
 
-## Vehicle IMU Dataset Structure
+## Sensor Dataset Structure
 
 ```python
-# 6-DOF IMU data from a cornering maneuver
+# Example sensor dataset columns
 columns = [
     'timestamp',     # Time in seconds
-    'ax', 'ay', 'az', # Linear acceleration [m/s²]
-    'gx', 'gy', 'gz', # Angular velocity [rad/s]
-    'speed',         # Vehicle speed [km/h]
-    'steering_angle' # Steering input [degrees]
+    'temperature',   # Sensor reading [°C]
+    'pressure',      # Sensor reading [Pa]
+    'accel_x', 'accel_y', 'accel_z', # Acceleration [m/s²]
 ]
 ```
 
 ### Sample Data Preview
-| timestamp | ax   | ay    | az   | gx    | gy   | gz    | speed | steering |
-|-----------|------|-------|------|-------|------|-------|-------|----------|
-| 0.000     | 0.12 | 9.81  | 0.05 | 0.001 | 0.02 | 0.003 | 45.2  | 0.0      |
-| 0.001     | 0.15 | 9.79  | 0.08 | 0.002 | 0.02 | 0.005 | 45.3  | 2.1      |
+| timestamp | temperature | pressure | accel_x | accel_y | accel_z |
+|-----------|-------------|----------|---------|---------|---------|
+| 0.000     | 22.5        | 101325   | 0.12    | 9.81    | 0.05    |
+| 0.001     | 22.6        | 101320   | 0.15    | 9.79    | 0.08    |
 
 ---
 
@@ -203,8 +191,8 @@ columns = [
 import pandas as pd
 import numpy as np
 
-# Load IMU data from CSV
-df = pd.read_csv('data/telemetry_detailed.csv')
+# Load sensor data from CSV
+df = pd.read_csv('sensor_data.csv')
 
 # Quick data exploration
 print(f"Dataset shape: {df.shape}")
@@ -242,9 +230,9 @@ def find_outliers(series, threshold=3):
     z_scores = np.abs((series - series.mean()) / series.std())
     return series[z_scores > threshold]
 
-# Check acceleration outliers
-outliers_ax = find_outliers(df['ax'])
-print(f"Found {len(outliers_ax)} outliers in ax")
+# Check temperature outliers
+outliers_temp = find_outliers(df['temperature'])
+print(f"Found {len(outliers_temp)} outliers in temperature")
 ```
 
 ---
@@ -271,7 +259,7 @@ if len(gaps) > 0:
 df_clean = df.fillna(method='ffill', limit=5)
 
 # Strategy 2: Interpolation for sensor data
-df_clean['ax'] = df_clean['ax'].interpolate(method='linear')
+df_clean['temperature'] = df_clean['temperature'].interpolate(method='linear')
 
 # Strategy 3: Drop rows with too many missing values
 df_clean = df_clean.dropna(thresh=len(df.columns) * 0.8)
@@ -290,8 +278,8 @@ def remove_outliers_iqr(df, column):
     upper = Q3 + 1.5 * IQR
     return df[(df[column] >= lower) & (df[column] <= upper)]
 
-# Apply to acceleration data
-df_clean = remove_outliers_iqr(df, 'ax')
+# Apply to temperature data
+df_clean = remove_outliers_iqr(df, 'temperature')
 ```
 
 ---
@@ -305,7 +293,7 @@ df_clean['datetime'] = pd.to_datetime(df_clean['timestamp'], unit='s')
 df_indexed = df_clean.set_index('datetime')
 
 # Now we can use powerful time-based operations
-hourly_stats = df_indexed.resample('100ms').mean()
+stats_100ms = df_indexed.resample('100ms').mean()
 ```
 
 ---
@@ -313,26 +301,22 @@ hourly_stats = df_indexed.resample('100ms').mean()
 ### Moving Averages for Noise Reduction
 ```python
 # Smooth noisy sensor data
-window_size = 10  # 10ms window at 1000Hz
+window_size = 10  # 10ms window
 
 df_smooth = df_clean.copy()
-df_smooth['ax_smooth'] = df_clean['ax'].rolling(window=window_size).mean()
-df_smooth['ay_smooth'] = df_clean['ay'].rolling(window=window_size).mean()
-df_smooth['az_smooth'] = df_clean['az'].rolling(window=window_size).mean()
+df_smooth['temperature_smooth'] = df_clean['temperature'].rolling(window=window_size).mean()
+df_smooth['pressure_smooth'] = df_clean['pressure'].rolling(window=window_size).mean()
 ```
 
 ---
 
 ## Engineering Calculations
 
-### Coordinate Transformations
+### Sensor Calibration Example
 ```python
-# Remove gravity component (assuming vehicle is level initially)
-gravity = df_clean['ay'].iloc[:100].mean()  # Estimate from stationary period
-df_clean['ay_vehicle'] = df_clean['ay'] - gravity
-
-# Calculate lateral acceleration (important for cornering analysis)
-df_clean['lateral_g'] = df_clean['ay_vehicle'] / 9.81
+# Remove offset from temperature sensor (calibration)
+offset = df_clean['temperature'].iloc[:100].mean()  # Estimate from baseline
+df_clean['temperature_calibrated'] = df_clean['temperature'] - offset
 ```
 
 ---
@@ -343,101 +327,83 @@ df_clean['lateral_g'] = df_clean['ay_vehicle'] / 9.81
 dt = df_clean['timestamp'].diff().fillna(0)
 
 # Integrate acceleration to get velocity
-df_clean['vx'] = np.cumsum(df_clean['ax'] * dt)
-df_clean['vy'] = np.cumsum(df_clean['ay_vehicle'] * dt)
+df_clean['vel_x'] = np.cumsum(df_clean['accel_x'] * dt)
+df_clean['vel_y'] = np.cumsum(df_clean['accel_y'] * dt)
 
 # Integrate velocity to get position
-df_clean['pos_x'] = np.cumsum(df_clean['vx'] * dt)
-df_clean['pos_y'] = np.cumsum(df_clean['vy'] * dt)
+df_clean['pos_x'] = np.cumsum(df_clean['vel_x'] * dt)
+df_clean['pos_y'] = np.cumsum(df_clean['vel_y'] * dt)
 ```
 
 ---
 
 ## Performance Analysis
 
-### Cornering Metrics
+### Sensor Data Metrics
 ```python
-# Calculate cornering radius
-df_clean['yaw_rate'] = df_clean['gz']  # rad/s
-df_clean['speed_ms'] = df_clean['speed'] / 3.6  # Convert km/h to m/s
-
-# Radius of curvature
-df_clean['corner_radius'] = df_clean['speed_ms'] / np.abs(df_clean['yaw_rate'])
-
-# Maximum lateral acceleration during maneuver
-max_lateral_g = df_clean['lateral_g'].max()
-print(f"Maximum lateral acceleration: {max_lateral_g:.2f} g")
+# Calculate max/min temperature and pressure
+max_temp = df_clean['temperature'].max()
+min_temp = df_clean['temperature'].min()
+max_pressure = df_clean['pressure'].max()
+print(f"Max temperature: {max_temp:.2f} °C")
+print(f"Min temperature: {min_temp:.2f} °C")
+print(f"Max pressure: {max_pressure:.0f} Pa")
 ```
 
 ---
 
 ### Statistical Analysis
 ```python
-# Cornering phase detection (high steering angle)
-cornering_mask = np.abs(df_clean['steering_angle']) > 10
-
-# Performance metrics during cornering
-cornering_data = df_clean[cornering_mask]
-avg_corner_speed = cornering_data['speed'].mean()
-peak_lateral_g = cornering_data['lateral_g'].max()
-
-print(f"Average cornering speed: {avg_corner_speed:.1f} km/h")
-print(f"Peak lateral acceleration: {peak_lateral_g:.2f} g")
+# Detect high-pressure events
+high_pressure_mask = df_clean['pressure'] > 102000
+high_pressure_data = df_clean[high_pressure_mask]
+avg_high_pressure = high_pressure_data['pressure'].mean()
+print(f"Average high pressure: {avg_high_pressure:.0f} Pa")
 ```
 
 ---
 
 ## Advanced Data Operations
 
-### GroupBy for Lap Analysis
+### GroupBy for Sensor Events
 ```python
-# Identify laps using sector markers or lap time
-df['lap_number'] = (df['distance'] // track_length).astype(int)
+# Group by experiment or batch
+df['batch'] = (df['timestamp'] // 60).astype(int)  # Each batch = 1 min
 
-# Analyze performance by lap
-lap_stats = df.groupby('lap_number').agg({
-    'speed': ['mean', 'max'],
-    'lateral_g': 'max',
-    'corner_radius': 'min',
-    'timestamp': lambda x: x.max() - x.min()  # lap time
+# Analyze metrics by batch
+batch_stats = df.groupby('batch').agg({
+    'temperature': ['mean', 'max'],
+    'pressure': ['mean', 'max'],
+    'timestamp': lambda x: x.max() - x.min()  # batch duration
 })
-
-# Compare fastest vs average lap
-fastest_lap = lap_stats['timestamp'].idxmin()
-avg_performance = lap_stats.mean()
 ```
 
 ---
 
 ### Window Functions & Rolling Calculations
 ```python
-# Sector-based analysis (rolling windows)
-df['speed_trend'] = df['speed'].rolling(window=50).mean()
-df['accel_variance'] = df['ax'].rolling(window=100).var()
+# Rolling analysis for sensor data
+df['temp_trend'] = df['temperature'].rolling(window=50).mean()
+df['pressure_variance'] = df['pressure'].rolling(window=100).var()
 
-# Performance relative to session average
-df['speed_vs_avg'] = df['speed'] / df['speed'].expanding().mean()
-
-# Tire degradation analysis
-df['grip_proxy'] = df.groupby('lap_number')['lateral_g'].transform('max')
+# Relative to session average
+df['temp_vs_avg'] = df['temperature'] / df['temperature'].expanding().mean()
 ```
 
 ---
 
 ### Memory Optimization
 ```python
-# Optimize data types for large datasets
+# Optimize data types for large sensor datasets
 def optimize_dtypes(df):
     for col in df.select_dtypes(include=['float64']):
         if df[col].min() > np.finfo(np.float32).min and \
            df[col].max() < np.finfo(np.float32).max:
             df[col] = df[col].astype(np.float32)
-    
     for col in df.select_dtypes(include=['int64']):
         if df[col].min() > np.iinfo(np.int32).min and \
            df[col].max() < np.iinfo(np.int32).max:
             df[col] = df[col].astype(np.int32)
-    
     return df
 
 df_optimized = optimize_dtypes(df)
@@ -460,26 +426,23 @@ pre {
 # Multiple export formats for different use cases
 
 # 1. HDF5 for high-performance analysis
-with pd.HDFStore('data/racing_data.h5', complevel=9) as store:
+with pd.HDFStore('sensor_data.h5', complevel=9) as store:
     store['raw_data'] = df_raw
     store['processed_data'] = df_clean
-    store['cornering_segments'] = cornering_segments
-    store['performance_summary'] = pd.DataFrame([performance_metrics])
-    
+    store['summary'] = pd.DataFrame([summary_stats])
     # Add metadata
     store.get_storer('processed_data').attrs.metadata = {
         'sampling_rate': 1000,
-        'vehicle': 'Autocross Single Seater',
-        'track': 'Nova Paka Circuit',
-        'driver': 'Test Driver',
+        'experiment': 'Lab Sensor Test',
+        'operator': 'Test Engineer',
         'processing_date': pd.Timestamp.now()
     }
 
-# 2. CSV for external tools (MATLAB, Excel)
-df_clean.to_csv('data/telemetry_processed.csv', index=False)
+# 2. CSV for external tools (Excel, MATLAB)
+df_clean.to_csv('sensor_data_processed.csv', index=False)
 
 # 3. JSON for web applications
-summary_stats.to_json('performance_api.json', orient='records')
+summary_stats.to_json('sensor_summary.json', orient='records')
 ```
 
 ---
@@ -495,80 +458,14 @@ pre {
 </style>
 
 ```python
-# Professional data structure
-/data/racing_data.h5
+# Example HDF5 data structure
+/sensor_data.h5
 ├── /raw_data              # Original sensor readings
 ├── /processed_data        # Cleaned and calibrated
-├── /derived_parameters    # Calculated values (g-forces, etc.)
-├── /cornering_analysis    # Segment-specific data
-├── /performance_metrics   # Summary statistics
+├── /derived_parameters    # Calculated values
+├── /summary               # Summary statistics
 └── /metadata              # Calibration, units, processing log
 ```
-
----
-
-## Live Demo: Racing Data Analysis
-
-### 🏎️ **Hands-On Coding Session**
-
-**Task:** Analyze a racing car's cornering maneuver
-1. Load synthetic IMU data
-2. Clean and validate the dataset  
-3. Calculate vehicle motion parameters
-4. Extract performance metrics
-5. Prepare data for visualization
-
-**Dataset:** `data/telemetry_detailed.csv`
-
----
-
-### Key Takeaways
-
-<style scoped>
-.small-list {
-  font-size: 0.8em;
-}
-</style>
-
-### HDF5 Advantages for Engineering
-
-### Pandas Essentials for Engineers
-
-<div class="small-list">
-
-- ✅ **DataFrames** are your primary tool for structured data
-- ✅ **Time-based indexing** simplifies sensor data analysis
-- ✅ **HDF5 storage** for high-performance big data workflows
-- ✅ **GroupBy operations** for segment and lap analysis
-- ✅ **Rolling functions** for trend and statistical analysis
-- ✅ **Memory optimization** for large datasets
-- ✅ **Built-in statistical functions** accelerate analysis
-- ✅ **Integration capabilities** for motion calculations
-- ✅ **Export options** maintain data pipeline flow
-
-</div>
-
---- 
-
-### Data Processing Workflow
-```
-Raw Data → Clean → Transform → Analyze → Store (HDF5) → Visualize
-```
-
-### Racing Engineering Insights
-- **Data quality** directly impacts analysis reliability
-- **Coordinate systems** and reference frames matter
-- **Integration drift** requires correction strategies
-- **Storage format** choice affects performance and compatibility
-
----
-
-### HDF5 Best Practices
-- ✅ **Compress data** for storage efficiency
-- ✅ **Use hierarchical structure** for organization
-- ✅ **Store metadata** with datasets
-- ✅ **Query capabilities** for large datasets
-- ✅ **Cross-platform compatibility**
 
 ---
 
@@ -576,12 +473,11 @@ Raw Data → Clean → Transform → Analyze → Store (HDF5) → Visualize
 
 ### Next Session Preview
 - **Matplotlib**: Creating publication-ready plots
-- **Time series visualization**: Racing telemetry plots
-- **3D trajectory plotting**: Vehicle path analysis
+- **Time series visualization**: Sensor data plots
+- **3D trajectory plotting**: Experiment path analysis
 
 ### Your Mission
-- Practice with the racing dataset
-- Try additional calculations (jerk, path curvature)
-- Prepare questions for visualization session
+- Practice with the sensor dataset
+- Try additional calculations (moving average, event detection)
 
 **📁 All code examples:** Available in course repository
