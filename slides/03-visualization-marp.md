@@ -233,3 +233,651 @@ plt.show()
 - Apply design principles for effective plots
 - Integrate with pandas for data analysis
 - Avoid common pitfalls
+
+---
+
+<!-- _class: lead -->
+
+# Part II: 3D Visualization
+## VTK, meshio, and PyVista
+
+---
+
+# Why 3D Visualization?
+
+- **Engineering simulations** require 3D representation
+- **Finite Element Analysis** results are inherently spatial
+- **Modal analysis** shows 3D deformation patterns
+- **CFD results** need volumetric visualization
+- **Complex geometries** cannot be understood in 2D
+
+<!--
+Motivate the need for 3D visualization in mechanical engineering workflows
+-->
+
+---
+
+# 3D Visualization Landscape
+
+Three complementary tools for engineering visualization:
+
+1. **VTK** - Low-level, powerful foundation
+2. **meshio** - Universal format converter
+3. **PyVista** - High-level, Pythonic interface
+
+Together they form a complete FEM post-processing pipeline.
+
+---
+
+# The Visualization Toolkit (VTK)
+
+- Open-source 3D graphics and visualization library
+- Foundation for ParaView, VisIt, 3D Slicer
+- 25+ years of development and refinement
+- Industry standard for scientific visualization
+- Written in C++ with Python bindings
+
+---
+
+# VTK: Why It Matters
+
+**For Engineers:**
+- Handle millions of finite elements efficiently
+- Support all FEM cell types (hex, tet, wedge, pyramid)
+- Production-ready for professional applications
+- Maximum control over visualization pipeline
+
+**For Students:**
+- Understanding VTK = understanding ParaView internals
+- Transferable skills to commercial software
+- Foundation for custom post-processing tools
+
+---
+
+# VTK Architecture
+
+**Two Main Components:**
+
+1. **Visualization Model** - Data processing pipeline
+   - Sources → Filters → Mappers
+
+2. **Graphics Model** - Rendering system
+   - Actors → Renderer → Render Window
+
+**Design Pattern:** Pipeline architecture (like FEM workflows)
+
+```
+Visualization Model          Graphics Model
+─────────────────────        ──────────────
+Source → Filter → Mapper  →  Actor → Renderer → Window
+```
+
+---
+
+# VTK Pipeline Concept
+
+<div style="display: flex; gap: 30px; align-items: center;">
+<div style="flex: 0 0 auto; max-width: 45%;">
+
+```
+Source → Filter → Filter → Mapper
+  ↓        ↓        ↓         ↓
+ Read    Clip    Contour   Convert
+ Data    Data    Extract    to
+         Volume  Surfaces   Graphics
+```
+
+**Demand-Driven:** Only updates when needed (efficient for large data)
+
+</div>
+<div style="flex: 0 0 auto;">
+
+![width:450px](../static/img/vtk/vtk-pipeline.png)
+
+</div>
+</div>
+
+<!--
+Explain the flow from data reading through processing to final rendering
+-->
+
+---
+
+# VTK Dataset Types
+
+<div style="display: flex; gap: 30px; align-items: center;">
+<div style="flex: 0 0 auto; max-width: 45%;">
+
+Supports all common FEM mesh types:
+
+- **Unstructured Grid** - Mixed element types (FEM)
+- **Structured Grid** - Regular topology (CFD)
+- **Polygonal Data** - Surface meshes (CAD)
+- **Image Data** - Regular voxels (Medical imaging)
+
+**For FEM:** Unstructured grids are most common
+
+</div>
+<div style="flex: 0 0 auto;">
+
+![width:450px](../static/img/vtk/dataset-types.png)
+
+</div>
+</div>
+
+---
+
+# VTK Cell Types
+
+<div style="display: flex; gap: 20px;">
+<div style="flex: 1;">
+
+**Linear Elements:**
+
+![width:400px](../static/img/vtk/cell-types-linear.png)
+
+- Tetrahedron, Hexahedron
+- Wedge, Pyramid
+- Triangle, Quad, Line
+
+</div>
+<div style="flex: 1;">
+
+**Quadratic Elements:**
+
+![width:400px](../static/img/vtk/cell-types-nonlinear.png)
+
+- 10-node Tet (C3D10)
+- 20-node Hex (C3D20)
+- 15-node Wedge
+
+</div>
+</div>
+
+Matches standard FEM element library.
+
+---
+
+# VTK Code Example
+
+```python
+import vtk
+
+# 1. Create geometry
+cone = vtk.vtkConeSource()
+cone.SetHeight(3.0)
+cone.SetRadius(1.0)
+
+# 2. Create mapper
+mapper = vtk.vtkPolyDataMapper()
+mapper.SetInputConnection(cone.GetOutputPort())
+
+# 3. Create actor
+actor = vtk.vtkActor()
+actor.SetMapper(mapper)
+
+# 4. Create renderer and window
+renderer = vtk.vtkRenderer()
+renderer.AddActor(actor)
+renderWindow = vtk.vtkRenderWindow()
+renderWindow.AddRenderer(renderer)
+
+# 5. Show
+renderWindow.Render()
+```
+
+---
+
+# VTK: The Challenge
+
+**Pros:**
+- Maximum control and flexibility
+- Best performance for large datasets
+- Industry-standard architecture
+
+**Cons:**
+- Verbose code (30+ lines for simple plots)
+- Steep learning curve
+- C++-style API in Python
+
+**Solution:** PyVista provides a Pythonic wrapper!
+
+---
+
+<!-- _class: lead -->
+
+# meshio
+## Universal Mesh Format Converter
+
+---
+
+# The Format Problem
+
+Different FEM software use different formats:
+
+- **Abaqus** → .inp
+- **ANSYS** → .msh, .cdb
+- **CalculiX** → .inp, .frd
+- **Gmsh** → .msh
+- **VTK** → .vtu, .vtk
+- **Exodus** → .exo
+
+**Problem:** How to exchange data between tools?
+
+---
+
+# meshio: The Solution
+
+**Universal translator** for mesh files:
+- Read from 30+ formats
+- Write to 20+ formats
+- Preserve geometry and connectivity
+- Command-line and Python API
+
+**Workflow Integration:**
+```
+CAD → Gmsh → CalculiX → meshio → PyVista
+```
+
+---
+
+# meshio: Key Formats for FEM
+
+**Read/Write:**
+- Abaqus (.inp) - mesh and element definitions
+- VTK XML (.vtu, .vtp) - visualization standard
+- Exodus II (.exo) - multiphysics standard
+- XDMF (.xdmf) - large datasets with HDF5
+
+**Read Only:**
+- ANSYS (.msh) - commercial FEM
+- STL (.stl) - CAD surfaces
+
+---
+
+# meshio: Basic Usage
+
+```python
+import meshio
+
+# Read any supported format
+mesh = meshio.read("model.inp")  # Abaqus
+
+# Inspect mesh
+print(f"Points: {len(mesh.points)}")
+print(f"Cells: {mesh.cells}")
+
+# Convert format
+meshio.write("model.vtu", mesh)  # VTK XML
+```
+
+**That's it!** Automatic format detection and conversion.
+
+---
+
+# meshio Command-Line Tools
+
+Quick conversions without Python:
+
+```bash
+# Convert Abaqus to VTK
+meshio convert model.inp model.vtu
+
+# Show mesh info
+meshio info model.inp
+
+# Compress VTK file
+meshio compress model.vtu
+```
+
+Perfect for scripting and automation.
+
+---
+
+# meshio + PyVista Integration
+
+Seamless workflow:
+
+```python
+import meshio
+import pyvista as pv
+
+# Load with meshio
+mesh_io = meshio.read("model.inp")
+
+# Convert to PyVista
+mesh_pv = pv.from_meshio(mesh_io)
+
+# Visualize
+mesh_pv.plot(show_edges=True)
+```
+
+**Best of both worlds:** meshio for I/O, PyVista for visualization
+
+---
+
+# meshio Limitations
+
+**What meshio does well:**
+- Mesh geometry conversion
+- Cell connectivity
+- Point coordinates
+
+**What meshio doesn't handle:**
+- FEM result files (.frd, .rst, .odb)
+- Time series results
+- Complex field data
+
+**For results:** Export to VTK from solver or use ParaView
+
+---
+
+<!-- _class: lead -->
+
+# PyVista
+## Pythonic 3D Visualization
+
+---
+
+# What is PyVista?
+
+**High-level interface to VTK:**
+- Pythonic API (object-oriented, intuitive)
+- NumPy integration (direct array access)
+- Minimal boilerplate code
+- Full VTK power when needed
+
+**Philosophy:** Make simple things simple, complex things possible
+
+---
+
+# PyVista vs VTK
+
+**Same visualization in both:**
+
+**VTK:** 30+ lines
+**PyVista:** 3 lines
+
+```python
+import pyvista as pv
+
+cone = pv.Cone()
+cone.plot(color="red")
+```
+
+**80% less code** for common tasks!
+
+---
+
+# PyVista Core Concepts
+
+**Mesh Objects:**
+- `pv.PolyData` - Surface meshes
+- `pv.UnstructuredGrid` - 3D FEM meshes
+- `pv.StructuredGrid` - Regular grids
+
+**Plotter:**
+- `pv.Plotter()` - Visualization window
+- `.add_mesh()` - Add geometries
+- `.show()` - Display
+
+---
+
+# PyVista: Loading Data
+
+```python
+import pyvista as pv
+
+# Read various formats
+mesh = pv.read("model.vtu")     # VTK
+mesh = pv.read("model.stl")     # STL
+mesh = pv.read("model.obj")     # Wavefront
+
+# Or create programmatically
+sphere = pv.Sphere()
+cube = pv.Cube()
+cylinder = pv.Cylinder()
+```
+
+---
+
+# PyVista: Adding Data
+
+<div style="display: flex; gap: 30px; align-items: center;">
+<div style="flex: 0 0 auto; max-width: 45%;">
+
+**Scalar fields** (temperature, stress, pressure):
+
+```python
+import numpy as np
+
+# Add field to mesh
+mesh["Temperature"] = np.random.rand(
+    mesh.n_points)
+mesh["Stress"] = np.random.rand(
+    mesh.n_cells)
+
+# Visualize
+mesh.plot(scalars="Temperature",
+          cmap="coolwarm")
+```
+
+**Direct NumPy integration!**
+
+</div>
+<div style="flex: 0 0 auto;">
+
+![width:450px](../static/img/vtk/data-attributes.png)
+
+</div>
+</div>
+
+---
+
+# PyVista: Visualization Techniques
+
+**Contouring:**
+```python
+contours = mesh.contour(scalars="Pressure", isosurfaces=10)
+```
+
+**Slicing:**
+```python
+slices = mesh.slice_orthogonal()
+```
+
+**Warping (Deformation):**
+```python
+mesh["Displacement"] = displacement_vectors
+warped = mesh.warp_by_vector("Displacement", factor=10)
+```
+
+---
+
+# PyVista: Interactive Features
+
+<div style="display: flex; gap: 30px; align-items: center;">
+<div style="flex: 0 0 auto; max-width: 45%;">
+
+```python
+plotter = pv.Plotter()
+plotter.add_mesh(mesh, 
+                 scalars="Stress")
+
+# Add widgets
+plotter.add_slider_widget(
+    callback, [0, 100])
+plotter.enable_surface_picking(
+    callback)
+
+# Camera controls
+plotter.camera_position = [
+    (5,5,5), (0,0,0), (0,0,1)]
+plotter.show()
+```
+
+**Build custom GUIs** for engineering tools!
+
+</div>
+<div style="flex: 0 0 auto;">
+
+![width:450px](../static/img/vtk/camera-coordinates.png)
+
+</div>
+</div>
+
+---
+
+# PyVista: Performance Tips
+
+**For large meshes (>1M elements):**
+
+1. **Use appropriate data types**
+   ```python
+   mesh.points = mesh.points.astype(np.float32)
+   ```
+
+2. **Decimate when possible**
+   ```python
+   decimated = mesh.decimate(0.9)  # Keep 10%
+   ```
+
+3. **Compute in-place**
+   ```python
+   mesh.compute_normals(inplace=True)
+   ```
+
+---
+
+# Complete FEM Workflow Example
+
+```python
+import meshio
+import pyvista as pv
+import numpy as np
+
+# 1. Load Abaqus mesh
+mesh_io = meshio.read("model.inp")
+mesh = pv.from_meshio(mesh_io)
+
+# 2. Add FEM results (example: stress)
+stress = np.random.rand(mesh.n_cells)  # From solver
+mesh["von_Mises_Stress"] = stress
+
+# 3. Visualize with deformation
+mesh["Displacement"] = displacements  # From solver
+warped = mesh.warp_by_vector("Displacement", factor=5)
+
+# 4. Plot
+warped.plot(
+    scalars="von_Mises_Stress",
+    cmap="turbo",
+    show_edges=True,
+    scalar_bar_args={'title': 'Stress [MPa]'}
+)
+```
+
+---
+
+# Comparison: Tools Overview
+
+| Tool | Purpose | Complexity | Use Case |
+|------|---------|-----------|----------|
+| **VTK** | Low-level visualization | High | Custom tools, max control |
+| **meshio** | Format conversion | Low | I/O between FEM software |
+| **PyVista** | High-level visualization | Medium | Interactive post-processing |
+
+**Recommended:** meshio + PyVista for most engineering work
+
+---
+
+# Integration with Qt/GUI
+
+PyVista can be embedded in Qt applications:
+
+```python
+from PyQt5 import QtWidgets
+from pyvistaqt import QtInteractor
+
+class FEMViewer(QtWidgets.QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.plotter = QtInteractor(self)
+        self.setCentralWidget(self.plotter.interactor)
+        
+    def add_mesh(self, mesh):
+        self.plotter.add_mesh(mesh)
+```
+
+**Build professional FEM post-processors!**
+
+---
+
+# Real-World Applications
+
+**With VTK/PyVista you can:**
+- Visualize modal analysis results
+- Create interactive FEM post-processors
+- Build custom analysis tools
+- Generate publication-quality figures
+- Animate time-dependent simulations
+- Develop engineering software products
+
+---
+
+# Best Practices
+
+**For FEM Visualization:**
+1. Export to **VTK formats** from solvers
+2. Use **meshio** for format conversion
+3. Use **PyVista** for interactive visualization
+4. Keep data and visualization **separated**
+5. Vectorize operations with **NumPy**
+6. Use **appropriate color maps** (perceptually uniform)
+
+---
+
+# Resources
+
+**VTK:**
+- Documentation: https://vtk.org
+- Examples: https://kitware.github.io/vtk-examples/
+
+**meshio:**
+- GitHub: https://github.com/nschloe/meshio
+- PyPI: https://pypi.org/project/meshio/
+
+**PyVista:**
+- Documentation: https://docs.pyvista.org
+- Tutorial: https://tutorial.pyvista.org
+
+---
+
+# Summary: 3D Visualization
+
+**Three complementary tools:**
+1. **VTK** - Powerful foundation, industry standard
+2. **meshio** - Universal format converter
+3. **PyVista** - Pythonic interface, rapid development
+
+**Together they enable:**
+- Complete FEM post-processing workflows
+- Professional visualization applications
+- Integration with engineering simulation tools
+
+**Recommended path:** Start with PyVista, learn VTK concepts, use meshio for I/O
+
+---
+
+# Overall Recap
+
+**Part I: Matplotlib**
+- Foundation for 2D plotting in Python
+- Essential for data exploration and analysis
+
+**Part II: 3D Visualization**
+- VTK for robust 3D graphics
+- meshio for format interoperability
+- PyVista for practical engineering visualization
+
+**Next Steps:** Hands-on examples with your FEM data!

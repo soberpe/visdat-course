@@ -13,10 +13,12 @@ const config = {
   deploymentBranch: 'gh-pages',
   trailingSlash: false,
   markdown: {
+    mermaid: true,
     hooks: {
       onBrokenMarkdownLinks: 'warn',
     },
   },
+  themes: ['@docusaurus/theme-mermaid'],
   presets: [
     ['@docusaurus/preset-classic', {
       docs: { 

@@ -55,7 +55,7 @@ By completing this workshop, you will:
 - Python environment with the following packages:
   - `pandas`, `numpy`, `matplotlib`
   - `scipy` (for filtering)
-  - `madgwick-py` or `ahrs` (for orientation estimation)
+  - `ahrs` (for orientation estimation)
 - Basic understanding of vectors, coordinate systems, and integration
 
 ## Part 1: Data Acquisition

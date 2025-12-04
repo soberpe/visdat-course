@@ -58,6 +58,11 @@ module.exports = {
       items: [
         'visualization/introduction',
         'visualization/matplotlib',
+        'visualization/3d-visualization-vtk',
+        'visualization/meshio-file-conversion',
+        'visualization/3d-visualization-pyvista',
+        'visualization/mesh-visualization-workshop',
+        'visualization/fem-coding-challenge',
       ],
     },
   ],
