@@ -4,98 +4,104 @@ title: Pandas Fundamentals
 
 # Pandas Fundamentals
 
+
 ## Introduction to Pandas
 
-Pandas is Python's premier data manipulation and analysis library, built on top of NumPy. It provides two primary data structures that are perfect for engineering applications: Series (1-dimensional) and DataFrame (2-dimensional).
+
+
+Pandas was created in 2008 by Wes McKinney to address the lack of flexible, high-performance data analysis tools in Python. Before pandas, data manipulation in Python relied on basic lists, dictionaries, and NumPy arrays—powerful for numerical work, but cumbersome for tabular, labeled, or time series data.
+
+**The leap:** Pandas introduced the DataFrame and Series, bringing spreadsheet-like, labeled, and relational data handling to Python. This made tasks like filtering, grouping, joining, and time series analysis much easier and more expressive, and enabled Python to become a leading language for data science and engineering.
+
+
+> **Info**
+> All code examples use the provided dummy sensor dataset (`sensor_data.csv`). Column names (e.g. `speed_kmh`, `lateral_g`, etc.) are illustrative and may differ in your own data.
 
 ## Core Data Structures
+Learn how pandas represents and organizes data. Series and DataFrames are the foundation for all analysis and manipulation.
+
+
 
 ### Series: One-Dimensional Data
+A **Series** is a one-dimensional labeled array, similar to a column in a spreadsheet. Use Series for handling single columns or sensor channels with labels and fast operations.
+
+**Series Example:**
 ```python
 import pandas as pd
-import numpy as np
-
-# Create a Series for acceleration data
-acceleration_x = pd.Series([0.1, 0.2, 0.15, 0.3], 
-                          index=['t1', 't2', 't3', 't4'])
-print(acceleration_x)
-
-# Series with automatic index
-sensor_readings = pd.Series([9.81, 9.79, 9.82, 9.80])
-print(f"Mean: {sensor_readings.mean():.3f}")
-print(f"Std: {sensor_readings.std():.3f}")
+speed_series = pd.Series([10, 35, 50, 80, 120], name='speed_kmh')
+print(speed_series)
 ```
 
-### DataFrame: Two-Dimensional Data
+### DataFrames: Two-Dimensional Data
+A **DataFrame** is a two-dimensional table of data, like an entire spreadsheet, with rows and columns. DataFrames are the core structure in pandas for working with tabular data.
+
+DataFrames allow you to organize, inspect, and manipulate data efficiently. Once you understand their structure, you can select, filter, and transform data for analysis.
+
+**DataFrame Example:**
 ```python
-# Create DataFrame for IMU data
-imu_data = pd.DataFrame({
-    'timestamp': [0.0, 0.001, 0.002, 0.003],
-    'ax': [0.1, 0.2, 0.15, 0.3],
-    'ay': [9.81, 9.80, 9.82, 9.79],
-    'az': [0.05, 0.03, 0.08, 0.06],
-    'gx': [0.001, 0.002, 0.001, 0.003],
-    'gy': [0.02, 0.025, 0.018, 0.022],
-    'gz': [0.003, 0.005, 0.002, 0.008]
-})
-
-print(imu_data.head())
-print(f"Shape: {imu_data.shape}")
-```
-
-## Essential Operations
-
-### Data Loading and Inspection
-```python
-# Load racing session data
-sessions = pd.read_csv('data/racing_sessions.csv')
-print(sessions.info())
-print(sessions.head())
-
-# Load lap time data
-laps = pd.read_csv('data/lap_times.csv')
-print(f"Total laps: {len(laps)}")
-print(f"Fastest lap: {laps['lap_time_s'].min():.3f}s")
-
-# Load detailed telemetry
-telemetry = pd.read_csv('data/telemetry_detailed.csv')
-print(f"Telemetry points: {len(telemetry)}")
-print(f"Speed range: {telemetry['speed_kmh'].min()}-{telemetry['speed_kmh'].max()} km/h")
-```
-
-### Additional Data Loading Examples
-```python
-# Using the course dataset files
-sessions = pd.read_csv('data/racing_sessions.csv')
-laps = pd.read_csv('data/lap_times.csv') 
-telemetry = pd.read_csv('data/telemetry_detailed.csv')
-
-# Excel format (multi-sheet)
-excel_data = pd.read_excel('data/nova_paka_racing_data.xlsx', sheet_name='Sessions')
-all_sheets = pd.read_excel('data/nova_paka_racing_data.xlsx', sheet_name=None)
-
-# Basic information about the session data
-print(f"Dataset shape: {sessions.shape}")
-print(f"Columns: {sessions.columns.tolist()}")
-print(f"Data types:\n{sessions.dtypes}")
-
-# Statistical summary
-print(sessions.describe())
-
-# Missing values
-print(f"Missing values:\n{sessions.isnull().sum()}")
-
-# First and last rows
-print("First 5 rows:")
-print(sessions.head())
-print("Last 5 rows:")
-print(sessions.tail())
+data = {
+    'speed_kmh': [10, 35, 50, 80, 120],
+    'distance_m': [0, 100, 200, 300, 400],
+    'time_s': [0, 1, 2, 3, 4],
+    'brake_pressure_bar': [0, 10, 20, 30, 40],
+    'rpm': [1000, 3000, 5000, 7000, 9000]
+}
+telemetry = pd.DataFrame(data)
+print(telemetry)
 ```
 
 ### Data Selection and Filtering
+Select columns, rows, and filter data using conditions.
+```python
+# Column selection
+speed_data = telemetry['speed_kmh']
+position_data = telemetry[['distance_m', 'time_s']]
+
+# Row selection by index
+first_3_samples = telemetry.iloc[:3]
+specific_rows = telemetry.iloc[2:4]
+
+# Boolean indexing (filtering)
+high_speed = telemetry[telemetry['speed_kmh'] > 35]
+heavy_braking = telemetry[telemetry['brake_pressure_bar'] > 20]
+
+# Multiple conditions
+fast_braking = telemetry[(telemetry['speed_kmh'] > 30) & (telemetry['brake_pressure_bar'] > 10)]
+
+# Query method (alternative syntax)
+```python
+```
+
+
+### Data Modification
+Add, change, or remove columns to create new features or clean up your dataset.
+```python
+# Add new columns
+telemetry['speed_ms'] = telemetry['speed_kmh'] / 3.6  # Convert km/h to m/s
+telemetry['total_g'] = (telemetry.get('lateral_g', 0)**2 + telemetry.get('longitudinal_g', 0)**2)**0.5
+
+# Modify existing columns
+telemetry['time_minutes'] = telemetry['time_s'] / 60
+
+# Zero-start time (relative to first timestamp)
+telemetry['time_relative'] = telemetry['time_s'] - telemetry['time_s'].iloc[0]
+
+# Drop columns (example with hypothetical unused columns)
+# telemetry_reduced = telemetry.drop(['unused_column1', 'unused_column2'], axis=1)
+
+# Rename columns (example with existing columns)
+telemetry_renamed = telemetry.rename(columns={
+    'speed_kmh': 'velocity_kmh',
+    'time_s': 'timestamp_seconds',
+    'distance_m': 'position_meters'
+})
+```
+
+### Data Selection and Filtering
+Extract relevant rows and columns to focus your analysis on the data that matters.
 ```python
 # Using the telemetry dataset for examples
-telemetry = pd.read_csv('data/telemetry_detailed.csv')
+telemetry = pd.read_csv('data/sensor_data.csv')
 
 # Column selection
 speed_data = telemetry['speed_kmh']
@@ -116,10 +122,12 @@ fast_braking = telemetry[(telemetry['speed_kmh'] > 30) & (telemetry['brake_press
 high_rpm = telemetry.query('rpm > 7000')
 ```
 
+
 ### Data Modification
+Add, change, or remove columns to create new features or clean up your dataset.
 ```python
 # Using telemetry data for transformations
-telemetry = pd.read_csv('data/telemetry_detailed.csv')
+telemetry = pd.read_csv('data/sensor_data.csv')
 
 # Add new columns (using telemetry data)
 telemetry['speed_ms'] = telemetry['speed_kmh'] / 3.6  # Convert km/h to m/s
@@ -142,12 +150,16 @@ telemetry_renamed = telemetry.rename(columns={
 })
 ```
 
+
 ## Data Cleaning
+Prepare your data by handling missing values and removing outliers for reliable analysis.
+
 
 ### Handling Missing Values
+Deal with gaps in your data using strategies like dropping, filling, or interpolation.
 ```python
 # Using telemetry data for missing value examples
-telemetry = pd.read_csv('data/telemetry_detailed.csv')
+telemetry = pd.read_csv('data/sensor_data.csv')
 
 # Check for missing values
 missing_summary = telemetry.isnull().sum()
@@ -177,10 +189,12 @@ telemetry_filled = telemetry.fillna({
 })
 ```
 
+
 ### Outlier Detection and Removal
+Identify and remove extreme values that could distort your analysis.
 ```python
 # Using telemetry data for transformations
-telemetry = pd.read_csv('data/telemetry_detailed.csv')
+telemetry = pd.read_csv('data/sensor_data.csv')
 
 def detect_outliers_iqr(data, column):
     """Detect outliers using Interquartile Range method"""
@@ -195,7 +209,7 @@ def detect_outliers_iqr(data, column):
     return outliers, lower_bound, upper_bound
 
 # Detect outliers using telemetry data
-telemetry = pd.read_csv('data/telemetry_detailed.csv')
+telemetry = pd.read_csv('data/sensor_data.csv')
 outliers, lower, upper = detect_outliers_iqr(telemetry, 'lateral_g')
 print(f"Found {len(outliers)} outliers in lateral_g")
 print(f"Valid range: [{lower:.3f}, {upper:.3f}] g")
@@ -224,12 +238,16 @@ telemetry_clean = remove_outliers_iqr(telemetry, gforce_columns)
 print(f"Removed {len(telemetry) - len(telemetry_clean)} outlier samples")
 ```
 
+
 ## Basic Statistical Operations
+Summarize your data and discover patterns using descriptive statistics and correlations.
+
 
 ### Descriptive Statistics
+Calculate means, medians, percentiles, and more to understand your data’s distribution.
 ```python
 # Using telemetry data for statistical examples
-telemetry = pd.read_csv('data/telemetry_detailed.csv')
+telemetry = pd.read_csv('data/sensor_data.csv')
 
 # Single column statistics
 print(f"Speed - Mean: {telemetry['speed_kmh'].mean():.2f} km/h")
@@ -247,10 +265,12 @@ print("Speed percentiles:")
 print(percentiles)
 ```
 
+
 ### Correlation Analysis
+Find relationships between variables to reveal dependencies and trends.
 ```python
 # Using telemetry data for transformations
-telemetry = pd.read_csv('data/telemetry_detailed.csv')
+telemetry = pd.read_csv('data/sensor_data.csv')
 
 # Correlation matrix using telemetry data
 correlation_matrix = telemetry[['speed_kmh', 'lateral_g', 'longitudinal_g', 'steering_angle_deg']].corr()
@@ -262,12 +282,18 @@ speed_steering_corr = telemetry['speed_kmh'].corr(telemetry['steering_angle_deg'
 print(f"Speed-Steering correlation: {speed_steering_corr:.3f}")
 ```
 
+
 ## Data Transformation
+Apply mathematical operations, scaling, and categorization to create new insights from your data.
+
+
+
 
 ### Mathematical Operations
+Use arithmetic, trigonometric, and normalization functions to process and analyze sensor data.
 ```python
 # Using telemetry data for transformations
-telemetry = pd.read_csv('data/telemetry_detailed.csv')
+telemetry = pd.read_csv('data/sensor_data.csv')
 
 # Element-wise operations
 telemetry['speed_squared'] = telemetry['speed_kmh'] ** 2
@@ -287,10 +313,14 @@ telemetry['speed_normalized'] = (telemetry['speed_kmh'] - telemetry['speed_kmh']
 telemetry['speed_scaled'] = (telemetry['speed_kmh'] - telemetry['speed_kmh'].min()) / (telemetry['speed_kmh'].max() - telemetry['speed_kmh'].min())
 ```
 
+
+
+
 ### Binning and Categorization
+Group continuous data into categories for easier analysis and visualization.
 ```python
 # Using telemetry data for transformations
-telemetry = pd.read_csv('data/telemetry_detailed.csv')
+telemetry = pd.read_csv('data/sensor_data.csv')
 
 # Create speed categories using telemetry data
 speed_bins = [0, 30, 60, 100, 150, 300]
@@ -311,15 +341,17 @@ telemetry['driving_mode'] = np.select(conditions, choices, default='Unknown')
 ```
 
 ## File I/O Operations
+Read and write data in various formats to share results or work with other tools.
 
 ### Reading Data
+Import data from CSV, Excel, and other formats with flexible options.
 ```python
 # CSV with custom parameters (using course dataset)
-telemetry = pd.read_csv('data/telemetry_detailed.csv')
+telemetry = pd.read_csv('data/sensor_data.csv')
 
 # Excel with multiple sheets (using course dataset)
-sessions_excel = pd.read_excel('data/nova_paka_racing_data.xlsx', sheet_name='Sessions')
-all_sheets = pd.read_excel('data/nova_paka_racing_data.xlsx', sheet_name=None)  # All sheets
+sessions_excel = pd.read_excel('data/sensor_data.xlsx', sheet_name='Sessions')
+all_sheets = pd.read_excel('data/sensor_data.xlsx', sheet_name=None)  # All sheets
 
 # Example with custom CSV parameters (hypothetical)
 # df = pd.read_csv('custom_data.csv', 
@@ -334,6 +366,7 @@ all_sheets = pd.read_excel('data/nova_paka_racing_data.xlsx', sheet_name=None)  
 ```
 
 ### Writing Data
+Export your processed data for reporting, sharing, or further analysis.
 ```python
 # CSV export (using telemetry data)
 telemetry.to_csv('processed_data.csv', 
@@ -359,12 +392,16 @@ telemetry.to_json('telemetry_export.json',
           indent=2)              # Pretty formatting
 ```
 
+
 ## Performance Tips
+Optimize memory usage and speed for large datasets and efficient workflows.
+
 
 ### Memory Optimization
+Reduce memory footprint by adjusting data types and using efficient pandas features.
 ```python
 # Check memory usage (using telemetry data)
-telemetry = pd.read_csv('data/telemetry_detailed.csv')
+telemetry = pd.read_csv('data/sensor_data.csv')
 print(f"Memory usage: {telemetry.memory_usage(deep=True).sum() / 1e6:.1f} MB")
 
 # Optimize data types
@@ -397,10 +434,12 @@ def optimize_dtypes(telemetry_data):
 telemetry_optimized = optimize_dtypes(telemetry.copy())
 ```
 
+
 ### Vectorized Operations
+Speed up calculations by using pandas’ built-in vectorized operations instead of slow loops.
 ```python
 # Using telemetry data for vectorized operations
-telemetry = pd.read_csv('data/telemetry_detailed.csv')
+telemetry = pd.read_csv('data/sensor_data.csv')
 
 # Avoid loops - use vectorized operations
 # BAD: Loop through rows
@@ -423,9 +462,65 @@ telemetry['complex_result'] = telemetry.apply(complex_calculation, axis=1)
 telemetry['complex_result_vectorized'] = np.sqrt(telemetry['lateral_g']**2 + telemetry['longitudinal_g']**2) * telemetry['speed_kmh']
 ```
 
+#### Applying a Function to Each Row: 3D Vector Transformation Example
+You can use `.apply()` to perform complex operations on each row of a DataFrame. For example, transforming a body-fixed vector to global coordinates using reference points and orientation angles:
+```python
+import pandas as pd
+import numpy as np
+
+# Example DataFrame: each row has a reference point, body-fixed vector, and orientation angles
+df = pd.DataFrame({
+    'ref_x': [100, 200],
+    'ref_y': [50, 60],
+    'ref_z': [20, 30],
+    'body_x': [1, 0],
+    'body_y': [0, 1],
+    'body_z': [0, 0],
+    'yaw_deg': [30, 45],
+    'pitch_deg': [10, 0],
+    'roll_deg': [5, -10]
+})
+
+def rotation_matrix(yaw_deg, pitch_deg, roll_deg):
+    yaw = np.radians(yaw_deg)
+    pitch = np.radians(pitch_deg)
+    roll = np.radians(roll_deg)
+    Rz = np.array([
+        [np.cos(yaw), -np.sin(yaw), 0],
+        [np.sin(yaw),  np.cos(yaw), 0],
+        [0, 0, 1]
+    ])
+    Ry = np.array([
+        [np.cos(pitch), 0, np.sin(pitch)],
+        [0, 1, 0],
+        [-np.sin(pitch), 0, np.cos(pitch)]
+    ])
+    Rx = np.array([
+        [1, 0, 0],
+        [0, np.cos(roll), -np.sin(roll)],
+        [0, np.sin(roll),  np.cos(roll)]
+    ])
+    return Rz @ Ry @ Rx
+
+def transform_row(row):
+    p_ref = np.array([row['ref_x'], row['ref_y'], row['ref_z']])
+    v_body = np.array([row['body_x'], row['body_y'], row['body_z']])
+    R = rotation_matrix(row['yaw_deg'], row['pitch_deg'], row['roll_deg'])
+    v_global = R @ v_body + p_ref
+    return pd.Series({'global_x': v_global[0], 'global_y': v_global[1], 'global_z': v_global[2]})
+
+# Apply transformation to each row
+df[['global_x', 'global_y', 'global_z']] = df.apply(transform_row, axis=1)
+print(df[['ref_x', 'ref_y', 'ref_z', 'body_x', 'body_y', 'body_z', 'global_x', 'global_y', 'global_z']])
+```
+
+
 ## Best Practices
+Organize your code and document your workflow for reproducible, maintainable analysis.
+
 
 ### Code Organization
+Write reusable functions and validate your data for robust analysis.
 ```python
 # Create reusable functions
 def load_telemetry_data(filename):
@@ -463,7 +558,7 @@ def validate_sensor_data(telemetry_data):
     return issues
 
 # Use the functions
-telemetry = load_telemetry_data('data/telemetry_detailed.csv')
+telemetry = load_telemetry_data('data/sensor_data.csv')
 validation_issues = validate_sensor_data(telemetry)
 if validation_issues:
     print("Data validation issues:")
@@ -471,14 +566,16 @@ if validation_issues:
         print(f"  - {issue}")
 ```
 
+
 ### Documentation and Metadata
+Keep track of your processing steps and data quality for transparency and reproducibility.
 ```python
 # Document your data processing steps (using telemetry data)
-telemetry_raw = pd.read_csv('data/telemetry_detailed.csv')
+telemetry_raw = pd.read_csv('data/sensor_data.csv')
 telemetry_processed = telemetry_raw.copy()  # After processing steps
 
 processing_log = {
-    'source_file': 'data/telemetry_detailed.csv',
+    'source_file': 'data/sensor_data.csv',
     'processing_date': pd.Timestamp.now().isoformat(),
     'steps': [
         'loaded_raw_data',

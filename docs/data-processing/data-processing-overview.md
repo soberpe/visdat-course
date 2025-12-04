@@ -12,7 +12,7 @@ This section provides a comprehensive guide to data processing using pandas, Pyt
 
 ## Course Structure
 
-This data processing module is organized into four focused documents:
+This data processing module is organized into three focused documents:
 
 ### 📊 [Pandas Fundamentals](./pandas-fundamentals)
 **Core concepts and essential operations**
@@ -22,8 +22,10 @@ This data processing module is organized into four focused documents:
 - Data cleaning techniques
 - File I/O operations
 - Performance optimization basics
+- Time series operations
+- Statistical analysis
 
-*Start here if you're new to pandas or need a refresher on the fundamentals.*
+*Complete foundation for data processing with pandas - everything you need to get started and work effectively with engineering data.*
 
 ### 🚀 [High-Performance Data Storage with HDF5](./hdf5-storage)
 **Managing large engineering datasets efficiently**
@@ -33,144 +35,55 @@ This data processing module is organized into four focused documents:
 - Compression and performance optimization
 - Metadata and attributes
 - Production data management strategies
+- Integration with pandas workflows
 
-*Essential for working with large sensor datasets and long-term data archival.*
+*Essential for working with large sensor datasets and long-term data archival in professional engineering environments.*
 
-### ⚡ [Advanced Pandas Operations](./advanced-operations)
-**Sophisticated analysis techniques**
-- Time series analysis and resampling
-- GroupBy operations for segment analysis
-- Window functions and rolling calculations
-- Advanced data transformations
-- Pivot tables and melting
-- Performance optimization for large datasets
+## Learning Path
 
-*Master these techniques for complex engineering analysis workflows.*
+This streamlined approach ensures you master the essential data processing skills:
 
-### 🏎️ [Racing Data Case Study](./racing-case-study)
-**Complete workflow example with vehicle dynamics**
-- End-to-end analysis of racing telemetry data
-- Data quality assessment and validation
-- Coordinate system transformations
-- Performance metrics calculation
-- Comprehensive visualization examples
-- Professional reporting and data export
+1. **Start with Pandas Fundamentals** - Build solid foundation in data manipulation
+2. **Master HDF5 Storage** - Learn professional data management for large datasets  
+3. **Apply in practice** - Use course exercises and examples to reinforce learning
 
-*See all concepts applied in a real-world engineering scenario.*
+The focus is on practical, immediately applicable skills rather than exhaustive coverage of all possible techniques.
 
 ## Why Data Processing Matters
 
-### The Engineering Data Challenge
+Engineering sensor data is rarely analysis-ready. Racing cars generate 1.3 billion data points per race from 50+ sensors at 1000+ Hz sampling rates.
 
-Modern engineering systems generate enormous amounts of data:
-- **Racing cars**: 50-200 sensors at 1000+ Hz = 1.3 billion data points per race
-- **Manufacturing**: Continuous monitoring of production lines
-- **Aerospace**: Flight test instrumentation and simulation data
-- **Automotive**: Vehicle development and testing programs
-
-Raw sensor data is rarely analysis-ready and requires:
-- **Cleaning**: Remove outliers and handle missing values
-- **Transformation**: Apply calibrations and coordinate transformations
-- **Integration**: Convert measurements to derived parameters
-- **Filtering**: Reduce noise while preserving signal content
-- **Organization**: Structure data for efficient analysis and storage
-
-### From Sensors to Engineering Decisions
-
-The journey from raw data to actionable insights follows this typical workflow:
-
+**Typical workflow:**
 ```
-Raw Sensor Data → Data Quality → Clean Data → Transform → Analyze → Visualize → Decide
+Raw Sensor Data → Clean → Transform → Analyze → Visualize
 ```
 
-Each step requires careful consideration of:
-- **Physical validity**: Are the measurements reasonable?
-- **Temporal consistency**: Is the timing information reliable?
-- **Coordinate systems**: Are reference frames properly defined?
-- **Engineering context**: What do the numbers mean physically?
+**Essential steps:**
+- Remove outliers and handle missing values
+- Apply calibrations and coordinate transformations  
+- Filter noise while preserving signal content
+- Structure data for efficient analysis
 
-## Key Technologies Covered
+## Technologies
 
-### Pandas
-- **Why pandas?** Built specifically for data analysis workflows
-- **Performance**: Optimized operations on large datasets
-- **Flexibility**: Handles structured and time series data
-- **Integration**: Works seamlessly with the Python ecosystem
+**Pandas:** Data manipulation and analysis library optimized for structured and time series data.
 
-### HDF5 (Hierarchical Data Format)
-- **Compression**: 5-10x smaller files than CSV
-- **Performance**: Fast random access to data subsets
-- **Organization**: Hierarchical structure for complex datasets
-- **Metadata**: Store calibrations, units, and processing history
+**HDF5:** Binary format offering 5-10x compression vs CSV, fast random access, and hierarchical organization.
 
-### Engineering Applications
-- **Time series analysis**: Essential for sensor data
-- **Signal processing**: Filtering and noise reduction
-- **Coordinate transformations**: Vehicle dynamics and robotics
-- **Performance analysis**: Extracting engineering metrics
 
-## Racing Data Context
+## Example Datasets
 
-Throughout this module, we use **racing vehicle telemetry** as our primary example because it:
-
-✅ **Represents real engineering challenges**: High data rates, multiple sensors, complex coordinate systems  
-✅ **Demonstrates practical workflows**: From raw IMU data to performance insights  
-✅ **Scales to other applications**: Principles apply to any engineering time series data  
-✅ **Engages students**: Racing data is inherently exciting and motivating  
-✅ **Builds toward visualization**: Creates rich datasets for plotting and 3D analysis  
-
-The racing context provides a vehicle dynamics foundation that supports the course progression:
-- **Data Processing** → Clean and analyze sensor data
-- **Visualization** → Plot trajectories and performance metrics  
-- **3D Analysis** → Visualize vehicle motion and suspension geometry
-- **Interactive UIs** → Create real-time monitoring dashboards
-
-## Learning Path Recommendations
-
-### For Beginners
-1. Start with **Pandas Fundamentals** to build core skills
-2. Work through the **Racing Case Study** to see practical applications
-3. Explore **HDF5 Storage** when dealing with larger datasets
-4. Advance to **Advanced Operations** for sophisticated analysis
-
-### For Experienced Users
-1. Review **Pandas Fundamentals** quickly for any gaps
-2. Focus on **HDF5 Storage** for production-scale data management
-3. Master **Advanced Operations** for complex analysis workflows
-4. Use the **Racing Case Study** as a reference implementation
-
-### For Racing Enthusiasts
-1. Jump straight to the **Racing Case Study** for motivation
-2. Reference **Pandas Fundamentals** as needed for specific operations
-3. Explore **Advanced Operations** for lap-by-lap analysis techniques
-4. Implement **HDF5 Storage** for managing race weekend data
+Throughout the module, you’ll see generic code examples using time series sensor data, tabular measurements, and simulated engineering signals. Specific sample datasets for exercises and demos are introduced in a separate document.
 
 ## Prerequisites
 
-### Programming Knowledge
-- Basic Python programming (variables, functions, loops)
-- Familiarity with NumPy arrays and basic operations
-- Understanding of file systems and data formats
-
-### Engineering Background
-- Basic understanding of coordinate systems
-- Familiarity with sensor data and measurement concepts
-- Knowledge of time series data characteristics
-
-### Tools and Environment
-- Python 3.8+ with pandas, numpy, matplotlib installed
-- Jupyter notebooks or VS Code for interactive development
-- Basic command line familiarity
+- Basic Python programming
+- Familiarity with NumPy arrays
+- Python environment with pandas, numpy, matplotlib
 
 ## Next Steps
 
-After mastering data processing, you'll be ready for:
-- **Data Visualization**: Creating compelling plots and charts
-- **3D Analysis**: Spatial visualization and geometric analysis  
-- **Interactive Dashboards**: Real-time monitoring and control interfaces
-- **Machine Learning**: Advanced pattern recognition and prediction
-
-The clean, structured datasets you create with these data processing techniques provide the foundation for all subsequent analysis and visualization work.
+After this module: Data Visualization → 3D Analysis → Interactive Dashboards
 
 ---
 
