@@ -40,12 +40,12 @@ coverage/
 *~
 
 # venv directory
-venv/
-**/*venv*/
-**/venv/
-.venv/
-**/*.venv*/
-**/.venv/
+myproject312/
+**/*myproject312*/
+**/myproject312/
+myproject312/
+**/*myproject312*/
+**/myproject312/
 
 # Python cache
 __pycache__/
