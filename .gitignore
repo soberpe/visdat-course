@@ -11,6 +11,8 @@ dist/
 # Docusaurus
 .docusaurus/
 .cache-loader/
+versioned_docs/
+versioned_sidebars/
 
 # Environment variables
 .env
