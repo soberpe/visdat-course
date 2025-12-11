@@ -115,6 +115,93 @@ You can see the full Zen of Python by typing `import this` in the Python interpr
 3. **Package Manager:** pip (included with Python)
 4. **Virtual Environments:** venv for project isolation
 
+### Virtual Environments
+
+A virtual environment is an isolated Python environment that allows you to install packages independently for each project. This prevents conflicts between different projects that might require different versions of the same package.
+
+#### Understanding Virtual Environments
+
+**Key concepts:**
+- A virtual environment is **bound to the specific Python version** used to create it
+- Created using `python -m venv`, which uses the Python interpreter that runs the command
+- Contains its own Python binary and package installation directory
+- **Cannot change Python version** after creation - you must recreate the environment
+- Named `.venv` by convention (the leading dot hides it on Unix-like systems)
+
+#### Creating a Virtual Environment (Command Line)
+
+```bash
+# Method 1: If Python is in PATH
+python -m venv .venv
+
+# Method 2: Using specific Python installation (recommended)
+C:\Python313\python.exe -m venv .venv  # Windows
+/usr/bin/python3.13 -m venv .venv      # Linux/macOS
+
+# Activate (Windows)
+.venv\Scripts\activate
+
+# Activate (macOS/Linux)
+source .venv/bin/activate
+
+# Install packages
+pip install numpy pandas matplotlib
+
+# Deactivate when done
+deactivate
+```
+
+#### Creating a Virtual Environment in VS Code (Recommended)
+
+VS Code provides a convenient workflow for creating virtual environments:
+
+1. **Open Command Palette:** `Ctrl+Shift+P` (Windows/Linux) or `Cmd+Shift+P` (macOS)
+2. **Select:** "Python: Create Environment"
+3. **Choose:** "Venv" (not Conda)
+4. **Select Python interpreter:** VS Code shows all available Python installations
+5. **Select dependencies (optional):** If a `requirements.txt` exists, VS Code offers to install packages
+
+**Interpreter Selection:**
+- Click the Python version in the **bottom-right status bar**
+- Or use Command Palette: "Python: Select Interpreter"
+- VS Code automatically detects `.venv` folders in your workspace
+
+#### Managing Dependencies with requirements.txt
+
+The course repository includes a `requirements.txt` file with all necessary dependencies for the course. This file lists all required packages with their tested versions.
+
+**Install all course dependencies:**
+```bash
+pip install -r requirements.txt
+```
+
+This will install:
+- Core scientific libraries (NumPy, Pandas, SciPy)
+- Visualization tools (Matplotlib, Seaborn, Plotly)
+- 3D visualization (PyVista, meshio)
+- Data storage (HDF5, Excel support)
+- Additional utilities
+
+**Update requirements.txt (for instructors/contributors):**
+```bash
+pip freeze > requirements.txt
+```
+
+:::tip Best Practices
+- **Always use virtual environments** - one per project
+- **Use `.venv` as the folder name** - recognized by VS Code and git (add to `.gitignore`)
+- **Track dependencies** in `requirements.txt` for reproducibility
+- **Recreate, don't reconfigure** - if you need a different Python version, delete `.venv` and create new
+- **Activate before installing packages** - ensures packages go into the virtual environment
+:::
+
+:::warning Common Mistakes
+- Installing packages globally instead of in the virtual environment
+- Forgetting to activate the environment before running scripts
+- Trying to change Python version by editing configuration files (doesn't work!)
+- Not tracking dependencies in `requirements.txt`
+:::
+
 ### Essential Tools
 
 ```bash
@@ -124,12 +211,8 @@ pip --version
 # Install packages
 pip install numpy pandas matplotlib
 
-# Create virtual environment
-python -m venv myproject
-# Activate (Windows)
-myproject\Scripts\activate
-# Activate (macOS/Linux)
-source myproject/bin/activate
+# Upgrade pip (recommended)
+python -m pip install --upgrade pip
 ```
 
 ## Next Steps
