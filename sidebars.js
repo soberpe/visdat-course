@@ -65,5 +65,24 @@ module.exports = {
         'visualization/fem-coding-challenge',
       ],
     },
+    {
+      type: 'category',
+      label: 'User Interfaces',
+      items: [
+        'user-interfaces/ui-overview',
+        'user-interfaces/pyqt-basics',
+        'user-interfaces/pyvista-qt-integration',
+        'user-interfaces/qt-workshop',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Advanced Topics',
+      items: [
+        'advanced-topics/cmake-overview',
+        'advanced-topics/parallelization',
+        'advanced-topics/final-assignment',
+      ],
+    },
   ],
 };
