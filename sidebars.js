@@ -75,5 +75,14 @@ module.exports = {
         'user-interfaces/qt-workshop',
       ],
     },
+    {
+      type: 'category',
+      label: 'Advanced Topics',
+      items: [
+        'advanced-topics/cmake-overview',
+        'advanced-topics/parallelization',
+        'advanced-topics/final-assignment',
+      ],
+    },
   ],
 };
