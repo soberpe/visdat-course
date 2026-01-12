@@ -1,14 +1,6 @@
 from fileinput import filename
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget,
-    QVBoxLayout, QHBoxLayout, QLabel
-)
-from PyQt6.QtWidgets import (
-    QGroupBox, QComboBox, QCheckBox,
-    QPushButton
-)
-from PyQt6.QtWidgets import (
-    QApplication, QMainWindow, QWidget,
     QVBoxLayout, QHBoxLayout, QLabel, QFileDialog,
     QGroupBox, QComboBox, QCheckBox,
     QPushButton, QSlider  # Add QSlider
@@ -17,6 +9,7 @@ from PyQt6.QtGui import QAction
 from PyQt6.QtCore import Qt
 import sys
 from pyvistaqt import QtInteractor
+from PyQt6.QtWidgets import QLineEdit
 import pyvista as pv
 from PyQt6.QtWidgets import QFileDialog
 
@@ -29,6 +22,12 @@ class FEMViewer(QMainWindow):
         # State variables
         self.mesh = None
         self.current_cmap = "coolwarm"
+
+        # Scalar display options
+        self.scalar_auto = True
+        self.scalar_symmetric = False
+        self.scalar_min = None
+        self.scalar_max = None
 
         # Create central widget
         central_widget = QWidget()
@@ -99,10 +98,11 @@ class FEMViewer(QMainWindow):
             # 2D displacement, add zero Z component
             displacement = np.hstack([displacement, np.zeros((displacement.shape[0], 1))])
         
-        # Create deformed mesh
-        deformed_points = self.original_mesh.points + scale * displacement
-        self.mesh.points = deformed_points
-        
+    
+        # Create deformed mesh as copy
+        self.mesh = self.original_mesh.copy()
+        self.mesh.points = self.original_mesh.points + scale * displacement
+
         # Update display
         self.display_mesh()
 
@@ -137,6 +137,33 @@ class FEMViewer(QMainWindow):
         reset_action.triggered.connect(self.reset_camera)
         view_menu.addAction(reset_action)
 
+        front_action = QAction("Front", self)
+        front_action.setShortcut("1")
+        front_action.triggered.connect(self.view_front)
+        view_menu.addAction(front_action)
+
+        left_action = QAction("Left", self)
+        left_action.setShortcut("2")
+        left_action.triggered.connect(self.view_left)
+        view_menu.addAction(left_action)
+
+        right_action = QAction("Right", self)
+        right_action.setShortcut("3")
+        right_action.triggered.connect(self.view_right)
+        view_menu.addAction(right_action)
+
+        top_action = QAction("Top", self)
+        top_action.setShortcut("4")
+        top_action.triggered.connect(self.view_top)
+        view_menu.addAction(top_action)
+
+        view_menu.addSeparator()
+
+        iso_action = QAction("Isometric", self)
+        iso_action.setShortcut("5")
+        iso_action.triggered.connect(self.view_isometric)
+        view_menu.addAction(iso_action)
+
     def create_controls(self):
         """Create control panel with field selection and display options"""
         controls = QGroupBox("Visualization Controls")
@@ -155,6 +182,33 @@ class FEMViewer(QMainWindow):
         self.cmap_combo.setCurrentText(self.current_cmap)
         self.cmap_combo.currentTextChanged.connect(self.change_colormap)
         layout.addWidget(self.cmap_combo)
+    
+        # Scalar Range
+        layout.addWidget(QLabel("\nScalar Range:"))
+
+        self.scalar_auto_checkbox = QCheckBox("Auto Scale")
+        self.scalar_auto_checkbox.setChecked(True)
+        self.scalar_auto_checkbox.stateChanged.connect(self.update_scalar_range)
+        layout.addWidget(self.scalar_auto_checkbox)
+
+        self.scalar_sym_checkbox = QCheckBox("Symmetric (±max)")
+        self.scalar_sym_checkbox.stateChanged.connect(self.update_scalar_range)
+        layout.addWidget(self.scalar_sym_checkbox)
+
+        range_layout = QHBoxLayout()
+
+        self.scalar_min_edit = QLineEdit()
+        self.scalar_min_edit.setPlaceholderText("Min")
+        self.scalar_min_edit.editingFinished.connect(self.update_scalar_range)
+        range_layout.addWidget(self.scalar_min_edit)
+
+        self.scalar_max_edit = QLineEdit()
+        self.scalar_max_edit.setPlaceholderText("Max")
+        self.scalar_max_edit.editingFinished.connect(self.update_scalar_range)
+        range_layout.addWidget(self.scalar_max_edit)
+
+        layout.addLayout(range_layout)
+
 
         
         # Display options
@@ -165,17 +219,6 @@ class FEMViewer(QMainWindow):
         self.scalar_bar_checkbox = QCheckBox("Show Scalar Bar")
         self.scalar_bar_checkbox.setChecked(True)
         layout.addWidget(self.scalar_bar_checkbox)
-        
-        # Mesh info
-        layout.addWidget(QLabel("\nMesh Information:"))
-        self.info_label = QLabel("No mesh loaded")
-        self.info_label.setWordWrap(True)
-        layout.addWidget(self.info_label)
-        
-        # Reset button
-        reset_button = QPushButton("Reset View")
-        reset_button.clicked.connect(self.reset_camera)
-        layout.addWidget(reset_button)
 
         # Add these lines in create_controls method after creating the widgets:
         self.field_combo.currentTextChanged.connect(self.update_field_display)
@@ -220,6 +263,17 @@ class FEMViewer(QMainWindow):
         self.clip_slider.valueChanged.connect(self.update_clipping)
         layout.addWidget(self.clip_slider)
 
+         # Mesh info
+        layout.addWidget(QLabel("\nMesh Information:"))
+        self.info_label = QLabel("No mesh loaded")
+        self.info_label.setWordWrap(True)
+        layout.addWidget(self.info_label)
+        
+        # Reset button
+        reset_button = QPushButton("Reset View")
+        reset_button.clicked.connect(self.reset_camera)
+        layout.addWidget(reset_button)
+
 
         # Push controls to top
         layout.addStretch()
@@ -233,6 +287,26 @@ class FEMViewer(QMainWindow):
         """Change active colormap"""
         self.current_cmap = cmap_name
         self.display_mesh()
+
+    def update_scalar_range(self):
+        self.scalar_auto = self.scalar_auto_checkbox.isChecked()
+        self.scalar_symmetric = self.scalar_sym_checkbox.isChecked()
+
+        try:
+            self.scalar_min = float(self.scalar_min_edit.text())
+        except ValueError:
+            self.scalar_min = None
+
+        try:
+            self.scalar_max = float(self.scalar_max_edit.text())
+        except ValueError:
+            self.scalar_max = None
+
+        enabled = not self.scalar_auto
+        self.scalar_min_edit.setEnabled(enabled)
+        self.scalar_max_edit.setEnabled(enabled)
+        self.display_mesh()
+
 
     
     def open_mesh(self):
@@ -318,6 +392,16 @@ class FEMViewer(QMainWindow):
             return
         
         self.plotter.clear()
+
+        # Show undeformed mesh in background if deformation is active
+        if self.deform_checkbox.isChecked() and self.original_mesh is not None:
+            self.plotter.add_mesh(
+                self.original_mesh,
+                color="lightgray",
+                opacity=0.3,
+                show_edges=False
+            )
+
         
         # Get current field selection
         field_name = self.field_combo.currentText()
@@ -381,14 +465,25 @@ class FEMViewer(QMainWindow):
                 title = field_name
             
             # Display with scalar field
+            clim = None
+
+            if not self.scalar_auto:
+                if self.scalar_symmetric and field_data is not None:
+                    vmax = max(abs(field_data.min()), abs(field_data.max()))
+                    clim = (-vmax, vmax)
+                elif self.scalar_min is not None and self.scalar_max is not None:
+                    clim = (self.scalar_min, self.scalar_max)
+
             self.plotter.add_mesh(
                 mesh_to_display,
                 scalars=display_field,
                 cmap=self.current_cmap,
+                clim=clim,
                 show_edges=self.edges_checkbox.isChecked(),
                 show_scalar_bar=self.scalar_bar_checkbox.isChecked(),
                 scalar_bar_args={'title': title}
             )
+
         
         self.plotter.reset_camera()
         self.plotter.render()
@@ -413,6 +508,33 @@ class FEMViewer(QMainWindow):
         if self.plotter:
             self.plotter.reset_camera()
             self.statusBar().showMessage("Camera reset", 2000)
+
+    def view_front(self):
+        if self.plotter:
+            self.plotter.view_xy()
+            self.plotter.render()
+
+    def view_left(self):
+        if self.plotter:
+            self.plotter.view_yz()
+            self.plotter.render()
+
+    def view_right(self):
+        if self.plotter:
+            self.plotter.view_yz()
+            self.plotter.camera.azimuth += 180
+            self.plotter.render()
+
+    def view_top(self):
+        if self.plotter:
+            self.plotter.view_xz()
+            self.plotter.render()
+
+    def view_isometric(self):
+        if self.plotter:
+            self.plotter.view_isometric()
+            self.plotter.render()
+
 
     def closeEvent(self, event):
         """Clean up VTK resources before closing"""
