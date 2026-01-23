@@ -103,3 +103,9 @@ public
 # Temporary folders
 tmp/
 temp/
+
+
+# Python virtual environments
+clean_env/
+*.pyc
+__pycache__/
