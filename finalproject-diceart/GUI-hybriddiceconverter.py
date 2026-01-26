@@ -14,19 +14,12 @@ from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
 from PyQt6.QtCore import Qt, QThread, pyqtSignal, QRectF, QPointF
 from PyQt6.QtGui import QPixmap, QPainter, QPen, QColor, QWheelEvent, QBrush, QFont, QPainterPath
 
-# --- CONFIGURATION ---
-COMPARE_RES = 32
-
-# --- RESOURCE HELPER (FIXED) ---
+# --- RESOURCE HELPER (FOR EXE) ---
 def resource_path(relative_path):
-    """ Get absolute path to resource, works for dev and for PyInstaller """
     try:
-        # PyInstaller creates a temp folder and stores path in _MEIPASS
         base_path = sys._MEIPASS
     except Exception:
-        # FIX: Nutze den Pfad der Skript-Datei, nicht das Arbeitsverzeichnis
         base_path = os.path.dirname(os.path.abspath(__file__))
-
     return os.path.join(base_path, relative_path)
 
 # --- WORKER THREAD ---
@@ -35,7 +28,7 @@ class DiceWorker(QThread):
     finished_signal = pyqtSignal(object, tuple, list) 
     error_signal = pyqtSignal(str)
 
-    def __init__(self, input_image_path, h_dice, v_dice, dice_folder, crop_box, invert, algo_mode):
+    def __init__(self, input_image_path, h_dice, v_dice, dice_folder, crop_box, invert, algo_mode, chunk_size):
         super().__init__()
         self.input_image_path = input_image_path
         self.h_dice = h_dice
@@ -44,17 +37,22 @@ class DiceWorker(QThread):
         self.crop_box = crop_box 
         self.invert = invert
         self.algo_mode = algo_mode 
+        self.chunk_size = chunk_size 
         self.is_running = True
 
     def run(self):
         try:
+            # Capture chunk_size locally
+            c_res = self.chunk_size
+
             class DiceVariant:
                 def __init__(self, image, value, rotation, direction_char):
                     self.image = image
                     self.value = value
                     self.rotation = rotation
                     self.direction_char = direction_char
-                    self.compare_data = list(image.resize((COMPARE_RES, COMPARE_RES)).getdata())
+                    # Dynamic compare resolution
+                    self.compare_data = list(image.resize((c_res, c_res)).getdata())
 
             def get_difference(pixels_a, pixels_b):
                 diff = 0
@@ -83,7 +81,7 @@ class DiceWorker(QThread):
             for i in range(1, 7):
                 path = os.path.join(self.dice_folder, f"{i}.png")
                 if not os.path.exists(path):
-                    self.error_signal.emit(f"Error: File {i}.png missing in 'dice' folder!\nPath: {path}")
+                    self.error_signal.emit(f"Error: File {i}.png missing in 'dice' folder!")
                     return
                 base_img = Image.open(path).resize((dice_render_size, dice_render_size)).convert('L')
                 dice_variants[i] = []
@@ -104,25 +102,20 @@ class DiceWorker(QThread):
                     if not self.is_running: break
                     x = idx % self.h_dice
                     y = idx // self.h_dice
-                    
                     val = int(brightness / 256 * 6)
                     if val > 5: val = 5
                     target_val = 6 - val 
-                    
                     current_row.append(f"{target_val}N")
                     if len(current_row) == self.h_dice:
                         matrix.append(current_row)
                         current_row = []
-                        
                     dice_img = dice_variants[target_val][0].image
                     preview_img.paste(dice_img, (x * dice_render_size, y * dice_render_size))
-                    
                     if idx % 500 == 0: self.progress_signal.emit(int(idx / total_dice * 100))
-            
             else:
-                # --- GRADIENT & ADAPTIVE ---
-                target_w = self.h_dice * COMPARE_RES
-                target_h = self.v_dice * COMPARE_RES
+                # --- GRADIENT & ADAPTIVE (Using Chunk Size) ---
+                target_w = self.h_dice * self.chunk_size
+                target_h = self.v_dice * self.chunk_size
                 analyze_img = cropped_img.resize((target_w, target_h), resample=Image.Resampling.LANCZOS)
                 
                 count = 0
@@ -130,7 +123,7 @@ class DiceWorker(QThread):
                     if not self.is_running: break
                     row_data = []
                     for x in range(self.h_dice):
-                        box = (x * COMPARE_RES, y * COMPARE_RES, (x + 1) * COMPARE_RES, (y + 1) * COMPARE_RES)
+                        box = (x * self.chunk_size, y * self.chunk_size, (x + 1) * self.chunk_size, (y + 1) * self.chunk_size)
                         chunk_data = list(analyze_img.crop(box).getdata())
                         
                         avg_brightness = sum(chunk_data) / len(chunk_data)
@@ -140,24 +133,36 @@ class DiceWorker(QThread):
                         
                         best_variant = None
                         
-                        # --- HYBRID LOGIC ---
-                        use_simple_rotation = False
+                        # Logic
+                        variant_north = dice_variants[target_val][0]
+                        diff_north = get_difference(chunk_data, variant_north.compare_data)
+                        
+                        force_simple = False
                         
                         if self.algo_mode == 'adaptive':
                             variance = sum((p - avg_brightness) ** 2 for p in chunk_data) / len(chunk_data)
                             std_dev = math.sqrt(variance)
                             if std_dev < 18.0:
-                                use_simple_rotation = True
+                                force_simple = True
                         
-                        if use_simple_rotation:
-                            best_variant = dice_variants[target_val][0] 
+                        if force_simple:
+                            best_variant = variant_north
                         else:
                             min_diff = float('inf')
+                            temp_best = None
                             for variant in dice_variants[target_val]:
                                 diff = get_difference(chunk_data, variant.compare_data)
                                 if diff < min_diff:
                                     min_diff = diff
-                                    best_variant = variant
+                                    temp_best = variant
+                            
+                            if self.algo_mode == 'adaptive':
+                                if min_diff < (diff_north * 0.85):
+                                    best_variant = temp_best
+                                else:
+                                    best_variant = variant_north
+                            else:
+                                best_variant = temp_best
                         
                         row_data.append(f"{target_val}{best_variant.direction_char}")
                         preview_img.paste(best_variant.image, (x * dice_render_size, y * dice_render_size))
@@ -229,9 +234,7 @@ class DraggableCropItem(QGraphicsRectItem):
 class StaticGridOverlay(QGraphicsRectItem):
     def __init__(self, rect, h_dice, v_dice, hue):
         super().__init__(rect)
-        self.h_dice = h_dice
-        self.v_dice = v_dice
-        self.hue = hue
+        self.h_dice = h_dice; self.v_dice = v_dice; self.hue = hue
         self.setBrush(QBrush(Qt.BrushStyle.NoBrush))
         self.setPen(QPen(Qt.PenStyle.NoPen))
 
@@ -304,8 +307,8 @@ class SyncedGraphicsView(QGraphicsView):
 class DiceArtApp(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("DiceArt Converter Pro v17 (Native File Dialog)")
-        self.resize(1350, 900)
+        self.setWindowTitle("DiceArt Converter")
+        self.resize(1350, 950)
 
         self.image_path = None
         self.original_pixmap = None
@@ -316,6 +319,8 @@ class DiceArtApp(QMainWindow):
         self.crop_item = None 
         self.img_w = 0; self.img_h = 0
         self.ignore_spin_change = False 
+        
+        self.chunk_steps = [4, 8, 16, 32, 64]
 
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
@@ -378,7 +383,24 @@ class DiceArtApp(QMainWindow):
         self.combo_algo.addItem("Adaptive (Hybrid)", "adaptive")
         self.combo_algo.addItem("Gradient (High Quality)", "gradient")
         self.combo_algo.addItem("Simple (Fast)", "simple")
+        self.combo_algo.currentIndexChanged.connect(self.toggle_chunk_slider)
         grp_layout.addWidget(self.combo_algo)
+        
+        # --- CHUNK SLIDER CONTAINER ---
+        self.chunk_widget = QWidget()
+        chunk_layout = QHBoxLayout(self.chunk_widget)
+        chunk_layout.setContentsMargins(0,0,0,0)
+        self.lbl_chunk = QLabel("Chunk Size: 32 px")
+        chunk_layout.addWidget(self.lbl_chunk)
+        self.slider_chunk = QSlider(Qt.Orientation.Horizontal)
+        self.slider_chunk.setRange(0, 4) 
+        self.slider_chunk.setValue(3)    
+        self.slider_chunk.setTickPosition(QSlider.TickPosition.TicksBelow)
+        self.slider_chunk.setTickInterval(1)
+        self.slider_chunk.valueChanged.connect(self.update_chunk_label)
+        chunk_layout.addWidget(self.slider_chunk)
+        grp_layout.addWidget(self.chunk_widget)
+        # -----------------------------
 
         self.chk_invert = QCheckBox("Invert Colors"); grp_layout.addWidget(self.chk_invert)
         self.chk_enable_crop = QCheckBox("Enable Cropping")
@@ -460,6 +482,16 @@ class DiceArtApp(QMainWindow):
         self.view_right.set_linked_view(self.view_left)
 
     # --- LOGIC ---
+    def toggle_chunk_slider(self):
+        # Hide chunk slider if simple mode is selected, show otherwise
+        mode = self.combo_algo.currentData()
+        self.chunk_widget.setVisible(mode != 'simple')
+
+    def update_chunk_label(self):
+        idx = self.slider_chunk.value()
+        val = self.chunk_steps[idx]
+        self.lbl_chunk.setText(f"Chunk Size: {val} px")
+
     def show_startup_message(self):
         scene = self.view_left.scene()
         scene.clear()
@@ -468,26 +500,21 @@ class DiceArtApp(QMainWindow):
         font = QFont("Arial", 20, QFont.Weight.Bold)
         text_item.setFont(font)
         text_item.setDefaultTextColor(QColor(150, 150, 150))
-        
         arrow_path = QPainterPath()
         arrow_path.moveTo(-15, 0); arrow_path.lineTo(15, 0)
         arrow_path.lineTo(15, 40); arrow_path.lineTo(30, 40)
         arrow_path.lineTo(0, 70);  arrow_path.lineTo(-30, 40)
         arrow_path.lineTo(-15, 40); arrow_path.closeSubpath()
-        
         arrow_item = QGraphicsPathItem(arrow_path)
         arrow_item.setBrush(QBrush(QColor(255, 255, 255)))
-        arrow_item.setPen(QPen(QColor(180, 180, 180), 1)) 
-        
+        arrow_item.setPen(QPen(QColor(200, 200, 200), 1)) 
         scene.addItem(arrow_item)
         scene.setSceneRect(0, 0, 400, 400)
-        
         tr = text_item.boundingRect()
         text_item.setPos((400 - tr.width())/2, 100)
         arrow_item.setPos(200, 160)
 
     def load_image(self):
-        # NATIVE DIALOG (Standard Windows)
         fname, _ = QFileDialog.getOpenFileName(self, "Select Image", "", "Images (*.jpg *.png *.jpeg *.webp)")
         if fname:
             self.crop_item = None 
@@ -571,6 +598,7 @@ class DiceArtApp(QMainWindow):
         self.btn_grid.setChecked(False); self.toggle_grid()
         self.slider_crop_scale.setValue(90); self.slider_grid_color.setValue(0)
         self.combo_algo.setCurrentIndex(0)
+        self.slider_chunk.setValue(3)
         self.ignore_spin_change = False
         self.btn_save_img.setEnabled(False); self.btn_save_img.setStyleSheet("")
         self.btn_save_bp.setEnabled(False); self.btn_save_bp.setStyleSheet("")
@@ -626,13 +654,16 @@ class DiceArtApp(QMainWindow):
             crop_box = (0, 0, self.img_w, self.img_h)
 
         algo_mode = self.combo_algo.currentData()
+        chunk_idx = self.slider_chunk.value()
+        chunk_size = self.chunk_steps[chunk_idx]
+
         self.btn_start.setEnabled(False); self.progress_bar.setValue(0); self.progress_bar.setStyleSheet("")
         self.lbl_status.setText(f"Calculating ({algo_mode})...")
         
         self.btn_save_img.setEnabled(False); self.btn_save_img.setStyleSheet("")
         self.btn_save_bp.setEnabled(False); self.btn_save_bp.setStyleSheet("")
         
-        self.worker = DiceWorker(self.image_path, self.spin_h.value(), self.spin_v.value(), dice_folder, crop_box, self.chk_invert.isChecked(), algo_mode)
+        self.worker = DiceWorker(self.image_path, self.spin_h.value(), self.spin_v.value(), dice_folder, crop_box, self.chk_invert.isChecked(), algo_mode, chunk_size)
         self.worker.progress_signal.connect(self.progress_bar.setValue)
         self.worker.error_signal.connect(self.on_error)
         self.worker.finished_signal.connect(self.on_finished)
