@@ -1,3 +1,6 @@
+# GUI Python Application for Converting Images into Dice Art
+# © 2026 - Michael Gahleitner
+
 import sys
 import os
 import traceback
