@@ -465,8 +465,8 @@ class DiceArtApp(QMainWindow):
         
         grp_layout.addWidget(QLabel("Algorithm:"))
         self.combo_algo = QComboBox()
-        self.combo_algo.addItem("Adaptive (Hybrid)", "adaptive")
-        self.combo_algo.addItem("Gradient (High Quality)", "gradient")
+        self.combo_algo.addItem("Adaptive (Recommended)", "adaptive")
+        self.combo_algo.addItem("Gradient", "gradient")
         self.combo_algo.addItem("Simple (Fast)", "simple")
         self.combo_algo.currentIndexChanged.connect(self.toggle_chunk_slider)
         grp_layout.addWidget(self.combo_algo)
