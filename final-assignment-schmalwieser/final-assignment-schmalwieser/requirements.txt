@@ -1,0 +1,8 @@
+PyQt6
+pyvista
+pyvistaqt
+matplotlib
+numpy
+pandas
+scipy
+imageio
