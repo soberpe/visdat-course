@@ -1,0 +1,9 @@
+# Folgende Module werden benötigt, um das Programm auszuführen
+
+PyQt6==6.10.1
+pyvista==0.46.4
+pyvistaqt==0.11.3
+NumPy==2.3.5
+
+# Weitrs wird .venv mit Python 3.13.0 verwendet
+python==3.13.0
