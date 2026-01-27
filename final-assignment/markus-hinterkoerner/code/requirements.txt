@@ -1,0 +1,22 @@
+# Installieren mit: pip install -r requirements.txt
+
+# Numerische Berechnungen
+numpy>=1.24
+
+# Datenhandling / CSV einlesen
+pandas>=2.0
+
+# Signalverarbeitung, Peaks, Interpolation
+scipy>=1.10
+
+# 2D-Plotting
+matplotlib>=3.7
+
+# 3D-Visualisierung
+pyvista>=0.40
+
+# Optional: für interaktive 3D-Plots in PyVista
+pyvistaqt>=0.6
+
+# Dateipfade
+pathlib>=1.0

@@ -17,3 +17,13 @@ npm run build
 ## Struktur
 - `docs/` — Skript/Handout in Markdown
 - `slides/` — Marp-Markdown-Folien
+
+   ```markdown
+   ## Students
+
+   ### [Your Name]
+   - **GitHub:** [Markus Hinterkoerner](https://github.com/mhinterkoe)
+   - **Program:** Master Mechanical Engineering
+   - **Interests:** Python, Visualisierung und Datenaufbereitung
+   - **Background:** HTL Vöcklabruck, Konstrukteur bei Stiwa, Bachelor FH Wels
+   ```

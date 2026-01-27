@@ -49,11 +49,17 @@ venv/
 **/*.venv*/
 **/.venv/
 
+<<<<<<< HEAD
+# custom venv name
+myproject/
+**/myproject/
+=======
 # Python cache
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
+>>>>>>> 267355e425cb5066b62a3b334df6b3950b1b5d57
 
 # OS generated files
 .DS_Store

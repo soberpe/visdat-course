@@ -385,17 +385,17 @@ Use this template for your PR description:
 ## Kickoff Assignment Submission
 
 ### Student Information
-- **Name:** [Your Full Name]
-- **GitHub Username:** @[your-username]
-- **Branch:** assignment/kickoff-[your-name]
+- **Name:** Markus Hinterkörner
+- **GitHub Username:** @mhinterkoe
+- **Branch:** assignment/kickoff-Markus Hinterkörner
 
 ### Completed Tasks
-- [ ] Environment setup (Git, VS Code, Python, Node.js)
-- [ ] Repository forked and cloned
-- [ ] Updated README.md with student information
-- [ ] Created personal introduction document
-- [ ] Created Marp presentation
-- [ ] All changes committed and pushed
+- [x] Environment setup (Git, VS Code, Python, Node.js)
+- [x] Repository forked and cloned
+- [x] Updated README.md with student information
+- [x] Created personal introduction document
+- [x] Created Marp presentation
+- [x] All changes committed and pushed
 
 ### Files Modified/Added
 - `README.md` - Added student information
@@ -407,11 +407,11 @@ Use this template for your PR description:
 
 ### Confirmation
 I confirm that:
-- [ ] All required software is installed and working
-- [ ] I can successfully run Git commands
-- [ ] VS Code is set up with required extensions
-- [ ] My Marp slides render correctly
-- [ ] I understand the course workflow
+- [x] All required software is installed and working
+- [x] I can successfully run Git commands
+- [x] VS Code is set up with required extensions
+- [x] My Marp slides render correctly
+- [x] I understand the course workflow
 ```
 
 ## Grading Criteria
