@@ -72,7 +72,7 @@ for i in range(5):
 ---
 
 ## C++ Motivation
-- Performance, control, ecosystem
+- Performance, control, ecosystem, handling the language
 - Often used to wrap low-level libs
 
 **Goal:** read core syntax & patterns.
