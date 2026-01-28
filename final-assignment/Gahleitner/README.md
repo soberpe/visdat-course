@@ -31,7 +31,7 @@ The goal of this project is to provide artists and hobbyists with a tool to visu
 
 ---
 
-### 🧠 The Dicing Algorithms
+### 🧠 Dicing Algorithms
 
 The core of the project lies in its three distinct algorithms for determining dice placement:
 
@@ -74,6 +74,6 @@ The core of the project lies in its three distinct algorithms for determining di
 
 ### Toto Wolff
 
-| Original | | DiceArt (200x200) |
+| Original | | DiceArt (100x100) |
 | :---: | :---: | :---: |
-| <img src="assets/toto_original.jpg" width="200" height="200" style="object-fit: cover;"> | ➔ | <img src="assets/toto_dice_200x200.png" width="200" height="200" style="object-fit: cover;"> |
+| <img src="assets/toto_original.jpg" width="200" height="200" style="object-fit: cover;"> | ➔ | <img src="assets/toto_dice_100x100.png" width="200" height="200" style="object-fit: cover;"> |

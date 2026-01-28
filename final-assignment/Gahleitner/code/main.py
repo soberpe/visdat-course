@@ -90,8 +90,11 @@ class DiceWorker(QThread):
             else:
                 cropped_img = original_img
             
-            # Apply Inversion logic
-            if self.invert: cropped_img = ImageOps.invert(cropped_img)
+            # --- MODIFIED: Invert Logic Swapped ---
+            # If the checkbox 'Invert Colors' (self.invert) is NOT checked, we apply default inversion.
+            # If it IS checked, we skip inversion (keeping original colors).
+            if not self.invert: 
+                cropped_img = ImageOps.invert(cropped_img)
 
             # --- 2. LOAD & PREPARE DICE ASSETS ---
             dice_variants = {}
