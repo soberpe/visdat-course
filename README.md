@@ -17,3 +17,19 @@ npm run build
 ## Struktur
 - `docs/` — Skript/Handout in Markdown
 - `slides/` — Marp-Markdown-Folien
+
+## Students
+
+### [thmaie]
+- **GitHub:** [thmaie](https://github.com/thmaie)
+- **Program:** Master Mechanical Engineering
+- **Interests:** 
+    -Shearing changes of documents by not copying and sending them to each other
+    -Working on on document at the same time
+    -getting a smart workflow on mentioned aboth
+
+- **Background:** 
+    -Some basics with programming C++
+    -Basics in programming with PLC: ST,CS,...
+    -recently started with programming a pool control with arduino 
+
