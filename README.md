@@ -17,3 +17,11 @@ npm run build
 ## Struktur
 - `docs/` — Skript/Handout in Markdown
 - `slides/` — Marp-Markdown-Folien
+
+## Students
+
+### [Your Name]
+- **GitHub:** nadecker(https://github.com/nadecker)
+- **Program:** Master Mechanical Engineering
+- **Interests:** Versionskontrolle, Umgang mit Github
+- **Background:** SQL, C++, Pascal, Java, Assembler,
