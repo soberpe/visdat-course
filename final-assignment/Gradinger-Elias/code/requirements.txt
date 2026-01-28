@@ -1,0 +1,7 @@
+#Folgende Funktionen und Python-Version werden benötigt um das Programm vollständig ausführen zu können
+
+Python==3.13.10
+pyvista==0.46.4
+pyvistaqt==0.11.3
+PyQt6==6.10.1
+numpy==2.3.4
