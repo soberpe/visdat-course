@@ -4,67 +4,70 @@ theme: default
 paginate: true
 ---
 
-# Final Assignment – Hochhaus FRF & 3D
+# Hochhaus Modalanalyse und Visualisierung
 **Alois Schmalwieser**  
-Visualization & Data Processing
+Visualization & Data Processing - Final Project
 
 ---
 
-## Motivation
+## Problem / Motivation
 - Zeitdaten aus Prüfstandstechnik: **Kraft** + **Beschleunigung**
-- Ziel: Moden extrahieren und darstellen (GUI + 3D)
-- Messaufbau: Response nur an **Punkt 1**, Anregung variiert **Punkt 1…6**
+- Ziel: Moden extrahieren und darstellen
+- Direkte verarbeitung der Zeitdaten aus Labview Messung
 
 ---
 
-## Pipeline (Überblick)
-1. `.lvm` Import (Zeit, Beschl., Kraft)
-2. Samplingrate aus Zeitvektor bestimmen
-3. FRF (H1): Welch + CSD
-4. Peak-Picking auf Mittelwert \|H\| → Moden 1…N
-5. Participation je Anregungspunkt am Peak
-6. 3D Darstellung + Export
+## Vorgehensweise
+1. Import der 6 Messungen im Zeitbereich
+2. Berechnung der FRF je Anregungspunkt mit `scipy.welch` und `scipy.csd`
+3. Ermitteln der Eigenfrequenzen aus Mittelwert der 6 Knoten mit `scipy.find_peaks`
+4. Participation je Anregungspunkt am Peak
+5. 3D Darstellung + Export
 
 ---
 
-## FRF-Berechnung (H1)
-- Detrend von Kraft und Beschleunigung
-- Spektren:
-  - Auto-Spektrum der Kraft: \(S_{ff}(f)\) (Welch)
-  - Kreuzspektrum Beschl./Kraft: \(S_{af}(f)\) (CSD)
-- H1-Estimator:
-  \[
-  H(f)=\frac{S_{af}(f)}{S_{ff}(f)}
-  \]
+## Implementation Highlights
+  - Keine vohergehenden Berechnungen in Labview notwendig
+  - Stabile Modeidentifikation durch Peak Picking auf dem gemittelten Betragsfrequenzgang aller FRFs
+  - Bewegte 3D - Darstellung der Moden
 
 ---
 
-## Peak Picking
-- Gemittelter Betrag über alle 6 FRFs:
-  \[
-  M(f)=\frac{1}{6}\sum_{i=1}^{6}|H_i(f)|
-  \]
-- Peaks in \([0,f_{max}]\) über `scipy.signal.find_peaks`
-- Filter über **Prominence** (relativ zu max(M))
-
----
-
-## Stabilisierung am Peak (Peak-Band)
-- Problem: "ein FFT-Bin" am Peak ist empfindlich (Rauschen, Raster)
-- Lösung: komplexes Mittel in Fenster **± Peak-Band** um \(f_0\)
-  \[
-  v_i = \frac{1}{N}\sum_{f\in[f_0-\Delta f,\,f_0+\Delta f]} H_i(f)
-  \]
-- Ergebnis: stabilere Participation und weniger Jitter
+## Screenshots FRFs
+<div style="display:flex; justify-content:space-around; align-items:center;">
+  <img src="assets/screenshots/frf_plot.png">
+</div>
 
 ---
 
 ## 3D-Visualisierung (Stickmodell)
-- 16 Knoten: 6 vorne + 6 hinten (3 Ebenen)
-- Participation wird auf Knoten gemappt:
-  - v(1..6) → vorn
-  - v(1..6) → hinten (gespiegelt)
-- Animation: harmonische Bewegung in einer Richtung
+- 16 Knoten: 8 vorne + 8 hinten (4 Ebenen)
+- Unterste Ebene Fixiert
+- Grid zu bessern Veranschaulichung
+
+---
+
+
+## Screenshots 2D Darstellung - Eigenmode
+<div style="display:flex; justify-content:space-around; align-items:center;">
+  <img src="assets/screenshots/2d_Plot.png">
+</div>
+
+---
+
+
+## Screenshots 3D Darstellung - Eigenmode
+<div style="display:flex; justify-content:space-around; align-items:center;">
+  <img src="assets/screenshots/3d_animation.gif">
+</div>
+
+<style>
+img {
+  max-height: 50vh;
+  max-width: 50vw; 
+  object-fit: contain;
+}
+</style>
 
 ---
 
@@ -73,23 +76,34 @@ Visualization & Data Processing
 - 3D Screenshot als PNG
 - 3D Animation als GIF
 - Exportpfad: `assets/screenshots/`
+ 
+---
+
+## Ergebnisse
+ - Korrekte Ermittlung der Eigenfrequenzen
+ - Verständliche Visualisierung der Moden
+ - Beschränkt auf diesen einen Anwendungsfall
+
 
 ---
 
-## Hinweis / Limitation
-- Response wird nur an **einem** Punkt gemessen
-- Daher:
-  - Modenfrequenzen sind zuverlässig auffindbar
-  - Participation je Anregungspunkt ist sinnvoll
-  - **keine vollständigen räumlichen Eigenformen** der Response rekonstruierbar
+## Herausforderungen & Lösungen
+ - Ermittlung der Eigenfrequenzen - ChatGTP kam auf `welch` und `csd`
+ - Interpretation des von KI erstellen Codes
+ - Übersicht behalten
+-Nicht alles in `main.py` implementieren
+ - Fehlersuche kann sehr zeitintesiv sein
 
 ---
 
-## Entfernt
-- Kohärenz-Berechnung und Kohärenz-Plot wurden entfernt (nicht benötigt)
+## Lessons Learned
+- ChatGPT ist sehr gut für einen "First Shot"
+- ChatGPT braucht sehr genaue Angaben
+- Umgang mit PyQT6 zu GUI erstellung
+- Auch kleine Änderungen sofort Testen
 
 
-## 3D view
-- 16-node stick-model high-rise
-- Ground grid for better motion perception
-- Lowest 4 nodes (ground floor) fixed
+---
+
+## Thank You
+Questions?

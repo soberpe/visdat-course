@@ -583,6 +583,11 @@ class MainWindow(QMainWindow):
             self.mode_combo.blockSignals(True)
             self.mode_combo.setCurrentIndex(row)
             self.mode_combo.blockSignals(False)
+        if self.mode2d_combo.currentIndex() != row:
+            self.mode2d_combo.blockSignals(True)
+            self.mode2d_combo.setCurrentIndex(row)
+            self.mode2d_combo.blockSignals(False)
+
         self._apply_mode(row)
 
     

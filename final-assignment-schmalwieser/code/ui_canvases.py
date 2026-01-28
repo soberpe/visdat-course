@@ -58,7 +58,7 @@ class Mode2DCanvas(FigureCanvas):
         self.ax.set_yticks(self.floor_y)
         self.ax.set_yticklabels(self.floor_labels)
 
-        self.ax.set_xlabel("Verschiebung (normalisiert)")
+        self.ax.set_xlabel("Verschiebung")
         self.ax.set_ylabel("Etage")
         self.ax.set_title(title)
 

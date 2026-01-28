@@ -1,13 +1,10 @@
 # Final Assignment – Hochhaus FRF & 3D (Schmalwieser)
-
+## Projektbeschreibung
 Dieses Projekt lädt **6 Zeitmessungen** (LabVIEW `.lvm`) eines Hochhaus‑Versuchsaufbaus
 (Anregung Punkte 1…6, Response immer Punkt 1), berechnet daraus **FRFs (H1)** und
 visualisiert die gefundenen Moden als **Participation** auf einem einfachen
-**16‑Knoten‑Stickmodell** (6 vorne + 6 hinten).
+**16‑Knoten‑Stickmodell** (8 vorne + 8 hinten).
 
-> Hinweis: Aus dem Messaufbau (Response nur an einem Punkt) kann man **keine echten
-> räumlichen Eigenformen** rekonstruieren. Die 3D‑Ansicht zeigt daher **Participation
-> pro Anregungspunkt** (komplex, auf Amplitude normiert), nicht eine vollständige Modenform.
 
 ## Features
 - `.lvm` Parser (Zeit, Beschleunigung, Kraft)
@@ -20,7 +17,14 @@ visualisiert die gefundenen Moden als **Participation** auf einem einfachen
   - 3D Screenshot (PNG)
   - 3D Animation (GIF)
 
-**Entfernt (auf Wunsch):** Kohärenz‑Berechnung und ‑Plot.
+## Verwendete Technologien
+
+- **NumPy** – numerische Berechnungen, FFT-Auswertung
+- **Pandas** – Einlesen und Verarbeiten von CSV-Daten
+- **Matplotlib** – Visualisierung der Analyseergebnisse
+- **PyQt6** – grafische Benutzeroberfläche
+- **Pyvista** – 2d Darstellung
+
 
 ## Projektstruktur
 ```
@@ -47,6 +51,11 @@ cd final-assignment-schmalwieser/code
 pip install -r requirements.txt
 python main.py
 ```
+
+## Daten
+Dateien liegen in:
+`final-assignment-schmalwieser/code/data/sample`
+
 
 ## Export
 Exports landen in:
