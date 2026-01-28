@@ -1,0 +1,1 @@
+Messung mit roving sensor ( Hammer an selber stelle in Richtung x und Sensor wird verschoben)
