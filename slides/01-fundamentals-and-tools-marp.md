@@ -13,7 +13,7 @@ Instructor: Stefan Oberpeilsteiner
 ---
 
 ## Today's Agenda
-- Organization & grading
+- Organization & grading & Motivation
 - Programming paradigms & structured programming
 - C++ & Python fundamentals
 - **Git & GitHub workflow** 🔧
@@ -85,7 +85,7 @@ for i in range(5):
 - Fast to write, batteries included
 - Great for data & prototyping
 
-**Goal:** write small tools and use libs.
+**Goal:** write small tools and use libs and have fun
 
 **📖 Deep dive:** [Python Guide](https://soberpe.github.io/visdat-course/python/python-overview)
 
