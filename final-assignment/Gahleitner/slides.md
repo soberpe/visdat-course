@@ -7,10 +7,19 @@ paginate: true
 # DiceArt Converter
 ### Transforming Images into Physical Dice Mosaics
 
-<br>
 
 **Michael Gahleitner**
 Final Project - Visualization & Data Processing
+
+<style scoped>
+img[alt="floating"] {
+  position: absolute;
+  top: 50px;
+  right: 50px;
+  width: 300px;
+}
+</style>
+![floating](assets/fhooe.png)
 
 ---
 
@@ -23,7 +32,7 @@ Final Project - Visualization & Data Processing
 
 ## 🛠️ Core Concept
 
-- **Grid Subdivision (Rasterization)**:
+- **Rasterization**:
   - The source image is divided into equal-sized squares based on user input (`Width/Height in Dice`).
   - Each of these squares corresponds to exactly one physical die.
 - **Grayscale Calculation**:
@@ -39,23 +48,31 @@ The baseline method, focusing purely on luminance.
 
 - **Function**: Maps the average brightness of a square directly to a dice value (1–6). Dice are NOT rotationally optimized. 
 
+| Grid (20x20)| | Simple |
+| :---: | :---: | :---: |
+| <img src="assets/grid.png" width="300" height="300" style="object-fit: cover;"> | ➔ | <img src="assets/greyscale.png" width="300" height="300" style="object-fit: cover;"> |
+
 ---
 
 ## 🎲 Algorithm 2: Gradient Mode (Rotational Optimization)
 Treating dice as geometric shapes to approximate lines and edges.
 
-- **The Goal**: Detect the orientation of features (like eyes, jawline or hair) and rotate the die to follow that line.
-- **Chunking**: Both grid square and dice reference picture are discretised using a specified chunk resolution.
+- **The Goal**: Detect the orientation of features (like eyes, jawline or hair) and rotate the die to best fit that line.
+- **Chunking**: Both grid square area and dice reference picture are discretised using a specified chunk resolution (e.g.: Chunk Size 32x32).
 - **MSE Calculation**: The algorithm compares each chunk against **4 pre-rotated variants** (0°, 90°, 180°, 270°) of the target die.
 - **Gradient Detection**:
     - Uses **Mean Squared Error (MSE)** to find the mathematical "best fit" 
-    - By comparing pixel-by-pixel, the code identifies which rotation aligns its dots best with the brightness of the image.
+    - By comparing pixel-by-pixel, the code identifies which rotation aligns its dots best with the identified feature of the image.
 
 ---
 
 ## Challenges & Solutions
 - **Visual Noise**: Initially, slight brightness noise in smooth areas caused dice to rotate randomly, creating a chaotic "nervous" and unnatural looking dice art picture.
     - **Solution**: Implementing the **Adaptive Algorithm** with variance thresholding to ignore insignificant gradients.
+
+    <br>
+
+    **Example on next slide ➔**
 
 ---
 
@@ -72,7 +89,7 @@ A sophisticated approach to prevent "visual noise" in homogenius areas.
 
 - **Statistical Measure**: The code calculates the **Standard Deviation ($\sigma$)** of the chunk's pixels.
 - **The Decision Logic**:
-    - **Low Variance**: The area is "flat" (sky, skin). The code stays with **Simple Mode** (North orientation) to keep the area homogeneous.
+    - **Low Variance**: The area is "smooth" (sky, skin). The code stays with **Simple Mode** (North orientation) to keep the area homogeneous.
     - **High Variance**: The area contains an edge. **Rotational Optimization** is triggered.
 - **Significance Check**: A rotation is only used if it improves the MSE by **>15%** over the base orientation.
 
@@ -102,7 +119,7 @@ A sophisticated approach to prevent "visual noise" in homogenius areas.
 
 ## Lessons Learned
 - **Perceptual Computing**: What is mathematically "correct" or "optimal" isn't always what looks best to the human eye (hence the need for the Adaptive algorithm).
-- **Asynchronous Design**: Using signals and slots to separate data processing from visual representation.
+- **Asynchronous Design**: Using signals and slots to separate backend data processing from visual representation.
 
 ---
 
