@@ -1,0 +1,12 @@
+# FreeDyn
+#	Download: FreeDynAPI_2024.9 -- nicht notwendig
+#	In Zeile 373 FreeDynGUI Adresse einfügen.
+# Activate (Windows): .venv\Scripts\activate
+# pip install -r requirements.txt
+
+numpy
+pandas
+matplotlib
+PyQt6
+pyvista
+vtk

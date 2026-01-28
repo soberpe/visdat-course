@@ -1,0 +1,9 @@
+#Pakete Äquivalent zu Vorlesung
+
+#pip install 
+
+numpy
+pandas
+matplotlib
+PyQT6
+scipy
