@@ -95,6 +95,14 @@ Unten im Bild ist zu sehen, wie man durch setzen von Häckchen "Show Slice Plane
 - Unterschiedliche Ansichten z.B. Spannung & Verschiebung
 - Koordinatensystem im Eck usw.
 
+## 8 SRC - Ordner
+
+Der src - Ordner enthält die wichtigsten zusatz Änderungen, die für die Implementierung von Zustatzfunktionen relevant sind.
+
+Der main - code befindet sich im "python run_application.py" dort sind alle Funktionen enthalten, das heißt, dort werden die Funktionen aus src - Odner nicht aufgerufen!
+
+Der src - Ordner wurde genutzt, um die wichtigsten Änderung einzeln aufzulisten.
+
 
 
 
