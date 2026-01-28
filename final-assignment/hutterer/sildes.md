@@ -11,26 +11,14 @@ Visualization & Data Processing - Final Project
 ---
 
 ## Problem / Motivation
-- Durchführung einer **Modalanalyse an einem Prüfstand**
+- Durchführung einer **Modalanalyse an einem Rollenprüfstand**
 - Messung von Systemantworten in **X- und Y-Richtung**
 - Bereits berechnete **Übertragungsfunktionen** liegen vor  
   → dargestellt als **Imaginärteil über der Frequenz**
 - Ziel:
   - Moden (Eigenfrequenzen) **identifizieren**
-  - Ergebnisse **verständlich visualisieren**
-  - Moden **numerisch auswertbar** darstellen (Tabelle)
-
----
-
-## Datengrundlage
-- Messdaten aus einem **experimentellen Prüfstand**
-- Dateiformat: **LVM**
-- Enthaltene Größen:
-  - `X_Value` → Frequenz
-  - `Comment` → Imaginärteil der Übertragungsfunktion
-- Zwei Datensätze:
-  - Übertragungsfunktion in **X-Richtung**
-  - Übertragungsfunktion in **Y-Richtung**
+  - Ergebnisse **visualisieren**
+  - Moden **numerisch auswertbar** darstellen in einer Tabelle
 
 ---
 
@@ -61,6 +49,21 @@ Visualization & Data Processing - Final Project
 
 ---
 
+## Implementierungs Highlights
+
+- Erkennung der Moden und nicht jedes Peaks
+- Darstellen der Moden im GUI
+- Darstellen der Moden in einer Tabelle (links)
+- Kontrollpanel links, GUI rechts
+
+---
+
+## Demo Foto
+
+![h:550](assets/screenshots/Ubertragungsfunktion.png)
+
+---
+
 ## Fazit
 
 - Erfolgreiche Umsetzung einer **Modalanalyse-Visualisierung**
@@ -71,6 +74,15 @@ Visualization & Data Processing - Final Project
   - Verständlich
   - Erweiterbar
   - Praktisch für experimentelle Auswertung
+
+---
+
+## Lessons Learned
+
+- Python ist eine gute alternative zu Excel/Matlab
+- Diagramme sind einfacher aufzubereiten als mit anderen Programmen
+- KI unterstützt gut, aber nur mit sehr genauen Angaben
+- Stellenweise einfacher zu bedienen als z.B.
 
 ---
 
