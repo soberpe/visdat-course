@@ -1,122 +1,166 @@
 from fileinput import filename
+# Importiert alle benötigten Qt-Widgets für das GUI
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget,
     QVBoxLayout, QHBoxLayout, QLabel, QFileDialog,
     QGroupBox, QComboBox, QCheckBox,
-    QPushButton, QSlider  # Add QSlider
+    QPushButton, QSlider  # Slider für Skalierung / Clipping
 )
+
+# QAction wird für Menüeinträge (Menüleiste) benötigt
 from PyQt6.QtGui import QAction
-from PyQt6.QtCore import Qt
+
+# Qt-Core, z. B. für Ausrichtungen (Qt.Horizontal)
+from PyQt6.QtCore import Qt, QTimer
+
+# Systemfunktionen (z. B. Programmstart/-ende)
 import sys
+import math
+
+
+
+# PyVista-Qt-Widget zum Einbetten eines VTK-Renderfensters in Qt
 from pyvistaqt import QtInteractor
+
+# Text-Eingabefelder
 from PyQt6.QtWidgets import QLineEdit
+
+# PyVista-Bibliothek für 3D-Meshes und Visualisierung
 import pyvista as pv
-from PyQt6.QtWidgets import QFileDialog
+
+# Hauptfenster-Klasse des FEM-Viewers
 
 class FEMViewer(QMainWindow):
     def __init__(self):
         super().__init__()
+
+        # Fenstertitel und Startgröße
         self.setWindowTitle("FEM Results Viewer")
         self.resize(1200, 800)
         
-        # State variables
+        # Zustandsvariablen
+
+        # Aktuelles Mesh (kann deformiert sein)
         self.mesh = None
+
+        # Aktive Colormap für Skalardaten
         self.current_cmap = "coolwarm"
 
-        # Scalar display options
-        self.scalar_auto = True
-        self.scalar_symmetric = False
-        self.scalar_min = None
-        self.scalar_max = None
+        # Optionen für die Skalardarstellung
+        self.scalar_auto = True        # automatische Skalierung
+        self.scalar_symmetric = False  # symmetrische Skala (±max)
+        self.scalar_min = None         # manuelles Minimum
+        self.scalar_max = None         # manuelles Maximum
 
-        # Create central widget
+        # Zentrales Widget
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         
-        # Create main layout (horizontal split)
+        # Hauptlayout: horizontal (links Controls, rechts 3D-View)
         main_layout = QHBoxLayout()
         central_widget.setLayout(main_layout)
 
-
-        # Clipping state
+        # Clipping-Zustand
         self.clip_enabled = False
-        self.clip_normal = "X"
-        self.clip_offset = 0.0
+        self.clip_normal = "X"   # Schnittebene normal zur X/Y/Z-Achse
+        self.clip_offset = 0.0   # relative Verschiebung der Ebene
 
-        
-        # Create control panel
+        # Animation state
+        self.anim_timer = QTimer()
+        self.anim_timer.timeout.connect(self.animate_deformation)
+        self.anim_direction = 1  # 1 = vorwärts, -1 = rückwärts
+        self.anim_speed_ms = 30 # Millisekunden pro Schritt
+        self.anim_phase = 0.0
+
+
+        # Kontrollpanel (linke Seite)
         controls = self.create_controls()
         main_layout.addWidget(controls)
 
-        # PyVista plotter (move existing plotter code here)
-        self.plotter = QtInteractor(central_widget)
-        main_layout.addWidget(self.plotter.interactor, stretch=3)  # Give more space to 3D view
+        # PyVista-Plotter (rechte Seite)
 
-        # Create menus and status bar
+        # QtInteractor kapselt ein VTK-Renderfenster
+        self.plotter = QtInteractor(central_widget)
+
+        # stretch=3 → mehr Platz für die 3D-Ansicht als für das Panel
+        main_layout.addWidget(self.plotter.interactor, stretch=3)
+
+        # Menüleiste und Statusleiste
         self.create_menus()
         self.statusBar().showMessage("Ready")
         
+        # Originalmesh (unverformt), wird für Deformation benötigt
         self.mesh = None
-        self.original_mesh = None  # Store undeformed mesh
-        
+        self.original_mesh = None  
+
    
     def update_deformation(self):
-        """Apply deformation to mesh based on displacement field"""
+        
+        ##Wendet eine geometrische Deformation auf das Mesh an,
+        ##basierend auf einem Verschiebungsfeld (Displacement).
+        
+
+        # Wenn kein Mesh geladen ist oder Deformation deaktiviert:
+        # → Originalzustand anzeigen
         if self.mesh is None or not self.deform_checkbox.isChecked():
-            # Restore original if not deforming
             if self.original_mesh is not None:
                 self.mesh = self.original_mesh.copy()
             self.display_mesh()
             return
         
-        # Find displacement field (common names: U, Displacement, displacement)
+        # Suche nach einem geeigneten Verschiebungsfeld
         displacement_field = None
         for field_name in ['U', 'Displacement', 'displacement', 'DISPL']:
             if field_name in self.mesh.point_data:
                 displacement_field = field_name
                 break
         
+        # Kein Verschiebungsfeld gefunden
         if displacement_field is None:
             self.statusBar().showMessage("No displacement field found", 3000)
             self.deform_checkbox.setChecked(False)
             return
         
-        # Get scale factor
+        # Skalierungsfaktor aus dem Slider (z. B. 1.0x, 5.0x)
         scale = self.deform_slider.value() / 10.0
         self.deform_label.setText(f"{scale:.1f}x")
         
-        # Store original if not already stored
+        # Originalmesh speichern (nur einmal)
         if self.original_mesh is None:
             self.original_mesh = self.mesh.copy()
         
-        # Apply deformation
+        # Verschiebungsdaten aus dem Mesh lesen
         import numpy as np
         displacement = self.mesh.point_data[displacement_field]
         
-        # Ensure displacement is 3D
+        # Falls 2D-Verschiebung → Z-Komponente mit 0 ergänzen
         if displacement.shape[1] == 2:
-            # 2D displacement, add zero Z component
-            displacement = np.hstack([displacement, np.zeros((displacement.shape[0], 1))])
+            displacement = np.hstack([
+                displacement,
+                np.zeros((displacement.shape[0], 1))
+            ])
         
-    
-        # Create deformed mesh as copy
+        # Neues deformiertes Mesh erzeugen
         self.mesh = self.original_mesh.copy()
         self.mesh.points = self.original_mesh.points + scale * displacement
 
-        # Update display
+        # Anzeige aktualisieren
         self.display_mesh()
 
     def create_menus(self):
-        """Create application menus"""
+        """Erstellt die Menüleiste der Anwendung"""
+
         menubar = self.menuBar()
         
-        # File menu
+        # Datei-Menü
+
         file_menu = menubar.addMenu("&File")
         
         open_action = QAction("&Open Mesh...", self)
         open_action.setShortcut("Ctrl+O")
         open_action.triggered.connect(self.open_mesh)
         file_menu.addAction(open_action)
+
         export_action = QAction("&Export Screenshot...", self)
         export_action.setShortcut("Ctrl+S")
         export_action.triggered.connect(self.export_screenshot)
@@ -129,7 +173,8 @@ class FEMViewer(QMainWindow):
         exit_action.triggered.connect(self.close)
         file_menu.addAction(exit_action)
         
-        # View menu
+        # View-Menü (Kamerasteuerung)
+
         view_menu = menubar.addMenu("&View")
         
         reset_action = QAction("&Reset Camera", self)
@@ -220,12 +265,13 @@ class FEMViewer(QMainWindow):
         self.scalar_bar_checkbox.setChecked(True)
         layout.addWidget(self.scalar_bar_checkbox)
 
-        # Add these lines in create_controls method after creating the widgets:
+        # Connect signals to update display
         self.field_combo.currentTextChanged.connect(self.update_field_display)
         self.edges_checkbox.stateChanged.connect(self.update_display_options)
         self.scalar_bar_checkbox.stateChanged.connect(self.update_display_options)
 
-        # Add after scalar bar checkbox --- Deformation ---
+    
+        # Deformation
         layout.addWidget(QLabel("\nDeformation:"))
 
         self.deform_checkbox = QCheckBox("Show Deformed")
@@ -235,15 +281,26 @@ class FEMViewer(QMainWindow):
 
         layout.addWidget(QLabel("Scale Factor:"))
         self.deform_slider = QSlider(Qt.Orientation.Horizontal)
-        self.deform_slider.setRange(1, 100000)  # 0.1x to 10000x
+        self.deform_slider.setRange(1, 10000)  # 0.1x to 1000x
         self.deform_slider.setValue(10)  # 1.0x
         self.deform_slider.valueChanged.connect(self.update_deformation)
         layout.addWidget(self.deform_slider)
 
         self.deform_label = QLabel("1.0x")
         layout.addWidget(self.deform_label)
+
+        # Animation controls
+        anim_layout = QHBoxLayout()
+
+        self.play_button = QPushButton("▶")
+        self.play_button.setCheckable(True)
+        self.play_button.clicked.connect(self.toggle_animation)
+        anim_layout.addWidget(self.play_button)
+
+        layout.addLayout(anim_layout)
+
         
-        # --- Clipping ---
+        #  Clipping 
         layout.addWidget(QLabel("\nClipping Plane:"))
 
         self.clip_checkbox = QCheckBox("Enable Clipping")
@@ -402,6 +459,19 @@ class FEMViewer(QMainWindow):
                 show_edges=False
             )
 
+        # Show undeformed mesh in background if clipping is active
+        if self.clip_enabled and self.mesh is not None:
+            background_mesh = (
+                self.original_mesh if self.original_mesh is not None else self.mesh)
+
+            self.plotter.add_mesh(
+                background_mesh,
+                color="lightgray",
+                opacity=0.3,
+                show_edges=False
+            )
+
+
         
         # Get current field selection
         field_name = self.field_combo.currentText()
@@ -488,6 +558,27 @@ class FEMViewer(QMainWindow):
         self.plotter.reset_camera()
         self.plotter.render()
     
+    def animate_deformation(self):
+        if not self.deform_checkbox.isChecked():
+            self.deform_checkbox.setChecked(True)
+
+        self.anim_phase += 0.1
+        mid = (self.deform_slider.maximum() + self.deform_slider.minimum()) / 2
+        amp = (self.deform_slider.maximum() - self.deform_slider.minimum()) / 2
+
+        value = int(mid + amp * math.sin(self.anim_phase))
+        self.deform_slider.setValue(value)
+
+
+    def toggle_animation(self):
+        if self.play_button.isChecked():
+            self.play_button.setText("⏸")
+            self.anim_timer.start(self.anim_speed_ms)
+        else:
+            self.play_button.setText("▶")
+            self.anim_timer.stop()
+
+
     def update_field_display(self, field_name):
         """Update display when field selection changes"""
         self.display_mesh()
