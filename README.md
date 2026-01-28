@@ -17,3 +17,13 @@ npm run build
 ## Struktur
 - `docs/` — Skript/Handout in Markdown
 - `slides/` — Marp-Markdown-Folien
+
+```
+```
+## Students
+
+### Ruslan Auschev
+- **GitHub:** [@auschev](https://github.com/auschev)
+- **Program:** Master Mechanical Engineering
+- **Interests:** creating documents, creating structures, optimizing workflows, visualizing data
+- **Background:** First and Second semester VBA and C++, also Raspberry Pi and Arduino
