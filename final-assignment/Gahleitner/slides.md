@@ -126,4 +126,4 @@ A sophisticated approach to prevent "visual noise" in homogenius areas.
 ## Thank You
 
 **Michael Gahleitner**
-*DiceArt Converter - Turning Pixels into Mosaics*
+*DiceArt Converter*
