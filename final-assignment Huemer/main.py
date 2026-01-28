@@ -14,8 +14,7 @@ from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
-# --- MODERN SCIENTIFIC GUI THEME ---
-# hier hab ich das design definiert, sieht ähnlich aus wie css
+# GUI THEME 
 STYLESHEET = """
 QMainWindow {
     background-color: #f0f0f0;
@@ -114,7 +113,7 @@ class TerrainFloodApp(QMainWindow):
         self.resize(1500, 950)
         self.setStyleSheet(STYLESHEET)
 
-        # --- SPECIAL COLORMAP ---
+        # COLORMAP
         # eigene farbpalette definieren damit es realistisch aussieht
         # 0 ist wasser (blau), dann grün, dann braun für berge, oben weiss
         colors = [
@@ -134,7 +133,7 @@ class TerrainFloodApp(QMainWindow):
         self.main_layout.setContentsMargins(0,0,0,0)
         self.main_layout.setSpacing(0)
 
-        # ==================== LINKE SEITE: CONTROLS (DARK PANEL) ====================
+        # LINKE SEITE: CONTROLS 
         # hier kommen alle buttons und slider rein
         self.controls_panel = QFrame()
         self.controls_panel.setObjectName("ControlsPanel")
@@ -151,7 +150,7 @@ class TerrainFloodApp(QMainWindow):
         lbl_mode.setObjectName("SubHeader")
         self.controls_layout.addWidget(lbl_mode)
 
-        # umschalten zwischen nur gelände und flut simulation
+        # umschalten zwischen nur gelände und flood simulation
         self.mode_group = QButtonGroup(self)
         self.radio_terrain = QRadioButton("Terrain Analysis (Topology)")
         self.radio_terrain.setChecked(True)
@@ -180,7 +179,7 @@ class TerrainFloodApp(QMainWindow):
         self.file_selector.currentIndexChanged.connect(self.change_map)
         self.controls_layout.addWidget(self.file_selector)
         
-        # --- NEU: Checkbox für Downsampling ---
+        # Downsampling
         # checkbox für performance, damit man umschalten kann ob man alle pixel will oder weniger
         self.chk_downsampling = QCheckBox("High Performance (Downsample)")
         self.chk_downsampling.setChecked(True) # Standart ist an weils sonst ruckelt
@@ -206,7 +205,7 @@ class TerrainFloodApp(QMainWindow):
 
         self.controls_layout.addSpacing(15)
 
-        # --- Slider 1: Exaggeration ---
+        # Slider 1 Exaggeration
         # slider um das terrain übertrieben darzustellen
         lbl_exag = QLabel("Visual Exaggeration:")
         lbl_exag.setObjectName("SubHeader")
@@ -220,7 +219,7 @@ class TerrainFloodApp(QMainWindow):
 
         self.controls_layout.addSpacing(15)
 
-        # --- Slider 2: Slice Direction & Slider ---
+        # Slider 2: Slice Direction & Slider
         lbl_slice = QLabel("Profile Slice Control:")
         lbl_slice.setObjectName("SubHeader")
         self.controls_layout.addWidget(lbl_slice)
@@ -256,7 +255,7 @@ class TerrainFloodApp(QMainWindow):
         self.slice_slider.valueChanged.connect(self.update_profile_plot)
         self.controls_layout.addWidget(self.slice_slider)
 
-        # --- 3. Wasser Controls ---
+        # 3. Wasser Controls
         # das menü ist versteckt solange man nicht auf flood simulation klickt
         self.water_controls_widget = QWidget()
         self.water_layout = QVBoxLayout(self.water_controls_widget)
@@ -288,7 +287,7 @@ class TerrainFloodApp(QMainWindow):
 
         self.main_layout.addWidget(self.controls_panel)
 
-        # ==================== RECHTE SEITE ====================
+        # RECHTE SEITE 
         # hier teilen wir den bildschirm, oben 2d profil, unten 3d ansicht
         self.right_splitter = QSplitter(Qt.Orientation.Vertical)
         self.main_layout.addWidget(self.right_splitter, stretch=1)
@@ -396,13 +395,13 @@ class TerrainFloodApp(QMainWindow):
             image_path = os.path.join(current_dir, "data", filename)
 
             raw_image = iio.imread(image_path)
-            # wir brauchen nur einen kanal, also graustufen
+            
             if len(raw_image.shape) > 2:
                 self.image_data = raw_image[:, :, 0]
             else:
                 self.image_data = raw_image
 
-            # 90° Drehung im Uhrzeigersinn, sonst passt die orientierung nicht
+            # 90° Drehung im Uhrzeigersinn, nordung
             self.image_data = np.rot90(self.image_data, k=-1)
 
             # --- DOWNSAMPLING LOGIK ---
@@ -420,11 +419,11 @@ class TerrainFloodApp(QMainWindow):
             self.slice_slider.setMaximum(self.x_size - 1)
             self.slice_slider.setValue(self.x_size // 2)
 
-            # hier bauen wir das 3d gitter
+            # 3d gitter
             self.grid = pv.StructuredGrid()
             xx, yy = np.meshgrid(np.arange(self.x_size), np.arange(self.y_size), indexing='ij')
 
-            # hier musste ich order='F' benutzen sonst gabs komische zacken im terrain
+            # hier order='F'
             self.grid.points = np.c_[
                 xx.flatten(order='F'),
                 yy.flatten(order='F'),
@@ -454,7 +453,7 @@ class TerrainFloodApp(QMainWindow):
             return 3000.0
 
     def update_terrain(self):
-        # funktion die das gitter "verbiegt" (warping) basierend auf höhenwerten
+        # funktion die das gitter verzerht basierend auf höhenwerten
         if not hasattr(self, 'grid'): return
 
         z_factor = self.z_slider.value() / 50.0
@@ -464,7 +463,7 @@ class TerrainFloodApp(QMainWindow):
         real_elevation = (elevation_values / 255.0) * real_max
         self.grid["Real Elevation (m)"] = real_elevation
 
-        # hier passiert die magie: 2d gitter wird zu 3d berg
+        # 2d gitter wird zu 3d berg
         self.warped_mesh = self.grid.warp_by_scalar("Elevation", factor=z_factor)
 
         self.plotter.clear()
@@ -522,7 +521,7 @@ class TerrainFloodApp(QMainWindow):
         self.profile_ax.fill_between(x_axis, profile_data_m, color='green', alpha=0.3, label="Terrain")
         self.profile_ax.plot(x_axis, profile_data_m, color='darkgreen', linewidth=1)
 
-        # wenn flut modus an ist, blaue linie einzeichnen
+        # wenn flood modus an ist, blaue linie einzeichnen
         if self.radio_flood.isChecked():
             water_h = self.current_water_height_m
             self.profile_ax.axhline(y=water_h, color='blue', linestyle='--', linewidth=2, label="Water Level")
