@@ -11,6 +11,8 @@ dist/
 # Docusaurus
 .docusaurus/
 .cache-loader/
+versioned_docs/
+versioned_sidebars/
 
 # Environment variables
 .env
@@ -38,6 +40,20 @@ coverage/
 *.swp
 *.swo
 *~
+
+# venv directory
+venv/
+**/*venv*/
+**/venv/
+.venv/
+**/*.venv*/
+**/.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
 
 # OS generated files
 .DS_Store

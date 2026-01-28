@@ -38,7 +38,7 @@ Instructor: Alois Schmalwieser
 3. Review → Merge
 4. Slides also from **Markdown** (Marp)
 
-**📖 Detailed guide:** [Development Tools & Workflow](https://soberpe.github.io/visdat-course/tools-and-workflow)
+**📖 Detailed guide:** [Development Tools & Workflow](https://soberpe.github.io/visdat-course/tools-workflow/tools-workflow-overview)
 
 ---
 
@@ -77,7 +77,7 @@ for i in range(5):
 
 **Goal:** read core syntax & patterns.
 
-**📖 Deep dive:** [C++ Guide](https://soberpe.github.io/visdat-course/cpp-guide)
+**📖 Deep dive:** [C++ Guide](https://soberpe.github.io/visdat-course/cpp/cpp-overview)
 
 ---
 
@@ -87,7 +87,7 @@ for i in range(5):
 
 **Goal:** write small tools and use libs.
 
-**📖 Deep dive:** [Python Guide](https://soberpe.github.io/visdat-course/python-guide)
+**📖 Deep dive:** [Python Guide](https://soberpe.github.io/visdat-course/python/python-overview)
 
 ---
 
@@ -350,7 +350,7 @@ C:\Python313\python.exe -m venv .venv
 pip install numpy pandas matplotlib
 ```
 
-**💡 Detailed setup:** [Python Virtual Environments Guide](https://soberpe.github.io/visdat-course/python-guide#virtual-environments)
+**💡 Detailed setup:** [Python Virtual Environments Guide](https://soberpe.github.io/visdat-course/python/python-overview#virtual-environments)
 
 ---
 
@@ -438,7 +438,7 @@ def sum_of_squares(n):
 - **Branching** for experiments
 - **Industry standard** everywhere
 
-**📖 Complete guide:** [Git & Version Control](https://soberpe.github.io/visdat-course/tools-and-workflow#git--version-control)
+**📖 Complete guide:** [Git & Version Control](https://soberpe.github.io/visdat-course/tools-workflow/tools-workflow-overview#git--version-control)
 
 ---
 
@@ -523,7 +523,7 @@ git push origin feature/data-analysis
 ✅ Pylance (Microsoft)
 ```
 
-**💡 Installation guide:** [VS Code Setup](https://soberpe.github.io/visdat-course/tools-and-workflow#vs-code-setup)
+**💡 Installation guide:** [VS Code Setup](https://soberpe.github.io/visdat-course/tools-workflow/tools-workflow-overview#vs-code-setup)
 
 ---
 
@@ -566,7 +566,7 @@ pip install numpy pandas matplotlib
 5. **Make Marp presentation** about yourself
 6. **Submit Pull Request**
 
-**🎯 Complete details:** [Kickoff Assignment](https://soberpe.github.io/visdat-course/kickoff-assignment)
+**🎯 Complete details:** [Kickoff Assignment](https://soberpe.github.io/visdat-course/tools-workflow/kickoff-assignment)
 
 ---
 

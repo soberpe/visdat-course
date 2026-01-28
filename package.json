@@ -10,6 +10,10 @@
   "dependencies": {
     "@docusaurus/core": "^3",
     "@docusaurus/preset-classic": "^3",
-    "clsx": "^2"
+    "@docusaurus/theme-mermaid": "^3.9.1",
+    "@mermaid-js/layout-elk": "^0.1.9",
+    "clsx": "^2",
+    "rehype-katex": "^7.0.1",
+    "remark-math": "^6.0.0"
   }
 }
