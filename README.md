@@ -1,5 +1,13 @@
 # Visualisierung & Datenaufbereitung — Kurs-Site
 
+## Students
+
+### [Oliver Straßl]
+- **GitHub:** [OS017](https://github.com/your-username)
+- **Program:** Master Mechanical Engineering
+- **Interests:** [Verbessern der Programmier- und Visualisierungskenntnisse]
+- **Background:** [Kenntnisse von Mathlab and Scilab]
+
 ## Schnellstart
 ```bash
 # 1) Node 18+ installieren

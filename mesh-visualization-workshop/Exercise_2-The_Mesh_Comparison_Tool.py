@@ -1,0 +1,78 @@
+# Block2-Broken_Code-Challenge
+# ++++++++++++++++++++++++++++++++++++++++++++
+# Exercise 2: The Mesh Comparison Tool
+
+import pyvista as pv
+import numpy as np
+
+def load_and_process_mesh(filename):
+    """Load mesh and prepare for analysis"""
+    mesh = pv.read(filename)
+    
+    # Normalize stress values (scale to 0-1 range)
+    stress = mesh['S_Mises']
+    normalized = (stress - stress.min()) / (stress.max() - stress.min())
+    mesh['normalized_stress'] = normalized
+    
+    return mesh
+
+def find_differences(mesh1, mesh2, field='S_Mises'):
+    """Compare two meshes and find differences"""
+    data1 = mesh1[field]
+    data2 = mesh2[field]
+    
+    # Calculate difference
+    diff = data2 - data1
+
+    # Store
+    diff_mesh = mesh1.copy()
+    diff_mesh['difference']= diff
+    
+    #return mesh1
+    return diff_mesh
+
+def visualize_comparison(original, modified):
+    """Show original, modified, and difference side-by-side"""
+    
+    diff_mesh = find_differences(original, modified)
+
+    # Kontrolle
+    #print(original.array_names)
+    #print(diff_mesh.array_names)
+    
+    # Kontrolle -> nicht nötig
+    # pl = pv.Plotter()
+    # pl.add_mesh(original, scalars='S_Mises', cmap='viridis')
+    # pl.add_text('Original', font_size=10)
+    # pl.show()
+
+    pl = pv.Plotter(shape=(1, 3))
+    
+    # Original
+    pl.subplot(0, 0)
+    pl.add_mesh(original, scalars='S_Mises', cmap='viridis')
+    pl.add_text('Original', font_size=10)
+   
+
+    # Modified  
+    pl.subplot(0, 1)
+    pl.add_mesh(modified, scalars='S_Mises', cmap='viridis')
+    pl.add_text('Modified', font_size=10)
+    
+    # Difference
+    pl.subplot(0, 2)
+    pl.add_mesh(diff_mesh, scalars='difference', cmap='coolwarm',copy_mesh=True)
+    pl.add_text('Difference', font_size=10)
+    #print("Difference range: ",diff_mesh['difference'].min(), " to ", diff_mesh['difference'].max(),"MPa")
+    
+    pl.show()
+
+# Load two versions
+original = load_and_process_mesh('data/beam_stress.vtu')
+modified = load_and_process_mesh('data/beam_stress.vtu')
+
+# Modify one mesh (simulate design change)
+modified['S_Mises'] = modified['S_Mises'] * 1.2  # 20% increase
+
+# Compare
+visualize_comparison(original, modified)
