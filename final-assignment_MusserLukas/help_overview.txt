@@ -1,0 +1,81 @@
+Hilfe – Statistische Versuchsplanung
+
+📅 Allgemeine Informationen
+Datum: 28.01.2026
+URL: /final-assignment_MusserLukas/statistischeVersuchsplanung.py
+Ersteller: Lukas Musser
+Version: 1.0
+
+🎯 Zweck der Anwendung
+Dieses Tool dient der Planung, Durchführung und Auswertung von vollfaktoriellen Versuchsreihen mit zwei Stufen pro Einflussfaktor. Es eignet sich für:
+Technische und naturwissenschaftliche Experimente
+Statistische Auswertung von Einflussfaktoren und Wechselwirkungen
+Visualisierung von Haupteffekten, Interaktionen und Signifikanztests
+
+📦 Installation
+Vor der Nutzung müssen folgende Python-Bibliotheken installiert werden:
+pip install pyqt6 matplotlib numpy
+
+🧭 Bedienoberfläche – Controls
+Einflussfaktoren: Anzahl der unabhängigen Variablen (z. B. Temperatur, Druck, Materialart)
+Stufen: Anzahl der Ausprägungen pro Faktor (hier: fix auf 2 Stufen: −1 und +1)
+Wiederholungen: Anzahl der Messwiederholungen pro Versuchsbedingung
+
+Create experimental design: Erstellt die Versuchsplan-Tabelle mit allen Kombinationen
+Run experimental: Startet die Dateneingabe (manuell oder Import – derzeit nur manuell)
+
+Calculate: Führt die Berechnung der Effekte und Wechselwirkungen durch
+Show calculation: Zeigt die Ergebnisse in den vier Ausgabebereichen
+
+Haupteffekte (Checkbox): Aktiviert die Berechnung und Anzeige der Haupteffekte
+Wechselwirkungen: Aktiviert die Berechnung und Anzeige der Interaktionen
+Signifikanztest: Aktiviert die statistische Bewertung der Effekte
+Bericht: Zeigt eine textuelle Zusammenfassung der Ergebnisse
+
+❓ FAQs
+
+Wie erstelle ich einen Versuchsplan?
+1) Wähle Anzahl der Einflussfaktoren (z. B. 3)
+2) Wähle Anzahl der Wiederholungen (z. B. 5)
+3) Klicke auf Create experimental design → Die Tabelle wird automatisch mit allen Kombinationen gefüllt
+
+Wie trage ich die Messwerte ein?
+1) Klicke auf Run experimental
+2) Wähle Manuell (Import-Funktion nicht in Demo-Version verfügbar)
+3) Gib die Messwerte für jede Kombination und Wiederholung ein
+4) Klicke auf Speichern, um die Daten zu übernehmen
+
+Wie werte ich die Messungen aus?
+1) Klicke auf Calculate
+2) Aktiviere gewünschte Checkboxen (Effekte, Interaktionen, Signifikanz, Bericht)
+3) Klicke auf Show calculation → Die Ergebnisse erscheinen in den vier Ausgabefeldern
+
+Was kann man in den vier Schaubildern sehen?
+A) Haupteffekte: Linienplots der Mittelwerte bei niedriger und hoher Stufe je Faktor
+B) Wechselwirkungen: Interaktionsplots in Matrixform für alle Faktorpaare
+C) Signifikanz: Balkendiagramm mit Effektstärken und Schwellenwerten
+D) Bericht: Textuelle Zusammenfassung aller berechneten Werte
+
+Kann man die Daten speichern?
+Ja, über Speichern im Dialog zur manuellen Dateneingabe
+Die Daten bleiben bis zum Reset erhalten
+Exportfunktionen sind in dieser Version nicht enthalten
+
+⚠️ Fehlerbehandlung
+
+"Bitte zuerst einen Versuchsplan erzeugen"
+- Klicke auf Create experimental design vor der Dateneingabe
+
+"Keine gespeicherten Daten gefunden"
+- Stelle sicher, dass du Daten eingegeben und gespeichert hast
+
+"No experimental data available"
+- Führe zuerst die Dateneingabe durch
+
+Diagramme bleiben leer
+- Prüfe, ob die zugehörige Checkbox aktiviert ist
+
+Programm reagiert nicht
+- Starte die Anwendung neu, prüfe Konsolenausgaben auf Fehlermeldungen
+
+📘 Für Rückfragen oder Erweiterungswünsche: Kontakt über Projektordner oder direkt im Code ergänzen.
