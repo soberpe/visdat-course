@@ -1,8 +1,8 @@
-Hilfeübersicht – Statistische Versuchsplanung
+Hilfe – Statistische Versuchsplanung
 
 📅 Allgemeine Informationen
 Datum: 28.01.2026
-URL: c:/visdat-course-2/project/statistischeVersuchsplanung.py
+URL: /final-assignment_MusserLukas/statistischeVersuchsplanung.py
 Ersteller: Lukas Musser
 Version: 1.0
 
