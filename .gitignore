@@ -41,7 +41,7 @@ coverage/
 *.swo
 *~
 
-# venv directory
+# venv directory#
 PRT/
 venv/
 **/*venv*/
