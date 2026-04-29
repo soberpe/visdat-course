@@ -17,3 +17,11 @@ npm run build
 ## Struktur
 - `docs/` — Skript/Handout in Markdown
 - `slides/` — Marp-Markdown-Folien
+
+## Students
+
+### [Tobias Haumer]
+- **GitHub:** [@your-username](https://github.com/haumert)
+- **Program:** Master Mechanical Engineering
+- **Interests:** 
+- **Background:** 

@@ -1,0 +1,12 @@
+# Importiert alle benötigten Qt-Widgets für das GUI
+PyQt6.QtWidgets
+# QAction wird für Menüeinträge (Menüleiste) benötigt
+PyQt6.QtGui
+# Qt-Core, z. B. für Ausrichtungen (Qt.Horizontal)
+PyQt6.QtCore
+# PyVista-Qt-Widget zum Einbetten eines VTK-Renderfensters in Qt
+pyvistaqt 
+# Text-Eingabefelder
+PyQt6.QtWidgets
+# PyVista-Bibliothek für 3D-Meshes und Visualisierung
+pyvista

@@ -1,0 +1,16 @@
+{
+  "source_file": "data/telemetry_detailed.csv",
+  "processing_date": "2025-11-18T13:46:31.532051",
+  "steps": [
+    "loaded_raw_data",
+    "removed_outliers_iqr",
+    "interpolated_missing_values",
+    "applied_moving_average_filter",
+    "calculated_derived_parameters"
+  ],
+  "data_quality": {
+    "original_samples": 650,
+    "final_samples": 650,
+    "retention_rate": 1.0
+  }
+}
