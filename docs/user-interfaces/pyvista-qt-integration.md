@@ -553,7 +553,7 @@ if __name__ == '__main__':
 ```
 
 :::tip The copy_mesh Parameter
-When adding the same mesh object to multiple plotters or multiple times with different scalars, always use `copy_mesh=True`. This prevents rendering state conflicts where one view's active scalars affect another view's display. See [Exercise 2 of the Mesh Visualization Workshop](../visualization/mesh-visualization-workshop#exercise-2-comparing-stress-and-displacement-fields) for detailed explanation.
+When adding the same mesh object to multiple plotters or multiple times with different scalars, always use `copy_mesh=True`. This prevents rendering state conflicts where one view's active scalars affect another view's display. See [Exercise 2 of the Mesh Visualization Workshop](../visualization/mesh-visualization-workshop#exercise-2-the-mesh-comparison-tool) for detailed explanation.
 :::
 
 ## Exporting and Screenshots

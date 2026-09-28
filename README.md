@@ -19,6 +19,10 @@ npm run build
 - `slides/` - Marp-Markdown-Folien
 - `data/` - Beispieldatensätze für die Übungen
 
+## Weiterentwicklung
+
+Was als Nächstes am Kursmaterial geplant ist, steht in [ROADMAP.md](ROADMAP.md).
+
 ## Abgaben
 
 Dieses Repository enthält ausschließlich Kursmaterial. Die Abgaben der
