@@ -1,0 +1,10 @@
+{
+  "// Marp": "Registers the course slide theme and allows the HTML used for two-column layouts.",
+  "markdown.marp.themes": ["./slides/theme/visdat.css"],
+  "markdown.marp.enableHtml": true,
+
+  "// Editor": "Keeps the Markdown sources diff-friendly.",
+  "files.trimTrailingWhitespace": false,
+  "files.insertFinalNewline": true,
+  "files.eol": "\n"
+}

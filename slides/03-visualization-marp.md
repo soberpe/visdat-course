@@ -1,802 +1,513 @@
 ---
 marp: true
+theme: visdat
 paginate: true
-theme: default
-class: lead
+footer: "FH OÖ Wels · Visualisierung & Datenaufbereitung"
 ---
 
-# Visualization with Matplotlib
+<!-- _class: title -->
 
-- Introduction to matplotlib and its role in Python
-- Design principles for effective plots
-- Typical workflows and practical examples
-- Integration with pandas
-- Best practices and common pitfalls
+# Visualization
+
+## From a table of numbers to a picture someone can act on
+
+Lecture 3 · Matplotlib, VTK, meshio, PyVista
+
 <!--
-Welcome to the lecture on visualization with matplotlib. This session explores the motivation for data visualization, key design principles, and practical usage of matplotlib in scientific data analysis.
+Three blocks today. First 2D with matplotlib, then 3D with the VTK family.
+Everything shown here is in the script, so nobody has to copy code from the
+screen. What is not in the script is the reasoning, and that is what we do here.
 -->
+
 ---
 
-# Overview
+# Today
 
-- Why visualize data?
-- What is matplotlib?
-- Where does it fit in the Python ecosystem?
-- How does it support data analysis?
+1. **2D**: the structure behind every matplotlib figure, and how to choose a plot
+2. **Colour and honesty**: why the default stress plot misleads you
+3. **3D**: VTK, meshio and PyVista, and which one to reach for
+4. **Live**: from `sensor_data.csv` and `beam_stress.vtu` to a figure
+
+<p class="note">Script: Visualization chapter. Data: <code>data/</code> in the course repository.</p>
+
 ---
 
-# Why Visualize Data?
+<!-- _class: ask -->
 
-- Makes patterns and trends visible
-- Supports exploration and hypothesis testing
-- Communicates results clearly
-- Helps avoid misinterpretation of raw numbers
----
+# You have 200 000 rows of sensor data. What do you look at first?
 
-# What is Matplotlib?
-
-- The standard Python library for 2D plotting
-- Flexible and widely used in science and engineering
-- Foundation for other libraries (pandas, seaborn)
-- Supports many chart types and customizations
 <!--
-Define matplotlib and its importance in the Python data ecosystem.
+Let them answer. Expected: mean, min, max, "I'd plot it". Push for the second
+one, and ask what exactly they would plot, and against what. The point of the
+block: a plot is a question you ask of the data, not decoration afterwards.
 -->
+
 ---
 
-# Where Does Matplotlib Fit?
+# Every figure has the same three parts
 
-- Integrates with pandas for tabular data
-- Works with numpy for numerical analysis
-- Used in Jupyter notebooks and scripts
-- Basis for more advanced or interactive tools
-<!--
-Show how matplotlib connects with other Python tools and workflows.
--->
----
+<div class="boxes">
+<div><b>Figure</b>The page. Holds everything, controls size and saving.</div>
+<div><b>Axes</b>One coordinate system. A figure can hold several.</div>
+<div><b>Artist</b>Everything you see: lines, text, ticks, the legend.</div>
+</div>
 
-# How Does Matplotlib Support Data Analysis?
-
-- Enables quick exploration with simple plots
-- Provides control for publication-quality figures
-- Allows customization for clarity and accessibility
-- Facilitates reproducible workflows
----
-
-# Why Use Matplotlib?
-
-- Turns raw data into clear graphics
-- Reveals patterns, trends, and relationships
-- Supports hypothesis testing and sharing results
-- Widely adopted and flexible
-<!--
-Emphasize the motivation for using matplotlib: making data visible and actionable.
--->
----
-
-# Matplotlib Architecture
-
-## Figure, Axes, Artist
-- Figure: overall window or page
-- Axes: coordinate system and plotting area
-- Artist: any visible element (lines, text, legend)
-- Hierarchical structure enables complex layouts
-<!--
-Explain the core objects in matplotlib and how they relate to each other. Use a diagram if possible.
--->
----
-
-# API Styles: Pyplot vs. OO
-
-- Pyplot: quick, stateful, interactive
-- Object-Oriented (OO): recommended for scripts and complex layouts
-- Choose one style per workflow
-- Avoid mixing styles to prevent confusion
-<!--
-Clarify the difference between the two APIs and why the OO style is preferred for maintainable code.
--->
----
-
-# Pyplot Example
-
-## Quick Line Plot
 ```python
-import matplotlib.pyplot as plt
-plt.plot([0, 1, 2, 3], [0, 1, 4, 9])
-plt.xlabel('X')
-plt.ylabel('Y')
-plt.title('Quick Line Plot')
+fig, ax = plt.subplots(figsize=(8, 4))   # one Figure, one Axes
+line, = ax.plot(t, a_z)                  # an Artist
+ax.set_xlabel("Time [s]")
+```
+
+<p class="note">Know which of the three you are holding, and every example in the documentation becomes readable.</p>
+
+<!--
+This is the single most useful idea of the 2D block. Draw it on the board once
+while saying it. Ask: in `plt.plot(...)`, which of the three are you addressing?
+Answer: none explicitly, pyplot picks one for you, which is exactly the problem.
+-->
+
+---
+
+# Two APIs, one rule
+
+<div class="cols">
+<div>
+
+**pyplot**, stateful
+
+```python
+plt.plot(t, a_z)
+plt.xlabel("Time [s]")
 plt.show()
 ```
----
 
-# Object-Oriented Example
+Short. Fine in a notebook, while exploring.
 
-## Controlled Layout
+</div>
+<div>
+
+**Object oriented**, explicit
+
 ```python
-import matplotlib.pyplot as plt
 fig, ax = plt.subplots()
-ax.plot([0, 1, 2, 3], [0, 1, 4, 9], marker='o')
-ax.set_xlabel('X')
-ax.set_ylabel('Y')
-ax.set_title('Line Plot (OO)')
+ax.plot(t, a_z)
+ax.set_xlabel("Time [s]")
+```
+
+Says what it acts on. Use it in scripts.
+
+</div>
+</div>
+
+> The rule: pick one per file. Mixing them is where the confusing bugs come from.
+
+---
+
+<!-- _class: live -->
+
+# First look at the data
+
+```python
+import pandas as pd, matplotlib.pyplot as plt
+
+df = pd.read_csv("data/sensor_data.csv")
+fig, ax = plt.subplots(figsize=(9, 4))
+ax.plot(df["time"], df["accel_z"])
+plt.show()
+```
+
+Then, together: what is wrong with this figure?
+
+<!--
+Type this live, do not paste. The result is deliberately raw: no axis labels, no
+units, default colour, 200k points drawn over each other. Collect what is
+missing from the room before fixing anything. Expect: labels, units, the line is
+a solid block. Then fix it in the next block.
+-->
+
+---
+
+# Which plot answers which question
+
+| The question | The plot |
+|---|---|
+| How does it develop over time? | Line |
+| Do these two quantities relate? | Scatter |
+| How is this distributed? | Histogram |
+| How do the categories compare? | Bar |
+| Where is the outlier? | Scatter, or a box plot |
+
+<p class="note">Start from the question, not from the chart menu.</p>
+
+---
+
+<!-- _class: ask -->
+
+# Why does this stress plot lie to you?
+
+<p>Every FE postprocessor shows you rainbow colours by default.</p>
+
+<!--
+Let it sit for a moment. The answer: rainbow is not perceptually uniform. Equal
+steps in stress become unequal steps in perceived colour, so the yellow-green
+band reads as a sharp edge where the field is smooth, and real gradients in the
+red end disappear. People find "hot spots" that are artefacts of the palette.
+-->
+
+---
+
+# Colour maps
+
+<div class="cols">
+<div>
+
+**Avoid**
+
+`jet`, `rainbow`, `turbo`
+
+Perceptually uneven, invents edges, unreadable in grayscale, hard with colour
+vision deficiency.
+
+</div>
+<div>
+
+**Use**
+
+`viridis`, `cividis` for magnitudes
+`coolwarm` for deviation from zero
+
+Perceptually uniform: equal data steps look like equal colour steps.
+
+</div>
+</div>
+
+```python
+ax.pcolormesh(X, Y, stress, cmap="viridis")
+```
+
+<p class="note">A diverging map only when zero means something, for example tension against compression.</p>
+
+---
+
+# Before you show a figure to anyone
+
+- Both axes labelled, **with units**
+- A scale the reader can trust: does the y axis start at zero, and should it?
+- More than one series: a legend, or direct labels
+- Readable when printed in grey
+- The file saved by the script, not by a screenshot
+
+<!--
+This is the checklist for the assignment too. Point out that "the script saves
+the figure" is what makes a result reproducible, and that a screenshot of a plot
+is the visualization equivalent of typing results into a Word file by hand.
+-->
+
+---
+
+<!-- _class: live -->
+
+# From raw to readable
+
+```python
+fig, ax = plt.subplots(figsize=(9, 4))
+ax.plot(df["time"], df["accel_z"], linewidth=0.8)
+ax.set_xlabel("Time [s]")
+ax.set_ylabel("Acceleration z [m/s²]")
+ax.set_title("Raw acceleration, sensor 1")
+ax.grid(alpha=0.3)
 fig.tight_layout()
-plt.show()
+fig.savefig("figures/accel_raw.png", dpi=150)
 ```
----
-
-# Typical Plot Types
-
-- Line plot: trends over time or variable
-- Scatter plot: relationships between variables
-- Bar chart: compare categories
-- Histogram: show distributions
-- Multiple subplots: compare views side by side
-
----
-
-# Example: Scatter Plot
-
-```python
-import matplotlib.pyplot as plt
-x = [1, 2, 3, 4]
-y = [4, 5, 6, 7]
-plt.scatter(x, y, color='red')
-plt.xlabel('X')
-plt.ylabel('Y')
-plt.title('Scatter Plot')
-plt.show()
-```
-
----
-
-# Example: Multiple Subplots
-
-```python
-import matplotlib.pyplot as plt
-import numpy as np
-fig, axs = plt.subplots(2, 2, figsize=(8, 6))
-x = np.linspace(0, 10, 100)
-axs[0, 0].plot(x, np.sin(x))
-axs[0, 0].set_title('Sine')
-axs[0, 1].plot(x, np.cos(x))
-axs[0, 1].set_title('Cosine')
-axs[1, 0].plot(x, np.tan(x))
-axs[1, 0].set_title('Tangent')
-axs[1, 1].plot(x, -np.sin(x))
-axs[1, 1].set_title('Negative Sine')
-fig.tight_layout()
-plt.show()
-```
-<!--
-Demonstrate how to compare multiple views in one figure using subplots.
--->
----
-
-# Design Principles
-
-- Clarity: make the message obvious
-- Accuracy: avoid misleading scales
-- Aesthetics: support understanding
-- Accessibility: use colorblind-friendly palettes
-- Label axes, units, and add legends
-<!--
-Discuss what makes a visualization effective and trustworthy. Use examples of good and bad design.
--->
----
-
-# Matplotlib in Data Analysis
-
-- Used in Jupyter notebooks for exploration
-- Used in scripts for automation and publication
-- Plots display automatically in notebooks
-- Always call plt.show() in scripts
-- Save figures with plt.savefig()
-
----
-
-# Integration with Pandas
-
-- DataFrames have built-in plotting methods
-- Use matplotlib as backend
-- Quick exploration with df.plot()
-- Advanced customization with returned Axes
-```python
-import pandas as pd
-import matplotlib.pyplot as plt
-df = pd.DataFrame({'x': [0, 1, 2, 3], 'y': [0, 1, 4, 9]})
-ax = df.plot(x='x', y='y', kind='line', marker='o')
-ax.set_title('Line Plot from DataFrame')
-ax.set_xlabel('X')
-ax.set_ylabel('Y')
-plt.tight_layout()
-plt.show()
-```
-
----
-
-# Common Pitfalls
-
-- Mixing pyplot and OO styles
-- Forgetting plt.show() in scripts
-- Overlapping labels and titles
-- Poor color choices
-- Not labeling axes
-
----
-
-# Recap
-
-- Matplotlib is essential for scientific visualization in Python
-- Understand the architecture: Figure, Axes, Artist
-- Choose the right API style for your workflow
-- Apply design principles for effective plots
-- Integrate with pandas for data analysis
-- Avoid common pitfalls
-
----
-
-<!-- _class: lead -->
-
-# Part II: 3D Visualization
-## VTK, meshio, and PyVista
-
----
-
-# Why 3D Visualization?
-
-- **Engineering simulations** require 3D representation
-- **Finite Element Analysis** results are inherently spatial
-- **Modal analysis** shows 3D deformation patterns
-- **CFD results** need volumetric visualization
-- **Complex geometries** cannot be understood in 2D
 
 <!--
-Motivate the need for 3D visualization in mechanical engineering workflows
+Same data as before, six lines more. Do it step by step and let them say what
+comes next. End on savefig and the figures/ folder, which is what the assignment
+expects.
 -->
 
 ---
 
-# 3D Visualization Landscape
+<!-- _class: section -->
 
-Three complementary tools for engineering visualization:
+# Part II
 
-1. **VTK** - Low-level, powerful foundation
-2. **meshio** - Universal format converter
-3. **PyVista** - High-level, Pythonic interface
-
-Together they form a complete FEM post-processing pipeline.
+## 3D: VTK, meshio, PyVista
 
 ---
 
-# The Visualization Toolkit (VTK)
+<!-- _class: ask -->
 
-- Open-source 3D graphics and visualization library
-- Foundation for ParaView, VisIt, 3D Slicer
-- 25+ years of development and refinement
-- Industry standard for scientific visualization
-- Written in C++ with Python bindings
+# Your solver produced 1.2 million elements. Now what?
 
----
-
-# VTK: Why It Matters
-
-**For Engineers:**
-- Handle millions of finite elements efficiently
-- Support all FEM cell types (hex, tet, wedge, pyramid)
-- Production-ready for professional applications
-- Maximum control over visualization pipeline
-
-**For Students:**
-- Understanding VTK = understanding ParaView internals
-- Transferable skills to commercial software
-- Foundation for custom post-processing tools
+<!--
+Bridge into 3D. Answers will include ParaView. Good: ParaView is VTK with a GUI.
+Today we do the same thing from Python, which is what lets you automate it.
+-->
 
 ---
 
-# VTK Architecture
+# Three tools, three jobs
 
-**Two Main Components:**
+<div class="boxes">
+<div><b>VTK</b>The engine. C++ with Python bindings, powers ParaView. Maximum control, verbose.</div>
+<div><b>meshio</b>The translator. Reads and writes 30+ mesh formats. Geometry only.</div>
+<div><b>PyVista</b>The Python face of VTK. Same power, a fraction of the code.</div>
+</div>
 
-1. **Visualization Model** - Data processing pipeline
-   - Sources → Filters → Mappers
-
-2. **Graphics Model** - Rendering system
-   - Actors → Renderer → Render Window
-
-**Design Pattern:** Pipeline architecture (like FEM workflows)
-
-```
-Visualization Model          Graphics Model
-─────────────────────        ──────────────
-Source → Filter → Mapper  →  Actor → Renderer → Window
-```
+<p class="note">In practice: meshio for input and output, PyVista for everything else, VTK when PyVista runs out.</p>
 
 ---
 
-# VTK Pipeline Concept
+# The VTK pipeline
 
-<div style="display: flex; gap: 30px; align-items: center;">
-<div style="flex: 0 0 auto; max-width: 45%;">
+<div class="cols">
+<div>
 
 ```
 Source → Filter → Filter → Mapper
   ↓        ↓        ↓         ↓
- Read    Clip    Contour   Convert
- Data    Data    Extract    to
-         Volume  Surfaces   Graphics
+ Read    Clip    Contour   To
+ data    volume  surfaces  graphics
 ```
 
-**Demand-Driven:** Only updates when needed (efficient for large data)
+Demand driven: nothing is computed until something asks for it. That is what
+makes large models workable.
 
 </div>
-<div style="flex: 0 0 auto;">
+<div>
 
-![width:450px](../static/img/vtk/vtk-pipeline.png)
+![width:430px](../static/img/vtk/vtk-pipeline.png)
 
 </div>
 </div>
 
 <!--
-Explain the flow from data reading through processing to final rendering
+The pipeline idea is the transferable part. Anyone who understands it can find
+their way around ParaView, and around any postprocessor built on VTK.
 -->
 
 ---
 
-# VTK Dataset Types
+# Dataset types
 
-<div style="display: flex; gap: 30px; align-items: center;">
-<div style="flex: 0 0 auto; max-width: 45%;">
+<div class="cols">
+<div>
 
-Supports all common FEM mesh types:
+- **Unstructured grid**: mixed elements, the FE case
+- **Structured grid**: regular topology, CFD
+- **Polygonal data**: surfaces, CAD
+- **Image data**: voxels, tomography
 
-- **Unstructured Grid** - Mixed element types (FEM)
-- **Structured Grid** - Regular topology (CFD)
-- **Polygonal Data** - Surface meshes (CAD)
-- **Image Data** - Regular voxels (Medical imaging)
-
-**For FEM:** Unstructured grids are most common
+For FE results you will almost always be holding an unstructured grid.
 
 </div>
-<div style="flex: 0 0 auto;">
+<div>
 
-![width:450px](../static/img/vtk/dataset-types.png)
+![height:450px](../static/img/vtk/dataset-types.png)
 
 </div>
 </div>
 
 ---
 
-# VTK Cell Types
+# Cell types match the FE element library
 
-<div style="display: flex; gap: 20px;">
-<div style="flex: 1;">
+<div class="cols">
+<div>
 
-**Linear Elements:**
+**Linear**
 
-![width:400px](../static/img/vtk/cell-types-linear.png)
+![height:330px](../static/img/vtk/cell-types-linear.png)
 
-- Tetrahedron, Hexahedron
-- Wedge, Pyramid
-- Triangle, Quad, Line
+Tet, hex, wedge, pyramid
 
 </div>
-<div style="flex: 1;">
+<div>
 
-**Quadratic Elements:**
+**Quadratic**
 
-![width:400px](../static/img/vtk/cell-types-nonlinear.png)
+![height:330px](../static/img/vtk/cell-types-nonlinear.png)
 
-- 10-node Tet (C3D10)
-- 20-node Hex (C3D20)
-- 15-node Wedge
+C3D10, C3D20, 15 node wedge
 
 </div>
 </div>
 
-Matches standard FEM element library.
+<p class="note">The same zoo as in Abaqus or CalculiX, which is why the conversion works at all.</p>
 
 ---
 
-# VTK Code Example
+# VTK: the cost of control
+
+<div class="cols">
+<div>
 
 ```python
 import vtk
 
-# 1. Create geometry
 cone = vtk.vtkConeSource()
-cone.SetHeight(3.0)
-cone.SetRadius(1.0)
-
-# 2. Create mapper
 mapper = vtk.vtkPolyDataMapper()
-mapper.SetInputConnection(cone.GetOutputPort())
-
-# 3. Create actor
+mapper.SetInputConnection(
+    cone.GetOutputPort())
 actor = vtk.vtkActor()
 actor.SetMapper(mapper)
-
-# 4. Create renderer and window
 renderer = vtk.vtkRenderer()
 renderer.AddActor(actor)
-renderWindow = vtk.vtkRenderWindow()
-renderWindow.AddRenderer(renderer)
-
-# 5. Show
-renderWindow.Render()
+window = vtk.vtkRenderWindow()
+window.AddRenderer(renderer)
+window.Render()
 ```
 
----
+</div>
+<div>
 
-# VTK: The Challenge
+```python
+import pyvista as pv
 
-**Pros:**
-- Maximum control and flexibility
-- Best performance for large datasets
-- Industry-standard architecture
-
-**Cons:**
-- Verbose code (30+ lines for simple plots)
-- Steep learning curve
-- C++-style API in Python
-
-**Solution:** PyVista provides a Pythonic wrapper!
-
----
-
-<!-- _class: lead -->
-
-# meshio
-## Universal Mesh Format Converter
-
----
-
-# The Format Problem
-
-Different FEM software use different formats:
-
-- **Abaqus** → .inp
-- **ANSYS** → .msh, .cdb
-- **CalculiX** → .inp, .frd
-- **Gmsh** → .msh
-- **VTK** → .vtu, .vtk
-- **Exodus** → .exo
-
-**Problem:** How to exchange data between tools?
-
----
-
-# meshio: The Solution
-
-**Universal translator** for mesh files:
-- Read from 30+ formats
-- Write to 20+ formats
-- Preserve geometry and connectivity
-- Command-line and Python API
-
-**Workflow Integration:**
-```
-CAD → Gmsh → CalculiX → meshio → PyVista
+pv.Cone().plot()
 ```
 
----
+Same cone.
 
-# meshio: Key Formats for FEM
+The VTK version is not wrong, it is explicit. You need that explicitness perhaps
+once a semester.
 
-**Read/Write:**
-- Abaqus (.inp) - mesh and element definitions
-- VTK XML (.vtu, .vtp) - visualization standard
-- Exodus II (.exo) - multiphysics standard
-- XDMF (.xdmf) - large datasets with HDF5
-
-**Read Only:**
-- ANSYS (.msh) - commercial FEM
-- STL (.stl) - CAD surfaces
+</div>
+</div>
 
 ---
 
-# meshio: Basic Usage
+# The format problem
+
+Every solver speaks its own dialect: `.inp`, `.frd`, `.msh`, `.cdb`, `.exo`, `.vtu`
 
 ```python
 import meshio
 
-# Read any supported format
-mesh = meshio.read("model.inp")  # Abaqus
-
-# Inspect mesh
-print(f"Points: {len(mesh.points)}")
-print(f"Cells: {mesh.cells}")
-
-# Convert format
-meshio.write("model.vtu", mesh)  # VTK XML
+mesh = meshio.read("conrod.inp")     # Abaqus in
+meshio.write("conrod.vtu", mesh)     # VTK out
 ```
-
-**That's it!** Automatic format detection and conversion.
-
----
-
-# meshio Command-Line Tools
-
-Quick conversions without Python:
 
 ```bash
-# Convert Abaqus to VTK
-meshio convert model.inp model.vtu
-
-# Show mesh info
-meshio info model.inp
-
-# Compress VTK file
-meshio compress model.vtu
+meshio convert conrod.inp conrod.vtu
+meshio info conrod.inp
 ```
 
-Perfect for scripting and automation.
+> meshio moves geometry and connectivity. Result fields are a different problem,
+> and that is why the solver has to export them for you.
 
 ---
 
-# meshio + PyVista Integration
+<!-- _class: live -->
 
-Seamless workflow:
+# Convert and inspect
 
-```python
-import meshio
-import pyvista as pv
-
-# Load with meshio
-mesh_io = meshio.read("model.inp")
-
-# Convert to PyVista
-mesh_pv = pv.from_meshio(mesh_io)
-
-# Visualize
-mesh_pv.plot(show_edges=True)
+```bash
+meshio info data/conrod.inp
+meshio convert data/conrod.inp /tmp/conrod.vtu
 ```
-
-**Best of both worlds:** meshio for I/O, PyVista for visualization
-
----
-
-# meshio Limitations
-
-**What meshio does well:**
-- Mesh geometry conversion
-- Cell connectivity
-- Point coordinates
-
-**What meshio doesn't handle:**
-- FEM result files (.frd, .rst, .odb)
-- Time series results
-- Complex field data
-
-**For results:** Export to VTK from solver or use ParaView
-
----
-
-<!-- _class: lead -->
-
-# PyVista
-## Pythonic 3D Visualization
-
----
-
-# What is PyVista?
-
-**High-level interface to VTK:**
-- Pythonic API (object-oriented, intuitive)
-- NumPy integration (direct array access)
-- Minimal boilerplate code
-- Full VTK power when needed
-
-**Philosophy:** Make simple things simple, complex things possible
-
----
-
-# PyVista vs VTK
-
-**Same visualization in both:**
-
-**VTK:** 30+ lines
-**PyVista:** 3 lines
 
 ```python
 import pyvista as pv
-
-cone = pv.Cone()
-cone.plot(color="red")
+mesh = pv.read("/tmp/conrod.vtu")
+print(mesh)                  # points, cells, bounds
+print(mesh.array_names)      # which fields came along
+mesh.plot(show_edges=True)
 ```
 
-**80% less code** for common tasks!
+<!--
+Run meshio info first and read the output together: how many points, which cell
+types. Then convert and open it. The empty array_names list is the teaching
+moment: the geometry survived, the results did not.
+-->
 
 ---
 
-# PyVista Core Concepts
-
-**Mesh Objects:**
-- `pv.PolyData` - Surface meshes
-- `pv.UnstructuredGrid` - 3D FEM meshes
-- `pv.StructuredGrid` - Regular grids
-
-**Plotter:**
-- `pv.Plotter()` - Visualization window
-- `.add_mesh()` - Add geometries
-- `.show()` - Display
-
----
-
-# PyVista: Loading Data
+# PyVista in four lines
 
 ```python
-import pyvista as pv
-
-# Read various formats
-mesh = pv.read("model.vtu")     # VTK
-mesh = pv.read("model.stl")     # STL
-mesh = pv.read("model.obj")     # Wavefront
-
-# Or create programmatically
-sphere = pv.Sphere()
-cube = pv.Cube()
-cylinder = pv.Cylinder()
-```
-
----
-
-# PyVista: Adding Data
-
-<div style="display: flex; gap: 30px; align-items: center;">
-<div style="flex: 0 0 auto; max-width: 45%;">
-
-**Scalar fields** (temperature, stress, pressure):
-
-```python
-import numpy as np
-
-# Add field to mesh
-mesh["Temperature"] = np.random.rand(
-    mesh.n_points)
-mesh["Stress"] = np.random.rand(
-    mesh.n_cells)
-
-# Visualize
-mesh.plot(scalars="Temperature",
-          cmap="coolwarm")
-```
-
-**Direct NumPy integration!**
-
-</div>
-<div style="flex: 0 0 auto;">
-
-![width:450px](../static/img/vtk/data-attributes.png)
-
-</div>
-</div>
-
----
-
-# PyVista: Visualization Techniques
-
-**Contouring:**
-```python
-contours = mesh.contour(scalars="Pressure", isosurfaces=10)
-```
-
-**Slicing:**
-```python
-slices = mesh.slice_orthogonal()
-```
-
-**Warping (Deformation):**
-```python
-mesh["Displacement"] = displacement_vectors
-warped = mesh.warp_by_vector("Displacement", factor=10)
-```
-
----
-
-# PyVista: Interactive Features
-
-<div style="display: flex; gap: 30px; align-items: center;">
-<div style="flex: 0 0 auto; max-width: 45%;">
-
-```python
-plotter = pv.Plotter()
-plotter.add_mesh(mesh, 
-                 scalars="Stress")
-
-# Add widgets
-plotter.add_slider_widget(
-    callback, [0, 100])
-plotter.enable_surface_picking(
-    callback)
-
-# Camera controls
-plotter.camera_position = [
-    (5,5,5), (0,0,0), (0,0,1)]
-plotter.show()
-```
-
-**Build custom GUIs** for engineering tools!
-
-</div>
-<div style="flex: 0 0 auto;">
-
-![width:450px](../static/img/vtk/camera-coordinates.png)
-
-</div>
-</div>
-
----
-
-# PyVista: Performance Tips
-
-**For large meshes (>1M elements):**
-
-1. **Use appropriate data types**
-   ```python
-   mesh.points = mesh.points.astype(np.float32)
-   ```
-
-2. **Decimate when possible**
-   ```python
-   decimated = mesh.decimate(0.9)  # Keep 10%
-   ```
-
-3. **Compute in-place**
-   ```python
-   mesh.compute_normals(inplace=True)
-   ```
-
----
-
-# Complete FEM Workflow Example
-
-```python
-import meshio
 import pyvista as pv
 import numpy as np
 
-# 1. Load Abaqus mesh
-mesh_io = meshio.read("model.inp")
-mesh = pv.from_meshio(mesh_io)
-
-# 2. Add FEM results (example: stress)
-stress = np.random.rand(mesh.n_cells)  # From solver
-mesh["von_Mises_Stress"] = stress
-
-# 3. Visualize with deformation
-mesh["Displacement"] = displacements  # From solver
-warped = mesh.warp_by_vector("Displacement", factor=5)
-
-# 4. Plot
-warped.plot(
-    scalars="von_Mises_Stress",
-    cmap="turbo",
-    show_edges=True,
-    scalar_bar_args={'title': 'Stress [MPa]'}
-)
+mesh = pv.read("data/beam_stress.vtu")
+mesh["utilisation"] = mesh["S_MISES"] / 235.0      # fields are numpy arrays
+mesh.plot(scalars="utilisation", cmap="viridis", show_edges=True)
 ```
 
----
-
-# Comparison: Tools Overview
-
-| Tool | Purpose | Complexity | Use Case |
-|------|---------|-----------|----------|
-| **VTK** | Low-level visualization | High | Custom tools, max control |
-| **meshio** | Format conversion | Low | I/O between FEM software |
-| **PyVista** | High-level visualization | Medium | Interactive post-processing |
-
-**Recommended:** meshio + PyVista for most engineering work
+<p class="note">A field is a numpy array on the mesh. Everything you know about numpy applies.</p>
 
 ---
 
-# Integration with Qt/GUI
+# Scalars, vectors, deformation
 
-PyVista can be embedded in Qt applications:
+<div class="cols">
+<div>
 
 ```python
-from PyQt5 import QtWidgets
+# scalar field per point or per cell
+mesh["Temperature"] = t_array
+
+# deform by a vector field
+warped = mesh.warp_by_vector(
+    "U", factor=50)
+
+# cut it open
+clipped = mesh.clip("x")
+
+# isosurfaces
+iso = mesh.contour(
+    scalars="S_MISES",
+    isosurfaces=8)
+```
+
+</div>
+<div>
+
+![height:430px](../static/img/vtk/data-attributes.png)
+
+</div>
+</div>
+
+---
+
+<!-- _class: live -->
+
+# The beam, properly
+
+```python
+mesh = pv.read("data/beam_stress.vtu")
+print(mesh.array_names)
+
+p = pv.Plotter()
+p.add_mesh(mesh.warp_by_vector("U", factor=100),
+           scalars="S_MISES", cmap="viridis",
+           show_edges=True, scalar_bar_args={"title": "von Mises [MPa]"})
+p.show()
+```
+
+<!--
+Show the deformation factor first at 1, where nothing is visible, then at 100.
+Ask what the factor does to the picture and what it does to the truth. Then
+switch the colour map to jet once, to make the earlier point visible.
+-->
+
+---
+
+# When it gets big
+
+- `mesh.points = mesh.points.astype(np.float32)` halves the memory
+- `mesh.decimate(0.9)` for a surface you only need to look at
+- `inplace=True` avoids copying the whole mesh
+- Filters are lazy: chain them, then render once
+
+<p class="note">A million elements is normal. Rendering one is not the same as processing one.</p>
+
+---
+
+# Where this goes
+
+```python
 from pyvistaqt import QtInteractor
 
 class FEMViewer(QtWidgets.QMainWindow):
@@ -804,80 +515,29 @@ class FEMViewer(QtWidgets.QMainWindow):
         super().__init__()
         self.plotter = QtInteractor(self)
         self.setCentralWidget(self.plotter.interactor)
-        
-    def add_mesh(self, mesh):
-        self.plotter.add_mesh(mesh)
 ```
 
-**Build professional FEM post-processors!**
+The same plotter, embedded in a window with your own controls. That is the Qt
+block, and it is where the final assignment usually starts.
 
 ---
 
-# Real-World Applications
+# Recap
 
-**With VTK/PyVista you can:**
-- Visualize modal analysis results
-- Create interactive FEM post-processors
-- Build custom analysis tools
-- Generate publication-quality figures
-- Animate time-dependent simulations
-- Develop engineering software products
+- A figure is **Figure, Axes, Artist**. Know which one you are holding.
+- The plot follows from **the question**, not from the menu.
+- **Perceptually uniform colour maps**. Rainbow invents edges that are not there.
+- **meshio** translates, **PyVista** visualizes, **VTK** is underneath both.
+- A field on a mesh is a **numpy array**. That is the whole trick.
 
 ---
 
-# Best Practices
+<!-- _class: section -->
 
-**For FEM Visualization:**
-1. Export to **VTK formats** from solvers
-2. Use **meshio** for format conversion
-3. Use **PyVista** for interactive visualization
-4. Keep data and visualization **separated**
-5. Vectorize operations with **NumPy**
-6. Use **appropriate color maps** (perceptually uniform)
+# Next
 
----
+## Mesh visualization workshop
 
-# Resources
+<p>Live coding, then broken code to repair, then a blank page.</p>
 
-**VTK:**
-- Documentation: https://vtk.org
-- Examples: https://kitware.github.io/vtk-examples/
-
-**meshio:**
-- GitHub: https://github.com/nschloe/meshio
-- PyPI: https://pypi.org/project/meshio/
-
-**PyVista:**
-- Documentation: https://docs.pyvista.org
-- Tutorial: https://tutorial.pyvista.org
-
----
-
-# Summary: 3D Visualization
-
-**Three complementary tools:**
-1. **VTK** - Powerful foundation, industry standard
-2. **meshio** - Universal format converter
-3. **PyVista** - Pythonic interface, rapid development
-
-**Together they enable:**
-- Complete FEM post-processing workflows
-- Professional visualization applications
-- Integration with engineering simulation tools
-
-**Recommended path:** Start with PyVista, learn VTK concepts, use meshio for I/O
-
----
-
-# Overall Recap
-
-**Part I: Matplotlib**
-- Foundation for 2D plotting in Python
-- Essential for data exploration and analysis
-
-**Part II: 3D Visualization**
-- VTK for robust 3D graphics
-- meshio for format interoperability
-- PyVista for practical engineering visualization
-
-**Next Steps:** Hands-on examples with your FEM data!
+<p>Bring the beam, and your own colour map decision.</p>

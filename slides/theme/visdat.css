@@ -1,0 +1,307 @@
+/* @theme visdat */
+
+/*
+ * Slide theme for Visualisierung & Datenaufbereitung.
+ *
+ * It matches the course site: IBM Plex Sans and Mono, the same steel blue, the
+ * same restraint. Activate it with `theme: visdat` in the front matter of a
+ * deck. VS Code picks it up through .vscode/settings.json, the Marp CLI through
+ * `--theme slides/theme/visdat.css`.
+ *
+ * Layouts, set per slide with `<!-- _class: title -->`:
+ *   title     opening slide, dark background
+ *   section   divider between parts, dark background
+ *   ask       one large question for the room
+ *   live      marks a live coding block
+ * Helpers usable inside any slide:
+ *   <div class="cols">  two columns
+ *   <div class="boxes"> a row of labelled boxes
+ *   <p class="note">    a quiet aside
+ */
+
+@import 'default';
+
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+:root {
+  --vis-ink: #1b2429;
+  --vis-muted: #5c6a72;
+  --vis-accent: #145f7d;
+  --vis-accent-soft: #e7f0f4;
+  --vis-border: #dfe3e6;
+  --vis-surface: #f6f7f8;
+  --vis-dark: #16242c;
+
+  --vis-sans: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', Roboto,
+    sans-serif;
+  --vis-mono: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
+}
+
+/* ------------------------------------------------------------------ Slide */
+
+section {
+  font-family: var(--vis-sans);
+  font-size: 26px;
+  line-height: 1.5;
+  color: var(--vis-ink);
+  background: #fff;
+  padding: 60px 70px 70px;
+  justify-content: flex-start;
+}
+
+section::after {
+  font-family: var(--vis-sans);
+  font-size: 15px;
+  color: var(--vis-muted);
+}
+
+footer {
+  font-size: 15px;
+  color: var(--vis-muted);
+}
+
+/* -------------------------------------------------------------- Headings */
+
+section h1 {
+  font-size: 44px;
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--vis-ink);
+  margin: 0 0 8px;
+}
+
+/* A short accent rule under the slide title carries the colour of the course. */
+section h1::after {
+  content: '';
+  display: block;
+  width: 64px;
+  height: 3px;
+  margin-top: 18px;
+  background: var(--vis-accent);
+}
+
+section h2 {
+  font-size: 30px;
+  font-weight: 500;
+  color: var(--vis-muted);
+  margin: 26px 0 10px;
+}
+
+section h3 {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 20px 0 6px;
+}
+
+/* ----------------------------------------------------------------- Lists */
+
+section ul,
+section ol {
+  margin: 22px 0;
+  padding-left: 26px;
+}
+
+section li {
+  margin-bottom: 14px;
+}
+
+section li::marker {
+  color: var(--vis-accent);
+}
+
+section strong {
+  font-weight: 600;
+  color: var(--vis-accent);
+}
+
+section p.note {
+  color: var(--vis-muted);
+  font-size: 22px;
+}
+
+/* ------------------------------------------------------------------ Code */
+
+section code {
+  font-family: var(--vis-mono);
+  font-size: 0.88em;
+  background: var(--vis-surface);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+section pre {
+  background: var(--vis-surface);
+  border: 1px solid var(--vis-border);
+  border-radius: 8px;
+  padding: 20px 24px;
+  font-size: 22px;
+  line-height: 1.45;
+}
+
+section pre code {
+  background: none;
+  padding: 0;
+  font-size: 1em;
+}
+
+/* --------------------------------------------------------------- Content */
+
+/* Safety net: an image that would run off the slide is fitted instead. */
+section img {
+  border-radius: 8px;
+  max-width: 100%;
+  max-height: 470px;
+  object-fit: contain;
+}
+
+section table {
+  font-size: 22px;
+  border-collapse: collapse;
+}
+
+section table th {
+  background: var(--vis-surface);
+  font-weight: 600;
+  text-align: left;
+}
+
+section table th,
+section table td {
+  border: 1px solid var(--vis-border);
+  padding: 8px 14px;
+}
+
+section blockquote {
+  border-left: 3px solid var(--vis-accent);
+  background: var(--vis-accent-soft);
+  margin: 24px 0;
+  padding: 14px 22px;
+  font-size: 24px;
+}
+
+section blockquote::before,
+section blockquote::after {
+  content: none;
+}
+
+/* --------------------------------------------------------------- Helpers */
+
+section .cols {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+}
+
+section .cols > * {
+  flex: 1;
+  min-width: 0;
+}
+
+section .boxes {
+  display: flex;
+  gap: 14px;
+  align-items: stretch;
+  margin: 30px 0;
+}
+
+section .boxes > div {
+  flex: 1;
+  border: 1px solid var(--vis-border);
+  border-top: 3px solid var(--vis-accent);
+  border-radius: 6px;
+  padding: 16px 18px;
+  font-size: 21px;
+  background: #fff;
+}
+
+section .boxes b {
+  display: block;
+  font-weight: 600;
+  color: var(--vis-accent);
+  margin-bottom: 4px;
+}
+
+/* --------------------------------------------------------------- Layouts */
+
+section.title,
+section.section {
+  background: var(--vis-dark);
+  color: #fff;
+  justify-content: center;
+}
+
+section.title h1,
+section.section h1 {
+  color: #fff;
+  font-size: 52px;
+}
+
+section.title h2,
+section.section h2 {
+  color: #9fb8c4;
+  font-weight: 400;
+  margin-top: 14px;
+}
+
+section.title h1::after,
+section.section h1::after {
+  background: #4eb3d4;
+}
+
+section.title p,
+section.section p {
+  color: #c3d3db;
+  font-size: 22px;
+}
+
+section.title code,
+section.section code {
+  background: rgba(255, 255, 255, 0.1);
+  color: #d7e6ed;
+}
+
+section.title::after,
+section.section::after {
+  color: #7d97a3;
+}
+
+/* One question, large, nothing else. */
+section.ask {
+  justify-content: center;
+  background: var(--vis-accent-soft);
+}
+
+section.ask h1 {
+  font-size: 46px;
+  max-width: 22ch;
+}
+
+section.ask h1::after {
+  content: none;
+}
+
+section.ask p {
+  color: var(--vis-muted);
+  font-size: 24px;
+  margin-top: 26px;
+}
+
+/* Live coding: the slide is a cue card, not a document. */
+section.live h1::after {
+  background: #b3541e;
+}
+
+section.live::before {
+  content: 'Live';
+  position: absolute;
+  top: 34px;
+  right: 70px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #b3541e;
+  border: 1px solid #b3541e;
+  border-radius: 4px;
+  padding: 3px 10px;
+}

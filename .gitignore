@@ -39,8 +39,9 @@ pids
 # Coverage directory used by tools like istanbul
 coverage/
 
-# IDE files
-.vscode/
+# IDE files, except the project settings that make the repo work out of the box
+.vscode/*
+!.vscode/settings.json
 .idea/
 *.swp
 *.swo
