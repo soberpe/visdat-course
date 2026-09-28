@@ -8,7 +8,7 @@ title: Kickoff Assignment
 
 Welcome to the Visualization & Data Processing course! This kickoff assignment will help you set up your development environment, familiarize yourself with the course workflow, and complete your first hands-on tasks.
 
-> **Quick Reference:** The slides of lecture 1 are in `slides/01-fundamentals-and-tools-marp.md`. Open them in VS Code and use the Marp preview for a condensed overview of today's material.
+> **Quick Reference:** The [slides of lecture 1](../slides.md) give a condensed overview of today's material.
 
 ## Learning Objectives
 

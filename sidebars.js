@@ -2,6 +2,7 @@ module.exports = {
   docs: [
     'index',
     'organization',
+    'slides',
     {
       type: 'category', 
       label: 'Programming Fundamentals',

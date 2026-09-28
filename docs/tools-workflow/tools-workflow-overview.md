@@ -8,7 +8,7 @@ title: Development Tools & Workflow
 
 Modern software development relies on a robust set of tools that enable collaboration, version control, and reproducible workflows. This course emphasizes industry-standard practices that you'll encounter in professional engineering environments.
 
-> **Quick Reference:** The slides of lecture 1 are in `slides/01-fundamentals-and-tools-marp.md`. Open them in VS Code and use the Marp preview for a condensed overview and the live demos.
+> **Quick Reference:** The [slides of lecture 1](../slides.md) give a condensed overview and mark the live demos.
 
 ## Git & Version Control
 

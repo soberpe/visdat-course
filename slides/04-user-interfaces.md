@@ -1,599 +1,419 @@
 ---
 marp: true
-theme: default
+theme: visdat
 paginate: true
-size: 16:9
-style: |
-  section {
-    font-size: 26px;
-    padding: 40px 50px;
-  }
-  h1 {
-    font-size: 46px;
-    color: #2c3e50;
-    margin-bottom: 20px;
-  }
-  h2 {
-    font-size: 36px;
-    color: #34495e;
-    margin-bottom: 15px;
-  }
-  code {
-    font-size: 20px;
-  }
-  pre {
-    margin: 10px 0;
-  }
+footer: "FH OÖ Wels · Visualisierung & Datenaufbereitung"
 ---
 
-# User Interface Development
-## For Engineering Applications
+<!-- _class: title -->
 
-**Visualization and Data Analysis Course**
-Building Professional Tools with Qt and Python
+# User Interfaces
+
+## Turning your script into a tool somebody else can use
+
+Lecture 4 · Qt, PyQt6, PyVista
+
+<!--
+Three blocks. The first is short on purpose: the interesting part is blocks two
+and three, where they build something. The Qt workshop on the site is the
+homework and picks up exactly where block three stops.
+-->
 
 ---
 
-## Today's Agenda
+# Today
 
-**Block 1 (45 min)**: UI Overview
-- Why user interfaces matter in engineering
-- Historical evolution and modern landscape
-- Desktop vs Web: choosing the right approach
-- Why Qt dominates engineering software
+1. **Why an interface at all**, and desktop against web
+2. **PyQt6**: windows, layouts, signals and slots, the event loop
+3. **PyVista in Qt**: the 3D view inside your own window
 
-**Block 2 (45 min)**: PyQt6 Basics
-- Installation and minimal application
-- Layouts, widgets, and signals/slots
-- QMainWindow structure and event loop
-
-**Block 3 (45 min)**: PyVista Integration
-- Embedding 3D visualization in Qt
-- Workshop reference for hands-on practice
+<p class="note">Hands on afterwards: the Qt workshop on the course site, building an FEM viewer.</p>
 
 ---
 
-# Block 1: UI Fundamentals
+<!-- _class: ask -->
+
+# Your viewer script works perfectly. Your colleague still cannot use it. Why?
+
+<!--
+Answers: they have no Python, they do not know which file to edit, they do not
+know what to change, they broke it. All correct. A user interface is not
+decoration, it is the difference between a script and a tool.
+-->
 
 ---
 
-## Why User Interfaces Matter
+# What an interface actually buys
 
-User interfaces bridge computational power and human understanding.
+<div class="boxes">
+<div><b>Reach</b>People who know the domain but not the language can use your work.</div>
+<div><b>Speed</b>Change a parameter and see the result, instead of editing and rerunning.</div>
+<div><b>Safety</b>The interface only offers what is valid, so fewer wrong inputs reach the code.</div>
+</div>
 
-**Impact on engineering:**
-- **Accessibility**: Domain experts can use tools without programming
-- **Productivity**: Fast path from data to insights
-- **Error Prevention**: Immediate feedback prevents mistakes
-- **Collaboration**: Teams share and discuss visualizations
-- **Decision Making**: Complex data becomes understandable
-
-> A well-designed interface transforms specialized software into team tools.
+<p class="note">The first internal tool you write at a company is usually a small window around a script that already worked.</p>
 
 ---
 
-## The Evolution of User Interfaces
+# Where this comes from
 
-**1960s-1970s: Command Line Era**
-- Batch processing on mainframes
-- Printed output only
-- Engineers submit jobs and wait
+![height:390px](../static/img/user-interfaces/ui-evolution-timeline.png)
 
-**1980s: Desktop Revolution**
-- Xerox Alto, Macintosh, Windows
-- First CAD systems (AutoCAD, CATIA)
-- Direct interaction with visual data
-
-**1990s-2000s: Native Applications**
-- MFC, Win32, .NET Windows Forms
-- MATLAB, ParaView
-- Platform-specific, maximum performance
+From batch jobs on a mainframe, through the desktop era and native CAD, to the
+browser. Engineering software sat on the desktop the whole time, for one reason:
+performance on large models.
 
 ---
 
-## The Evolution (continued)
+# Desktop and web are different architectures
 
-**2010s: The Web Era**
-- WebGL, Three.js for browser-based 3D
-- Cloud computing + web interfaces
-- Universal access, no installation
-- Jupyter notebooks: code + visualization
+![height:380px](../static/img/user-interfaces/desktop-vs-web-architecture.png)
 
-**Today: Hybrid Approaches**
-- Desktop for performance (millions of elements)
-- Web for collaboration and review
-- Python frameworks bridge both worlds
-- Many products use both!
+<p class="note">Desktop: one process, direct access to the GPU. Web: a browser, a server, and a connection in between.</p>
 
 ---
 
-## Desktop vs Web: Architecture
+# Which one, when
 
-**Desktop Applications:**
-- Native code with direct hardware access
-- Maximum 3D rendering performance
-- OpenGL/Vulkan integration
-- Works offline
-- Platform-specific compilation
+<div class="cols">
+<div>
 
-**Web Applications:**
-- **Frontend**: HTML/CSS/JavaScript (browser)
-- **Backend**: Python/Node.js/Go (server)
-- **API**: HTTP/WebSocket connection
-- Universal access, automatic updates
-- Browser sandbox limits performance
+**Desktop**
 
----
+Millions of cells, maximum rendering performance, offline, access to CAD files
+and hardware.
 
-## When to Choose Desktop
+ParaView, MATLAB, every CAD system.
 
-**Choose Desktop (Qt/Native) when:**
-- Working with very large datasets (millions of cells)
-- Requiring maximum 3D rendering performance
-- Needing offline capability
-- Integrating with system resources (CAD formats, GPU)
-- Building tools for daily use by individual engineers
+</div>
+<div>
 
-**Examples:**
-- ParaView (FEM postprocessing)
-- Autodesk Maya (3D modeling)
-- MATLAB (numerical computing)
-- All major CAD software
+**Web**
+
+Many occasional users, sharing and review, no installation, central deployment.
+
+Dash, Streamlit, result viewers for a team.
+
+</div>
+</div>
+
+> In practice both: the desktop tool for the person doing the work, a web view
+> for everyone who only needs to look.
 
 ---
 
-## When to Choose Web
+<!-- _class: section -->
 
-**Choose Web when:**
-- Enabling team collaboration and sharing
-- Supporting occasional use by many users
-- Simplifying deployment across organizations
-- Integrating with cloud computing
-- Building dashboards and monitoring
+# PyQt6
 
-**Examples:**
-- Plotly Dash (data science dashboards)
-- Streamlit (ML model interfaces)
-- Jupyter notebooks (collaborative analysis)
-- Web-based viewers for results review
-
-**Hybrid**: Desktop for intensive work, web for collaboration!
+## The framework behind most engineering software you know
 
 ---
 
-# Block 2: PyQt6 Basics
+# You have used Qt all day without noticing
+
+![height:300px](../static/img/user-interfaces/qt-applications-examples.png)
+
+ParaView, Maya, VLC, Audacity, the dashboard in a car, the terminal on an
+agricultural machine. Qt has been in production for over thirty years, it is
+genuinely cross platform, and it talks to OpenGL directly.
 
 ---
 
-## Why Qt for Engineering?
+# PyQt6 or PySide6
 
-Qt is the de facto standard for professional desktop applications.
+<div class="cols">
+<div>
 
-**Powers:**
-- **Scientific**: ParaView, Mathematica, LabPlot, QtiPlot
-- **Engineering**: Autodesk Maya, Dassault Systèmes tools
-- **Media**: VLC, Audacity, OBS Studio
+**PyQt6**
 
-**Why Qt dominates:**
-1. Native performance with direct hardware access
-2. Over 25 years of production use
-3. Comprehensive (UI, networking, files, SQL, XML...)
-4. True cross-platform (Windows, macOS, Linux)
-5. Professional support and licensing available
-6. Seamless OpenGL/Vulkan for 3D graphics
+GPL or commercial licence. What we use here.
 
----
+</div>
+<div>
 
-## Brief Qt History
+**PySide6**
 
-**Origins**: Created 1991 by Norwegian programmers Haavard Nord and Eirik Chambe-Eng for ultrasound imaging project.
+The Qt Company's own bindings, LGPL.
 
-**Key Milestones:**
-- 1995: First public release (Qt 0.90)
-- 2000: Released under GPL → open-source adoption
-- 2008: Acquired by Nokia (Qt in mobile phones)
-- 2011: Sold to Digia (later Qt Company)
-- 2020: Qt 6 with modern C++ and better Python support
+</div>
+</div>
 
-**Philosophy**: "Write once, compile anywhere" with native look and feel on each platform.
-
----
-
-## Python + Qt = Productivity
-
-**PyQt6** and **PySide6**: Python bindings for Qt
-- PyQt6: GPL/Commercial licensing
-- PySide6: Qt's official bindings, LGPL
-- Nearly identical APIs, interchangeable
-
-**Why perfect for engineering:**
-- Python ecosystem: NumPy, Pandas, Matplotlib, **PyVista**
-- Rapid development: hours instead of weeks
-- Scientific computing focus
-- Industry relevance: internal tools at engineering companies
-- Learning path: concepts transfer to C++ Qt if needed
-
-**PyVista Connection:**
-PyVista uses Qt for interactive windows - you're already using it!
-
----
-
-## Installation
-
-Install PyQt6 in your virtual environment:
+The APIs are close to identical. Code written against one usually runs against
+the other after changing the import.
 
 ```bash
-# Activate virtual environment
-.venv\Scripts\activate  # Windows
-# source .venv/bin/activate  # Linux/macOS
-
-# Install PyQt6
-pip install PyQt6
-
-# For 3D visualization integration
-pip install pyvista pyvistaqt
+pip install PyQt6 pyvistaqt
 ```
 
-**Best practice**: Always use virtual environments to isolate dependencies and prevent version conflicts.
+<p class="note">PyVista already opens its windows through Qt. You have been using it since the visualization block.</p>
 
 ---
 
-## Minimal Application
+<!-- _class: live -->
 
-Every PyQt6 application follows this pattern:
+# The smallest application that works
 
 ```python
 from PyQt6.QtWidgets import QApplication, QWidget
 
-# 1. Create application object
-app = QApplication([])
+app = QApplication([])          # 1. the application object
 
-# 2. Create main window
-window = QWidget()
-window.setWindowTitle("My First Qt App")
+window = QWidget()              # 2. a window
+window.setWindowTitle("First Qt App")
 window.resize(400, 300)
 
-# 3. Show window
-window.show()
-
-# 4. Start event loop
-app.exec()
+window.show()                   # 3. show it
+app.exec()                      # 4. hand control to the event loop
 ```
 
-Run it: `python minimal_app.py`
+<!--
+Type and run it. Then delete app.exec() and run again: the window flashes and
+disappears. That single experiment explains the event loop better than a
+paragraph.
+-->
 
 ---
 
-## Layouts: Responsive Design
-
-Qt uses layouts instead of manual positioning:
+# Layouts, not coordinates
 
 ```python
-from PyQt6.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout,
-    QPushButton, QLabel, QLineEdit
-)
-
-app = QApplication([])
-window = QWidget()
-
-# Create vertical layout
 layout = QVBoxLayout()
 layout.addWidget(QLabel("Enter name:"))
 layout.addWidget(QLineEdit())
 layout.addWidget(QPushButton("Submit"))
-
 window.setLayout(layout)
-window.show()
-app.exec()
 ```
 
-**Layout types**: VBox (vertical), HBox (horizontal), Grid, Form
+`QVBoxLayout`, `QHBoxLayout`, `QGridLayout`, `QFormLayout`
 
-Automatically handles resizing, fonts, platform differences!
+> Never position a widget by pixel. A layout survives a resize, a different
+> font size, a different operating system and a different screen. Fixed
+> coordinates survive none of those.
 
 ---
 
-## Signals and Slots
-
-Qt's distinctive feature: loose coupling between components.
-
-**Concept:**
-- **Signal**: Event notification (click, value changed)
-- **Slot**: Function that responds to signal
-- **Connection**: Link them at runtime
+# Signals and slots
 
 ```python
-# Connect button click to function
-button = QPushButton("Click Me")
-button.clicked.connect(lambda: print("Clicked!"))
+button = QPushButton("Load mesh")
+button.clicked.connect(self.open_file)      # signal → slot
 
-# Can connect multiple slots
-button.clicked.connect(update_display)
-button.clicked.connect(save_state)
-
-# Can disconnect later
-button.clicked.disconnect(save_state)
+slider.valueChanged.connect(self.update_scale)
+combo.currentTextChanged.connect(self.set_field)
 ```
 
-**Benefits**: Decoupled, flexible, thread-safe
+<div class="boxes">
+<div><b>Signal</b>Something happened. The widget announces it and does not care who listens.</div>
+<div><b>Slot</b>A function that reacts. It does not care who called it.</div>
+<div><b>Connection</b>Made at runtime, can be undone, can be many to many.</div>
+</div>
+
+<p class="note">This is what keeps the interface and the computation separable, and therefore testable.</p>
 
 ---
 
-## QMainWindow Structure
+<!-- _class: ask -->
 
-`QMainWindow` provides structure for complex applications:
+# You load a 200 MB mesh and the whole window freezes for five seconds. What happened?
+
+<!--
+The answer is the event loop: your function is running inside it, so nothing
+gets repainted until you return. Let them arrive at it. Then the rule: anything
+slow belongs in a QThread, and they will meet this in the final project.
+-->
+
+---
+
+# The event loop
 
 ```python
-from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout
-from PyQt6.QtGui import QAction
+app.exec()          # from here on, Qt waits for events
+print("closed")     # runs only after the last window closes
+```
 
+1. Wait for an event: click, key, timer, signal
+2. Send it to the connected slot
+3. Repaint what changed
+4. Repeat
+
+> Your code runs **inside** this loop. While your function is busy, nothing is
+> repainted. That is the freeze, and `QThread` is the answer.
+
+---
+
+# QMainWindow gives you the frame
+
+```python
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Application")
-        
-        # Central widget (required)
-        central = QWidget()
+        self.setWindowTitle("FEM Viewer")
+
+        central = QWidget()                 # the central widget is mandatory
         self.setCentralWidget(central)
-        layout = QVBoxLayout()
-        central.setLayout(layout)
-        
-        # Menu bar
-        menu = self.menuBar()
-        file_menu = menu.addMenu("&File")
-        exit_action = QAction("E&xit", self)
-        exit_action.triggered.connect(self.close)
-        file_menu.addAction(exit_action)
+
+        file_menu = self.menuBar().addMenu("&File")
+        open_action = QAction("&Open...", self)
+        open_action.triggered.connect(self.open_mesh)
+        file_menu.addAction(open_action)
 ```
+
+Menu bar, tool bar, status bar and dock widgets come with it.
 
 ---
 
-## Parent-Child Hierarchy
-
-Qt uses parent-child trees for automatic memory management:
+# Parent and child
 
 ```python
-window = QMainWindow()  # No parent
-
-# Button's parent is window
 button = QPushButton("Click", parent=window)
-
-# When window is deleted, button is automatically deleted
 ```
 
-**Key principle**: Parent deletion → all children deleted
-- Prevents memory leaks
-- Simplifies resource management
-- Mirrors visual hierarchy
+Every widget has a parent, and deleting the parent deletes its children. The
+tree of widgets is also the tree that manages the memory.
+
+<p class="note">This is why Qt code rarely deletes anything by hand, and why a widget without a parent tends to disappear unexpectedly.</p>
 
 ---
 
-## The Event Loop
+<!-- _class: section -->
 
-Qt applications are **event-driven**, not procedural:
+# PyVista inside Qt
+
+## The 3D view in your own window
+
+---
+
+# QtInteractor
 
 ```python
-app = QApplication([])
-window = QMainWindow()
-window.show()
-
-# Event loop starts here - program waits
-app.exec()
-
-# Only executes after window closes
-print("Application closed")
-```
-
-**The loop:**
-1. Wait for events (clicks, keys, timers, signals)
-2. Dispatch to handlers
-3. Update UI
-4. Repeat until exit
-
-**Implication**: Long computations block UI → use `QThread`!
-
----
-
-# Block 3: PyVista Integration
-
----
-
-## Why Embed PyVista in Qt?
-
-Standalone PyVista is great for quick visualization, but production tools need:
-
-- **Custom controls**: Sliders, buttons for parameters
-- **Data management**: File dialogs, forms
-- **Multiple views**: Split screens, synchronized cameras
-- **Integration**: Combine 3D with tables, plots
-- **Professional UI**: Menus, toolbars, consistent layout
-
-**Qt provides the framework, PyVista handles 3D.**
-
----
-
-## Basic Embedding: QtInteractor
-
-```python
-from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout
 from pyvistaqt import QtInteractor
-import pyvista as pv
-import sys
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("PyVista in Qt")
-        
         central = QWidget()
         self.setCentralWidget(central)
-        layout = QVBoxLayout()
-        central.setLayout(layout)
-        
-        # Create PyVista Qt widget
-        self.plotter = QtInteractor(central)
+        layout = QVBoxLayout(central)
+
+        self.plotter = QtInteractor(central)     # a PyVista plotter as a widget
         layout.addWidget(self.plotter.interactor)
-        
-        # Add geometry
-        mesh = pv.Sphere()
-        self.plotter.add_mesh(mesh, color='lightblue')
-        self.plotter.reset_camera()
+
+        self.plotter.add_mesh(pv.Sphere(), color="lightblue")
 ```
+
+The plotter you already know, this time as a widget you can place anywhere.
 
 ---
 
-## Cleanup Pattern
-
-Always clean up VTK resources properly:
+# Always clean up
 
 ```python
 def closeEvent(self, event):
-    """Override to prevent VTK errors on close"""
     if self.plotter:
         self.plotter.close()
         self.plotter = None
     event.accept()
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec())
 ```
 
-**Without this**: Harmless but annoying error messages when closing.
-**With this**: Clean shutdown, no errors.
+VTK holds resources that Qt knows nothing about. Without this you get a wall of
+error messages on exit. They are harmless, and they make your tool look broken
+to whoever is using it.
 
 ---
 
-## Adding Interactive Controls
-
-Combine PyVista with Qt widgets for complete control:
+# Controls beside the view
 
 ```python
-# Horizontal layout: controls | 3D view
 main_layout = QHBoxLayout()
 
-# Control panel
-controls = QGroupBox("Controls")
-controls_layout = QVBoxLayout()
-controls.setLayout(controls_layout)
-
-# Resolution slider
-res_slider = QSlider(Qt.Orientation.Horizontal)
-res_slider.setRange(5, 100)
-res_slider.valueChanged.connect(self.update_mesh)
-controls_layout.addWidget(res_slider)
+controls = QGroupBox("Controls")            # left: the panel
+controls_layout = QVBoxLayout(controls)
+slider = QSlider(Qt.Orientation.Horizontal)
+slider.setRange(5, 100)
+slider.valueChanged.connect(self.update_mesh)
+controls_layout.addWidget(slider)
 
 main_layout.addWidget(controls)
-
-# PyVista 3D view
-self.plotter = QtInteractor(central)
-main_layout.addWidget(self.plotter.interactor, stretch=3)
+main_layout.addWidget(self.plotter.interactor, stretch=3)   # right: the 3D view
 ```
 
-**Pattern**: Controls on left/top, 3D view takes remaining space.
+<p class="note"><code>stretch</code> decides who gets the space when the window grows.</p>
 
 ---
 
-## Dynamic Updates
+<!-- _class: live -->
 
-Update mesh when slider changes:
+# Make the slider do something
 
 ```python
 def update_mesh(self, value):
-    """Called when slider moves"""
-    # Create new mesh with resolution
-    self.mesh = pv.Sphere(
-        theta_resolution=value,
-        phi_resolution=value
-    )
-    
-    # Update display
+    self.mesh = pv.Sphere(theta_resolution=value, phi_resolution=value)
     self.plotter.clear()
-    self.plotter.add_mesh(
-        self.mesh,
-        color='lightblue',
-        show_edges=True
-    )
+    self.plotter.add_mesh(self.mesh, color="lightblue", show_edges=True)
     self.plotter.reset_camera()
 ```
 
-**Result**: Drag slider → mesh updates immediately!
+Drag the slider and watch the sphere change. Then drag it fast.
+
+<!--
+Dragging fast shows the flicker and the cost of clear() plus add_mesh() on every
+event. That sets up the next slide, and it is a much better motivation than
+stating the rule first.
+-->
 
 ---
 
-## Efficient Geometry Updates
+# Updating geometry without the flicker
 
-For animations or frequent updates, modify points in-place:
+<div class="cols">
+<div>
+
+**Rebuild**
 
 ```python
-def animate_deformation(self):
-    """Update mesh geometry without full redraw"""
-    # Update mesh points directly
-    self.mesh.points = new_points
-    
-    # Efficient render (no clear/add_mesh)
-    self.plotter.render()
+self.plotter.clear()
+self.plotter.add_mesh(...)
 ```
 
-**Use `display_mesh()` for**: Field changes, major updates
-**Use `plotter.render()` for**: Geometry-only updates, animations
+New field, new mesh, new scalar bar.
 
-This prevents scalar bar flickering!
+</div>
+<div>
 
----
+**Move the points**
 
-## Complete Application Example
+```python
+self.mesh.points = new_points
+self.plotter.render()
+```
 
-**Workshop available online with step-by-step guide:**
+Same mesh, different shape. Animations.
 
-Navigate to: **Course Website → User Interfaces → Qt Workshop**
+</div>
+</div>
 
-**Build a professional FEM viewer:**
-- File loading with QFileDialog
-- Field selection from mesh data
-- Deformation visualization with sliders
-- Animation using QTimer
-- Screenshot export
-
-**Three progressive blocks:**
-1. Application skeleton and file I/O
-2. Interactive controls with signals/slots
-3. Advanced features (deformation, animation)
-
-Work through as homework to practice today's concepts.
+<p class="note">The second keeps the scalar bar and the camera, so nothing jumps while an animation runs.</p>
 
 ---
 
-## Resources
+# Recap
 
-**Documentation:**
-- [Qt Documentation](https://doc.qt.io/) - C++ reference (concepts transfer)
-- [PyQt6 Docs](https://www.riverbankcomputing.com/static/Docs/PyQt6/)
-- [PySide6 Docs](https://doc.qt.io/qtforpython/) - Qt's official Python bindings
-- [PyVista](https://docs.pyvista.org/) - 3D visualization
-
-**Course Materials:**
-- [User Interface Overview](https://username.github.io/visdat-course/user-interfaces/ui-overview)
-- [PyQt6 Basics](https://username.github.io/visdat-course/user-interfaces/pyqt-basics)
-- [PyVista-Qt Integration](https://username.github.io/visdat-course/user-interfaces/pyvista-qt-integration)
-- [Workshop Guide](https://username.github.io/visdat-course/user-interfaces/qt-workshop)
+- An interface makes a script into something **another person** can operate
+- **Layouts**, never coordinates
+- **Signals and slots** keep interface and computation apart
+- Your code runs **inside the event loop**, so slow work freezes the window
+- **QtInteractor** puts the PyVista view into your own window, and it needs
+  cleaning up
 
 ---
 
-## Summary and Next Steps
+<!-- _class: section -->
 
-**Topics covered today:**
-✓ Why user interfaces matter in engineering
-✓ Historical evolution and modern landscape  
-✓ Desktop vs Web architectures
-✓ Qt fundamentals (signals, slots, widgets, layouts)
-✓ PyQt6 + PyVista integration
+# Next
 
-**Workshop materials:**
-Access the complete hands-on Qt workshop at:
-**Course Website → User Interfaces → Qt Workshop**
+## Qt workshop
 
-**Questions?**
+<p>Build an FEM viewer: file dialog, field selection, deformation, screenshot export.</p>
+
+<p>Course site → User Interfaces → Qt Workshop</p>

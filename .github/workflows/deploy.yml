@@ -38,6 +38,17 @@ jobs:
         run: npm ci
       - name: Build website
         run: npm run build
+      - name: Render slide decks
+        run: |
+          npx --yes @marp-team/marp-cli@4 \
+            --input-dir slides \
+            --output build/decks \
+            --theme slides/theme/visdat.css \
+            --html
+          # In the repository the decks reference images as ../static/img/...,
+          # which is where they live. On the published site the contents of
+          # static/ are served from the root, so the path is one level shorter.
+          sed -i 's|\.\./static/img/|../img/|g' build/decks/*.html
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Upload artifact

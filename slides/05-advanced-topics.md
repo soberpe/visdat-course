@@ -1,109 +1,75 @@
 ---
 marp: true
-theme: default
+theme: visdat
 paginate: true
-size: 16:9
-style: |
-  section {
-    font-size: 26px;
-    padding: 40px 50px;
-  }
-  h1 {
-    font-size: 46px;
-    color: #2c3e50;
-    margin-bottom: 20px;
-  }
-  h2 {
-    font-size: 36px;
-    color: #34495e;
-    margin-bottom: 15px;
-  }
-  code {
-    font-size: 20px;
-  }
-  pre {
-    margin: 10px 0;
-  }
-  footer {
-    font-size: 16px;
-  }
+footer: "FH OÖ Wels · Visualisierung & Datenaufbereitung"
 ---
 
-# Advanced Topics
-## Build Systems & Parallelization
+<!-- _class: title -->
 
-**Visualization and Data Analysis Course**
-Cross-Platform Development & Parallel Computing
+# Build Systems & Parallelization
+
+## Why installing a package compiles C++, and why your script uses one core
+
+Lecture 5 · CMake, threading, multiprocessing, Numba
+
+<!--
+Last lecture before the project phase. Two topics that look unrelated and are
+not: both are about what happens underneath the Python you write. After this,
+the final assignment.
+-->
 
 ---
 
-## Today's Agenda
+# Today
 
-**Input (45 min)**: Advanced Topics
-- CMake & Build Systems (awareness level)
-- Parallelization & Concurrency
-- Python GIL and threading
-- Multiprocessing & Numba
-
-**Practice (90 min)**: Qt Workshop
-- Work on FEM Viewer exercises
-- Individual progress on interactive applications
-
-**Assignment (15 min)**: Final Project
-- Requirements and deliverables
-- Timeline and grading criteria
+1. **Build systems**: what CMake does, and why you meet it as a Python user
+2. **Parallelization**: the GIL, and the four ways around it
+3. **Final assignment**: scope, deliverables, dates
 
 ---
 
-# Part 1: CMake & Build Systems
+<!-- _class: section -->
 
-## Why Build Systems?
+# Part 1
+
+## Build systems and CMake
 
 ---
 
-## The Compilation Problem
+<!-- _class: ask -->
 
-Manual compilation becomes unmaintainable:
+# Why does `pip install` sometimes take ten minutes and print C++ errors?
+
+<!--
+Because there is no wheel for their platform, so pip builds from source, and
+that build is driven by CMake. This is the honest reason a Python course spends
+half an hour on build systems: they will hit it, and the error messages are
+unreadable without knowing what is happening.
+-->
+
+---
+
+# The problem a build system solves
+
+One file is easy:
 
 ```bash
-g++ -c src/main.cpp -o build/main.o -I include
-g++ -c src/processor.cpp -o build/processor.o -I include  
-g++ -c src/utils.cpp -o build/utils.o -I include
-g++ -c src/solver.cpp -o build/solver.o -I include
-g++ -c src/io.cpp -o build/io.o -I include
-...
-g++ build/*.o -o app -lopencv -leigen3
+g++ main.cpp -O2 -std=c++17 -o app
 ```
 
-**Problems:**
-- Tedious for large projects
-- Platform-specific compiler flags
-- Dependency management
-- Incremental builds
+Two hundred files, across three platforms, against five libraries, half of them
+only rebuilt when their inputs changed, is not.
+
+<p class="note">The build system decides what to compile, in which order, with which flags, and skips what has not changed.</p>
 
 ---
 
-## What is CMake?
+# CMake, minimal
 
-**CMake** = Cross-platform Make
+<div class="cols">
+<div>
 
-Not a build system itself, but a **build system generator**:
-
-```
-CMakeLists.txt → CMake → Makefile/VS Project → Build Tool → Executable
-```
-
-**Abstracts platform differences:**
-- Linux: generates Makefiles
-- Windows: generates Visual Studio solutions
-- macOS: generates Xcode projects
-- Any: generates Ninja build files
-
----
-
-## Basic CMake Example
-
-**Project structure:**
 ```
 my_project/
 ├── CMakeLists.txt
@@ -114,689 +80,440 @@ my_project/
     └── calculator.cpp
 ```
 
-**CMakeLists.txt:**
+</div>
+<div>
+
 ```cmake
 cmake_minimum_required(VERSION 3.10)
 project(Calculator VERSION 1.0)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(calculator src/main.cpp src/calculator.cpp)
-target_include_directories(calculator PRIVATE include)
+add_executable(calculator
+    src/main.cpp
+    src/calculator.cpp)
+
+target_include_directories(
+    calculator PRIVATE include)
 ```
+
+</div>
+</div>
+
+CMake does not build. It **generates** the build: a Makefile on Linux, a Visual
+Studio solution on Windows, Ninja anywhere.
 
 ---
 
-## Building with CMake
+# Out of source, always
 
 ```bash
-# Create build directory (out-of-source build)
-mkdir build
-cd build
+mkdir build && cd build
 
-# Generate build files
-cmake ..
-
-# Build the project
-cmake --build .
-
-# Run the executable
-./calculator
+cmake ..              # configure and generate
+cmake --build .       # compile
+./calculator          # run
 ```
 
-**Key concept:** Always build in separate `build/` directory!
+Everything generated lands in `build/`, which stays out of version control.
+Delete the folder and you are back to a clean state.
+
+<p class="note">The same reason your <code>.venv</code> is not in git.</p>
 
 ---
 
-## CMake with External Libraries
+# External libraries
 
 ```cmake
-cmake_minimum_required(VERSION 3.10)
-project(FEMSolver)
-
-set(CMAKE_CXX_STANDARD 17)
-
-# Find required packages
-find_package(OpenCV REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(VTK REQUIRED)
 
 add_executable(fem_solver src/main.cpp src/solver.cpp)
 
-# Link libraries
-target_link_libraries(fem_solver 
-    ${OpenCV_LIBS}
+target_link_libraries(fem_solver
     Eigen3::Eigen
-    ${VTK_LIBRARIES}
-)
+    ${VTK_LIBRARIES})
 ```
 
----
-
-## When You Encounter CMake
-
-### As a Python User:
-
-1. **Installing packages from source:**
-   ```bash
-   pip install opencv-python  # May use CMake internally
-   pip install scipy          # Compiled extensions
-   ```
-
-2. **Creating Python C++ extensions:**
-   ```cmake
-   find_package(pybind11 REQUIRED)
-   pybind11_add_module(fast_solver src/bindings.cpp)
-   ```
-   Then use in Python:
-   ```python
-   import fast_solver
-   result = fast_solver.optimize(data)
-   ```
+`find_package` is where most build failures happen: the library is not
+installed, or it is installed somewhere CMake does not look.
 
 ---
 
-## CMake: Key Takeaways
+# Where you meet CMake
 
-1. **Automates compilation** for large C++ projects
-2. **Cross-platform** - same CMakeLists.txt works everywhere
-3. **Industry standard** - used by OpenCV, VTK, Blender, etc.
-4. **You'll encounter it** when:
-   - Building C++ projects
-   - Installing Python packages from source
-   - Creating Python extensions for performance
+<div class="cols">
+<div>
 
-**For Python-focused work:** Understanding basic concepts is sufficient. Deep expertise needed only when building complex C++ projects.
+**Installing**
 
----
+```bash
+pip install scipy
+```
 
-# Part 2: Parallelization
+No wheel for your platform means pip compiles, and CMake runs.
 
-## Making Your Code Faster
+</div>
+<div>
 
----
+**Extending**
 
-## Why Parallelization?
+```cmake
+find_package(pybind11 REQUIRED)
+pybind11_add_module(
+    fast_solver src/bindings.cpp)
+```
 
-Modern computers have multiple CPU cores:
-- Desktop: 4-16 cores typical
-- Workstation: 16-64 cores
-- Server: 64-256+ cores
+```python
+import fast_solver
+fast_solver.optimize(data)
+```
 
-**Problem:** Single-threaded Python uses only ONE core!
+</div>
+</div>
 
-**Solution:** Parallelization to utilize all cores
-
-**Example:** Processing 1000 images
-- Sequential: 10 minutes
-- Parallel (8 cores): ~1.3 minutes
-
----
-
-## Concurrency vs. Parallelism
-
-**Concurrency:**
-Multiple tasks making progress (not necessarily simultaneously)
-
-**Parallelism:**
-Multiple tasks executing simultaneously on different cores
-
-**Analogy:**
-- **Concurrency:** One chef cooking multiple dishes, switching between them
-- **Parallelism:** Multiple chefs each cooking different dishes simultaneously
+<p class="note">The second is how you move a hot loop out of Python when Numba is not enough.</p>
 
 ---
 
-## The Python GIL Problem
+<!-- _class: section -->
 
-**GIL** = Global Interpreter Lock
+# Part 2
 
-**What it does:**
-Only ONE thread can execute Python bytecode at a time
-
-**Why it exists:**
-- Simplifies memory management
-- Makes Python easier to implement
-- Protects internal data structures
-
-**Impact:**
-✗ Python threads DO NOT provide parallel speedup for CPU-bound tasks!
+## Parallelization
 
 ---
 
-## GIL Demonstration
+<!-- _class: ask -->
+
+# Your script runs for twenty minutes at 12 percent CPU. You have eight cores. Where are the other seven?
+
+<!--
+Let them guess. The answer is the GIL for CPU work, or waiting on I/O. 12
+percent of eight cores is roughly one core, which is the signature of both.
+Distinguishing the two cases is the whole content of this block.
+-->
+
+---
+
+# Two words that get mixed up
+
+<div class="boxes">
+<div><b>Concurrency</b>Several tasks make progress. One chef, several pots, switching between them.</div>
+<div><b>Parallelism</b>Several tasks run at the same instant. Several chefs, one pot each.</div>
+</div>
+
+Concurrency helps when you are **waiting**. Parallelism helps when you are
+**computing**. Choosing the wrong one is why speedups do not appear.
+
+---
+
+# The GIL
+
+**Global Interpreter Lock**: only one thread executes Python bytecode at a time.
+
+<div class="cols">
+<div>
+
+**Why it exists**
+
+It makes memory management simple and the interpreter fast for single threaded
+code, which is most code.
+
+</div>
+<div>
+
+**What it costs**
+
+Python threads give you **no speedup at all** for pure Python computation. Eight
+threads, one core's worth of work.
+
+</div>
+</div>
+
+---
+
+<!-- _class: live -->
+
+# See it yourself
 
 ```python
 import threading, time
 
 def cpu_work():
-    total = 0
-    for i in range(10_000_000):
-        total += i * i
-    return total
+    return sum(i * i for i in range(10_000_000))
 
-# Sequential
-start = time.time()
-cpu_work()
-cpu_work()
-print(f"Sequential: {time.time() - start:.2f}s")
+t0 = time.perf_counter(); cpu_work(); cpu_work()
+print(f"sequential: {time.perf_counter() - t0:.2f}s")
 
-# Multi-threaded (still limited by GIL!)
-start = time.time()
-t1 = threading.Thread(target=cpu_work)
-t2 = threading.Thread(target=cpu_work)
-t1.start(); t2.start()
-t1.join(); t2.join()
-print(f"Threaded: {time.time() - start:.2f}s")  # Same time!
+t0 = time.perf_counter()
+ts = [threading.Thread(target=cpu_work) for _ in range(2)]
+[t.start() for t in ts]; [t.join() for t in ts]
+print(f"threaded:   {time.perf_counter() - t0:.2f}s")
 ```
+
+<!--
+The two numbers come out nearly identical, sometimes the threaded one is
+slower. Nothing convinces like watching it. Have the task manager open on the
+second screen so they see one core at 100 percent.
+-->
 
 ---
 
-## Threading: When It Works
+# When threading does work
 
-**Good for I/O-bound tasks:**
-- Network requests
-- File operations
-- Database queries
-- User input
+<div class="cols">
+<div>
 
-During I/O, GIL is released → other threads can run
+**Waiting**
+
+Network requests, reading files, database queries. The GIL is released while
+you wait, so threads overlap.
+
+</div>
+<div>
+
+**C code that releases the GIL**
 
 ```python
-import threading, requests
-
-urls = ["https://api.example.com/data1", "https://api.example.com/data2", ...]
-
-def download(url):
-    response = requests.get(url)
-    save_data(response.content)
-
-threads = [threading.Thread(target=download, args=(url,)) for url in urls]
-for t in threads: t.start()
-for t in threads: t.join()  # Much faster!
+solve = factorized(A)          # scipy, C
+X = Parallel(prefer="threads")(
+    delayed(compute_column)(solve, B, i)
+    for i in range(n))
 ```
 
----
+Measured: **2.44x**, with no pickling cost.
 
-## Thread Synchronization
+</div>
+</div>
 
-**Problem:** Multiple threads accessing shared data → race conditions
-
-**Solution:** Locks (mutexes)
-
-```python
-import threading
-
-class BankAccount:
-    def __init__(self):
-        self.balance = 1000
-        self.lock = threading.Lock()  # Protection
-    
-    def deposit(self, amount):
-        with self.lock:  # Acquire lock
-            current = self.balance
-            current += amount
-            self.balance = current
-        # Lock automatically released
-
-account = BankAccount()
-# Multiple threads can safely deposit
-```
+<p class="note">NumPy, SciPy and VTK spend most of their time in C, where the GIL is not held. That is why they parallelize better than you expect.</p>
 
 ---
 
-## Processes vs. Threads
-
-| Aspect | Threads | Processes |
-|--------|---------|-----------|
-| **GIL Impact** | ✗ Limited by GIL | ✓ No GIL |
-| **Memory** | Shared | Separate |
-| **Overhead** | Low | Higher |
-| **Data Sharing** | Easy | Complex |
-| **Best For** | I/O-bound | CPU-bound |
-
-**Key point:** For CPU-intensive work, use **multiprocessing**!
-
----
-
-## Multiprocessing in Python
-
-Each process has its own Python interpreter → no GIL limitation!
+# Multiprocessing: a new interpreter per core
 
 ```python
 import multiprocessing as mp
-import numpy as np
 
-def expensive_computation(data_chunk):
-    """Heavy computation - benefits from multiprocessing"""
-    return np.sum(np.sin(data_chunk * np.arange(1000)))
-
-# Split data into chunks
-data = np.random.rand(8000, 100)
-chunks = np.array_split(data, 8)
-
-# Parallel processing
-with mp.Pool(processes=8) as pool:
-    results = pool.map(expensive_computation, chunks)
-# 8x speedup possible!
-```
-
----
-
-## Real-World Example: Eigenvalues
-
-**Problem:** Compute eigenvalues for many matrices
-
-Each matrix computation is independent → **perfect for parallelization**!
-
-**Application:** Parameter studies in structural dynamics
-
-```python
 def compute_eigenvalues(matrix):
-    eigenvalues = np.linalg.eigvals(matrix)
-    return np.sort(np.abs(eigenvalues))[::-1]
+    return np.sort(np.abs(np.linalg.eigvals(matrix)))[::-1]
 
-if __name__ == '__main__':
+if __name__ == "__main__":                 # required on Windows
     matrices = [np.random.rand(200, 200) for _ in range(80)]
-    
-    # Parallel computation
     with mp.Pool(processes=8) as pool:
         results = pool.map(compute_eigenvalues, matrices)
 ```
 
-**Measured speedup:** 2.88x on 8 cores (80 matrices)
+No shared GIL, because there is no shared interpreter. The price: every input
+and every result is pickled and copied between processes.
 
 ---
 
-## Advanced: Threading with C Extensions
+# Why the speedup is 2.88x and not 8x
 
-**Special case:** Threading CAN work for CPU-bound tasks when C/Fortran extensions release the GIL!
+<div class="cols">
+<div>
 
-```python
-from scipy.sparse.linalg import factorized
-from joblib import Parallel, delayed
+**Where it goes**
 
-def compute_column(solve_func, B, col_idx):
-    return solve_func(B[:, col_idx].toarray().ravel())
+Process startup, pickling the matrices, copying the results back, and the part
+of the program that stays serial.
 
-# Factorize once, solve columns with threading
-solve = factorized(A)  # C code
-X_cols = Parallel(prefer="threads")(  # Threading works!
-    delayed(compute_column)(solve, B, i) for i in range(num_cols)
-)
-```
+</div>
+<div>
 
-**Why it works:** scipy sparse solvers release GIL in C code  
-**Speedup:** 2.44x (no pickling overhead!)
+**Amdahl**
 
----
+If 20 percent of the runtime cannot be parallelized, eight cores buy you at
+most 3.3x. Ever.
 
-## Numba: The Game Changer
+</div>
+</div>
 
-**Numba** = Just-In-Time (JIT) compiler for Python
-
-**Why it's important:**
-1. ✓ Compiles Python to machine code
-2. ✓ **Releases the GIL**
-3. ✓ Near-C performance
-4. ✓ Easy to use (just add decorator!)
-
-```python
-import numba
-
-@numba.jit(nopython=True)
-def fast_computation(data):
-    result = 0.0
-    for i in range(len(data)):
-        result += np.sin(data[i]) * np.cos(data[i])
-    return result
-```
-
-**Typical speedup:** 10-100x over pure Python!
+> Report the speedup you measured, not the number of cores you used. The second
+> one is not a result.
 
 ---
 
-## Numba Parallel Execution
+# Numba: compile the loop instead
 
 ```python
-import numba
-
 @numba.jit(nopython=True, parallel=True)
-def parallel_computation(data):
-    n = len(data)
-    result = np.zeros(n)
-    
-    for i in numba.prange(n):  # Parallel range - no GIL!
-        result[i] = expensive_calc(data[i])
-    
-    return result
-```
-
-**Benefits:**
-- No GIL limitation
-- Automatic parallelization
-- Minimal code changes
-- Works great with NumPy
-
----
-
-## Monte Carlo Example
-
-```python
-import numba, numpy as np
-
-@numba.jit(nopython=True, parallel=True)
-def monte_carlo_pi(n_samples):
+def monte_carlo_pi(n):
     inside = 0
-    for _ in numba.prange(n_samples):  # Parallel!
+    for _ in numba.prange(n):           # parallel, and no GIL
         x, y = np.random.random(), np.random.random()
-        if x*x + y*y <= 1.0:
+        if x * x + y * y <= 1.0:
             inside += 1
-    return 4.0 * inside / n_samples
-
-pi_estimate = monte_carlo_pi(100_000_000)
+    return 4.0 * inside / n
 ```
 
-**Performance:**
-- Pure Python: 45s
-- Numba: 0.8s (56x faster!)
-- Numba parallel: 0.15s (300x faster!)
+| | Pure Python | Numba | Numba parallel |
+|---|---|---|---|
+| 100M samples | 45 s | 0.8 s | 0.15 s |
+
+<p class="note">Most of the gain is compilation, not parallelism. The first call is slow because it compiles.</p>
 
 ---
 
-## asyncio: Another Approach
-
-For **many concurrent I/O operations** (hundreds/thousands):
+# asyncio, for many connections at once
 
 ```python
-import asyncio, aiohttp
-
-async def fetch_url(session, url):
-    async with session.get(url) as response:
-        return await response.text()
-
 async def fetch_all(urls):
     async with aiohttp.ClientSession() as session:
-        tasks = [fetch_url(session, url) for url in urls]
-        return await asyncio.gather(*tasks)
-
-# Efficiently handle 1000+ concurrent requests
-results = asyncio.run(fetch_all(urls))
+        return await asyncio.gather(*(fetch(session, u) for u in urls))
 ```
 
-**When to use:** Web scraping, API clients, many network connections
+One thread, thousands of open connections, each one idle most of the time. The
+right tool for web APIs and data collection, the wrong tool for computation.
 
 ---
 
-## Choosing the Right Approach
+# Which one, when
 
-**I/O-bound tasks** (network, files, database):
-- Few operations → `threading`
-- Many operations → `asyncio`
-
-**CPU-bound tasks** (computation, data processing):
-- Pure Python loops → `multiprocessing`
-- NumPy/SciPy numerical code → `numba` (parallel=True)
-- NumPy/SciPy with C extensions → `threading` may work if GIL released
-
-**Mixed workload:**
-- Combine approaches (e.g., multiprocessing + Numba)
+| Your work is | Use |
+|---|---|
+| Waiting on a few files or requests | `threading` |
+| Waiting on hundreds of connections | `asyncio` |
+| Pure Python loops, CPU bound | `multiprocessing` |
+| Numerical loops over arrays | `numba` with `parallel=True` |
+| NumPy or SciPy calls | often already parallel, measure first |
 
 ---
 
-## Common Pitfalls
+# Measure before you optimize
 
-✗ **Using threads for CPU work:**
 ```python
-# Won't speed up due to GIL!
-threads = [threading.Thread(target=heavy_calc) for _ in range(8)]
+import cProfile
+cProfile.run("main()", sort="cumtime")
 ```
 
-✓ **Use multiprocessing instead:**
-```python
-with mp.Pool(8) as pool:
-    results = pool.map(heavy_calc, data_chunks)
-```
-
-✗ **Sharing data without locks:**
-```python
-counter = 0  # Race condition!
-def increment():
-    global counter
-    counter += 1
-```
-
----
-
-## Parallelization: Key Takeaways
-
-1. **GIL limits threading** for CPU-bound tasks
-2. **Threading works** for I/O-bound tasks
-3. **Multiprocessing** bypasses GIL (separate processes)
-4. **Numba** provides parallel execution without GIL
-5. **Always profile** before optimizing
-6. **Use locks** when threads share mutable state
-
-**For scientific computing:**
-- Heavy computation → Numba or multiprocessing
-- Data loading/saving → threading or asyncio
-- Large-scale → consider Dask or distributed computing
-
----
-
-# Practice Time
-
-## Qt Workshop (90 min)
-
-Work through the **Qt Workshop** exercises:
-- Build complete FEM Viewer application
-- File loading, field selection, visualization controls
-- Deformation visualization
-- Try the extension challenges!
-
-**Online documentation:**
-https://soberpe.github.io/visdat-course/user-interfaces/qt-workshop
-
-**Approach:**
-- Work at your own pace
-- Complete Block 1 first (foundation), try to reach Block 3 (advanced features)
-
----
-
-# Final Assignment
-
-## Individual Project
-
----
-
-## Assignment Overview
-
-**Type:** Individual project  
-**Topic:** Flexible - scientific data handling/visualization  
-**Deadline:** January 28, 2026, 23:59 (PR submission)  
-**Presentation:** Last January session
-
-**Freedom:**
-- Extend semester projects (FEM viewer, data processing, visualization)
-- Create new project related to your interests
-- Solve real problem from thesis/research/work
-
-**Key requirement:** Demonstrate significant effort and mastery of course concepts
-
----
-
-## What to Submit
-
-**Folder structure:**
-```
-final-assignment/
-└── your-name/
-    ├── README.md           # Documentation
-    ├── code/               # Implementation
-    │   ├── main.py
-    │   ├── src/
-    │   └── requirements.txt  # If additional packages
-    ├── slides.md           # Marp presentation
-    └── assets/             # Screenshots, images
-```
-
-**Deliverables:**
-1. **Working code** (must run!)
-2. **Documentation** (README with setup/usage)
-3. **Presentation slides** (Marp format)
-
----
-
-## Requirements
-
-### 1. Individual Ideas (30%)
-Original contribution, creative problem-solving, goes beyond basics
-
-### 2. Code Quality (40%)
-**Must run on instructor's machine!**  
-Organization, error handling, demonstrates course concepts
-
-### 3. Documentation (30%)
-Clear README, setup/usage instructions, presentation
-
----
-
-## Code Must Run!
-
-**Critical requirement:**
-
-✓ Use existing course dependencies  
-✓ OR include updated `requirements.txt`  
-✓ Test in fresh virtual environment before submission  
-✓ Document any setup steps clearly  
-
-✗ Don't assume instructor has specific tools installed  
-✗ Don't use obscure packages without documentation  
-
-**Test procedure:**
 ```bash
-python -m venv test_env
-test_env\Scripts\activate
-pip install -r requirements.txt
-python main.py  # Must work!
+python -m cProfile -s cumtime my_script.py | head -20
 ```
 
----
+> Almost every optimization that starts with a guess is wasted. Find the line
+> that actually costs the time, and it is usually not the one you suspected.
 
-## Appropriate Complexity
-
-**Good examples:**
-- Interactive FEM viewer with deformation, clipping, export
-- Parallel data processing with progress tracking
-- Time-series dashboard with filtering
-- 3D mesh comparison with difference visualization
-
-**Too simple:** Single plot script, basic calculator
-
-**Too ambitious:** Complete FEM solver, large ML framework
+<!--
+This is the most useful slide of the block, so do not rush it. Run the profiler
+on something from the data processing lecture and show that the time goes into
+read_csv, not into the loop everyone was worried about.
+-->
 
 ---
 
-## Timeline
+# Pitfalls
 
-**Now - January:** Use sessions for development, ask questions, test regularly
+<div class="cols">
+<div>
 
-**January 28, 23:59:** PR deadline - all code, docs, slides complete
+**Threads for CPU work**
 
-**Last January Session:** Present (5-8 min), live demo/video, Q&A
+No speedup. The GIL is still there.
 
----
+**Shared state without a lock**
 
-## Grading Criteria Summary
+```python
+counter += 1     # race condition
+```
 
-**Must Have:**
-✓ Runs without errors  
-✓ Clear documentation  
-✓ Significant effort evident  
-✓ Uses course concepts appropriately  
+</div>
+<div>
 
-**Nice to Have:**
-✓ Solves real problem elegantly  
-✓ Clean, maintainable code  
-✓ Good performance  
-✓ Impressive presentation  
+**Forgetting the guard**
 
-**Remember:** Better to do one thing really well than many things poorly!
+```python
+if __name__ == "__main__":
+```
 
----
+Without it, multiprocessing on Windows spawns processes forever.
 
-## Tips for Success
-
-1. **Start early** - don't underestimate time needed
-2. **Keep it focused** - polish over scope
-3. **Test in clean environment** before submission
-4. **Commit regularly** - not just once at end
-5. **Ask questions** during January sessions
-6. **Document as you go** - easier than at end
-7. **Practice presentation** - stay within time limit
-
-**Most common mistake:** Assuming code works without testing in fresh environment!
+</div>
+</div>
 
 ---
 
-## Project Ideas
+# Recap
 
-**Extend FEM Viewer:** Animation, multiple viewports, clipping, export
-
-**Data Processing:** Parallel batch processor, data cleaning tool, format converter
-
-**Visualization:** Custom plotting, 3D trajectories, real-time monitor, comparison tool
-
----
-
-## Questions?
-
-**Documentation:** https://soberpe.github.io/visdat-course/advanced-topics/final-assignment
-
-**During January sessions:**
-- Get feedback on your approach
-- Ask technical questions
-- Test your code
-- Prepare presentation
-
-**Remember:**
-- Deadline: January 28, 23:59
-- Presentations: Last January session
-- This is your chance to showcase what you've learned!
+- CMake **generates** builds, and you meet it whenever pip compiles
+- The **GIL** means Python threads do not speed up Python computation
+- **Threading** for waiting, **multiprocessing** for Python loops, **Numba** for
+  numerical loops
+- The speedup is always less than the core count, and **Amdahl** says by how much
+- **Profile first**
 
 ---
 
-# Summary
+<!-- _class: section -->
 
-## Today's Session
+# Final assignment
 
-**Learned:**
-- Build systems (CMake) and when you'll encounter them
-- Parallelization strategies (threads vs. processes)
-- GIL implications and solutions (multiprocessing, Numba)
-
-**Practice:**
-- Qt Workshop - build complete FEM viewer
-- Apply GUI concepts from previous session
-
-**Assignment:**
-- Individual project with flexible topic
-- Due January 28 with presentation
-
-**Next:** January sessions for project work and support
+## Your own project
 
 ---
 
-# Good Luck!
+# What it is
 
-**Remember:**
-- Use Qt Workshop to deepen your GUI skills
-- Start thinking about your final project
-- January sessions are for YOUR work
-- Don't hesitate to ask questions
+An individual project along the chain of this course: load data, process it,
+visualize it, and wrap it in something that can be operated.
 
-**Documentation:**
-https://soberpe.github.io/visdat-course/
+<div class="boxes">
+<div><b>Extend</b>Take something from the semester further: more features, more depth.</div>
+<div><b>Build new</b>Your own idea in scientific data handling or visualization.</div>
+<div><b>Use it</b>A problem from your thesis, your job, or your research.</div>
+</div>
 
-**See you in January!**
+<p class="note">Full description with folder layout and grading: Final Assignment on the course site.</p>
 
+---
+
+# What you hand in
+
+```
+submissions/<your-github-username>/final/
+├── README.md          what it does, how to run it, what you solved
+├── code/              entry point, modules, sample data, requirements.txt
+├── slides.md          your presentation, in Marp
+└── assets/            screenshots
+```
+
+| | |
+|---|---|
+| **Individual ideas** | 30 % |
+| **Code quality and function** | 40 % |
+| **Documentation and presentation** | 30 % |
+
+---
+
+# Two things that decide the grade
+
+<div class="cols">
+<div>
+
+**It has to run**
+
+On my machine, in a fresh virtual environment, from your `requirements.txt`.
+Test that before you submit, not after.
+
+</div>
+<div>
+
+**The history has to show the work**
+
+Commits over weeks, not one drop on the deadline. That is part of what is
+assessed, and it is also what saves you when something breaks.
+
+</div>
+</div>
+
+<p class="note">Deadline and presentation date: announced in class, end of January.</p>
+
+---
+
+<!-- _class: section -->
+
+# Questions
+
+<p>Then: Qt workshop, and pick a project topic.</p>
