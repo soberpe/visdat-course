@@ -315,12 +315,12 @@ Column {
 Qt strongly encourages layout-based design over fixed positioning:
 
 ```python
-# ❌ Manual positioning (brittle, doesn't scale)
+# ✗ Manual positioning (brittle, doesn't scale)
 button = QPushButton("OK", parent=window)
 button.move(100, 200)
 button.resize(80, 30)
 
-# ✅ Layout-based (responsive, maintainable)
+# ✓ Layout-based (responsive, maintainable)
 layout = QVBoxLayout()
 layout.addWidget(button)
 window.setLayout(layout)

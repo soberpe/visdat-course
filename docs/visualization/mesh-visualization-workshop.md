@@ -452,9 +452,9 @@ report.visualize_zones()
 ### Instructions
 
 You will receive:
-- ✅ A mesh file
-- ✅ A target screenshot showing the desired result
-- ❌ **NO CODE TEMPLATE**
+- ✓ A mesh file
+- ✓ A target screenshot showing the desired result
+- ✗ **NO CODE TEMPLATE**
 
 You must write everything from scratch!
 

@@ -530,10 +530,10 @@ Since factorization dominates for small problems but solving dominates when you 
 
 :::tip When Does Threading Beat Multiprocessing?
 Threading works when **C/Fortran extensions release the GIL**:
-- ✅ NumPy/SciPy operations (call BLAS/LAPACK/SuperLU)
-- ✅ Numba-compiled functions (with `nogil=True`)
-- ✅ C extensions that explicitly release GIL
-- ❌ Pure Python code (loops, list comprehensions, etc.)
+- ✓ NumPy/SciPy operations (call BLAS/LAPACK/SuperLU)
+- ✓ Numba-compiled functions (with `nogil=True`)
+- ✓ C extensions that explicitly release GIL
+- ✗ Pure Python code (loops, list comprehensions, etc.)
 
 For pure Python computation, use multiprocessing. For NumPy/SciPy-heavy computation, threading can be faster (no pickling overhead)!
 :::
@@ -744,7 +744,7 @@ graph TD
 
 ### 1. Using Threads for CPU-Bound Work
 ```python
-# ❌ Bad: GIL prevents parallel speedup
+# ✗ Bad: GIL prevents parallel speedup
 def cpu_intensive():
     return sum(i*i for i in range(10_000_000))
 
@@ -754,7 +754,7 @@ threads = [threading.Thread(target=cpu_intensive) for _ in range(4)]
 
 ### 2. Not Handling Process Communication Overhead
 ```python
-# ❌ Bad: Overhead dominates
+# ✗ Bad: Overhead dominates
 with mp.Pool() as pool:
     # Each task is too small, overhead dominates
     results = pool.map(lambda x: x*2, range(1000))
@@ -762,7 +762,7 @@ with mp.Pool() as pool:
 
 ### 3. Shared State Without Locks
 ```python
-# ❌ Bad: Race condition
+# ✗ Bad: Race condition
 counter = 0
 
 def increment():

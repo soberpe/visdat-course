@@ -16,10 +16,10 @@ Instructor: Stefan Oberpeilsteiner
 - Organization & grading
 - Programming paradigms & structured programming
 - C++ & Python fundamentals
-- **Git & GitHub workflow** 🔧
-- **Development environment setup** 💻
-- **Kickoff assignment** 🚀
-- **Hands-on practice** ⚡
+- **Git & GitHub workflow**
+- **Development environment setup**
+- **Kickoff assignment**
+- **Hands-on practice**
 
 ---
 
@@ -38,7 +38,7 @@ Instructor: Stefan Oberpeilsteiner
 3. Review → Merge
 4. Slides also from **Markdown** (Marp)
 
-**📖 Detailed guide:** [Development Tools & Workflow](https://soberpe.github.io/visdat-course/tools-workflow/tools-workflow-overview)
+** Detailed guide:** [Development Tools & Workflow](https://soberpe.github.io/visdat-course/tools-workflow/tools-workflow-overview)
 
 ---
 
@@ -77,7 +77,7 @@ for i in range(5):
 
 **Goal:** read core syntax & patterns.
 
-**📖 Deep dive:** [C++ Guide](https://soberpe.github.io/visdat-course/cpp/cpp-overview)
+** Deep dive:** [C++ Guide](https://soberpe.github.io/visdat-course/cpp/cpp-overview)
 
 ---
 
@@ -87,7 +87,7 @@ for i in range(5):
 
 **Goal:** write small tools and use libs.
 
-**📖 Deep dive:** [Python Guide](https://soberpe.github.io/visdat-course/python/python-overview)
+** Deep dive:** [Python Guide](https://soberpe.github.io/visdat-course/python/python-overview)
 
 ---
 
@@ -350,7 +350,7 @@ C:\Python313\python.exe -m venv .venv
 pip install numpy pandas matplotlib
 ```
 
-**💡 Detailed setup:** [Python Virtual Environments Guide](https://soberpe.github.io/visdat-course/python/python-overview#virtual-environments)
+** Detailed setup:** [Python Virtual Environments Guide](https://soberpe.github.io/visdat-course/python/python-overview#virtual-environments)
 
 ---
 
@@ -397,7 +397,7 @@ print(*[i for i in range(10) if i % 2 == 1])
 
 ---
 
-## 🏃‍♂️ Mini Exercise (5 min)
+## Mini Exercise (5 min)
 - Write a function that returns the **sum of squares** for numbers `0..n`.
 - Do it in **C++** and **Python**.
 
@@ -426,7 +426,7 @@ def sum_of_squares(n):
 
 ---
 
-# 🔧 Git & GitHub
+# Git & GitHub
 ## Version Control for Engineers
 
 ---
@@ -438,7 +438,7 @@ def sum_of_squares(n):
 - **Branching** for experiments
 - **Industry standard** everywhere
 
-**📖 Complete guide:** [Git & Version Control](https://soberpe.github.io/visdat-course/tools-workflow/tools-workflow-overview#git--version-control)
+** Complete guide:** [Git & Version Control](https://soberpe.github.io/visdat-course/tools-workflow/tools-workflow-overview#git--version-control)
 
 ---
 
@@ -495,7 +495,7 @@ git push origin feature/data-analysis
 
 ---
 
-## 🎯 Live Demo: Git Workflow
+## Live Demo: Git Workflow
 1. **Fork** course repository
 2. **Clone** your fork
 3. **Create branch** for assignment
@@ -505,25 +505,25 @@ git push origin feature/data-analysis
 
 ---
 
-# 💻 Development Environment
+# Development Environment
 ## VS Code & Extensions
 
 ---
 
 ## Required VS Code Extensions
 ```
-✅ C/C++ (Microsoft)
-✅ C/C++ Themes (Microsoft)
-✅ Git Graph (mhutchie)
-✅ GitHub Pull Requests and Issues (GitHub)
-✅ Marp for VS Code
-✅ Python (Microsoft)
-✅ Python Debugger (Microsoft)
-✅ Python Environments (Microsoft)
-✅ Pylance (Microsoft)
+✓ C/C++ (Microsoft)
+✓ C/C++ Themes (Microsoft)
+✓ Git Graph (mhutchie)
+✓ GitHub Pull Requests and Issues (GitHub)
+✓ Marp for VS Code
+✓ Python (Microsoft)
+✓ Python Debugger (Microsoft)
+✓ Python Environments (Microsoft)
+✓ Pylance (Microsoft)
 ```
 
-**💡 Installation guide:** [VS Code Setup](https://soberpe.github.io/visdat-course/tools-workflow/tools-workflow-overview#vs-code-setup)
+** Installation guide:** [VS Code Setup](https://soberpe.github.io/visdat-course/tools-workflow/tools-workflow-overview#vs-code-setup)
 
 ---
 
@@ -550,7 +550,7 @@ pip install numpy pandas matplotlib
 
 ---
 
-# 🚀 Kickoff Assignment
+# Kickoff Assignment
 ## Your First GitHub Workflow
 
 ---
@@ -566,17 +566,17 @@ pip install numpy pandas matplotlib
 5. **Make Marp presentation** about yourself
 6. **Submit Pull Request**
 
-**🎯 Complete details:** [Kickoff Assignment](https://soberpe.github.io/visdat-course/tools-workflow/kickoff-assignment)
+** Complete details:** [Kickoff Assignment](https://soberpe.github.io/visdat-course/tools-workflow/kickoff-assignment)
 
 ---
 
 ## Assignment Structure
 ```
-📁 Your changes:
+Your changes:
 ├── README.md (add your info)
-├── 📁 docs/students/
+├── docs/students/
 │   └── [lastname]-introduction.md
-└── 📁 slides/students/
+└── slides/students/
     └── [lastname]-introduction.md
 ```
 
@@ -615,7 +615,7 @@ git push origin assignment/kickoff-john-doe
 
 ---
 
-# ⚡ Hands-on Time
+# Hands-on Time
 ## Let's Get Started!
 
 ---
@@ -683,7 +683,7 @@ sphere.plot(show_edges=True)
 - **Resources:** All documentation online
 - **Questions?** Ask now or create GitHub Issues
 
-**🎯 Remember:** 
+** Remember:** 
 - Fork → Branch → Commit → Push → PR
 - Documentation is your friend
 - Start early, ask questions!
@@ -691,7 +691,7 @@ sphere.plot(show_edges=True)
 ---
 
 ## Thank you! 
-### Let's build something awesome! 🚀
+### Let's build something awesome!
 
 **Course repo:** https://github.com/soberpe/visdat-course  
 **Documentation:** https://soberpe.github.io/visdat-course/

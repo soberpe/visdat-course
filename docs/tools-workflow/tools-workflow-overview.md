@@ -201,7 +201,7 @@ marp presentation.md --html --output presentation.html
 
 ### Git Configuration (First Time Setup)
 
-⚠️ **IMPORTANT:** Before making your first commit, configure Git with your identity:
+**IMPORTANT:** Before making your first commit, configure Git with your identity:
 
 ```bash
 # Set your name and email (required for commits)

@@ -400,5 +400,5 @@ A: Live demos are great but risky. Pre-record a backup video or use screenshots.
 
 ---
 
-**Good luck with your final project! This is your chance to showcase what you've learned and create something you're proud of.** 🚀
+**Good luck with your final project! This is your chance to showcase what you've learned and create something you're proud of.**
 

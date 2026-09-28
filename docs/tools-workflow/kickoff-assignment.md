@@ -27,7 +27,7 @@ names, folders and pull requests are described once in
 through them for the first time.
 :::
 
-> **💡 Pro Tip:** Follow along with the live demo from today's lecture!
+> ** Pro Tip:** Follow along with the live demo from today's lecture!
 
 ## Prerequisites
 
@@ -360,7 +360,7 @@ FH OÖ Wels
 - [Specific learning goal]
 - [Project aspiration]
 
-Thank you! 🚀
+Thank you!
 ```
 
 ### Task 4: Practice Git Workflow
@@ -543,4 +543,4 @@ For additional practice:
 - [Marp Documentation](https://marp.app/)
 - [VS Code Documentation](https://code.visualstudio.com/docs)
 
-Good luck with your kickoff assignment! 🎯
+Good luck with your kickoff assignment!

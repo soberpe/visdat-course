@@ -60,11 +60,11 @@ Raw Sensor Data → Clean Data → Extract Features → Analyze Trends
 
 <div class="small-list">
 
-- ✅ **Time series** analysis (ideal for sensor data)
-- ✅ **File I/O**: CSV, Excel, JSON, **HDF5**, Parquet
-- ✅ **Data cleaning** and transformation
-- ✅ **Statistical operations** built-in
-- ✅ **Efficient storage** for large datasets
+- ✓ **Time series** analysis (ideal for sensor data)
+- ✓ **File I/O**: CSV, Excel, JSON, **HDF5**, Parquet
+- ✓ **Data cleaning** and transformation
+- ✓ **Statistical operations** built-in
+- ✓ **Efficient storage** for large datasets
 
 </div>
 
@@ -124,10 +124,10 @@ df_segment = pd.read_hdf('sensor_data.h5', key='experiment', where='timestamp >=
 
 <div class="small-list">
 
-- ✅ **Compression**: 5-10x smaller than CSV
-- ✅ **Hierarchical**: Organize data in groups/datasets
-- ✅ **Partial loading**: Read only what you need
-- ✅ **Metadata**: Store units, calibrations, descriptions
+- ✓ **Compression**: 5-10x smaller than CSV
+- ✓ **Hierarchical**: Organize data in groups/datasets
+- ✓ **Partial loading**: Read only what you need
+- ✓ **Metadata**: Store units, calibrations, descriptions
 
 </div>
 
@@ -480,4 +480,4 @@ pre {
 - Practice with the sensor dataset
 - Try additional calculations (moving average, event detection)
 
-**📁 All code examples:** Available in course repository
+** All code examples:** Available in course repository

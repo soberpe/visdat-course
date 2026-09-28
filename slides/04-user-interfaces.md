@@ -586,11 +586,11 @@ Work through as homework to practice today's concepts.
 ## Summary and Next Steps
 
 **Topics covered today:**
-✅ Why user interfaces matter in engineering
-✅ Historical evolution and modern landscape  
-✅ Desktop vs Web architectures
-✅ Qt fundamentals (signals, slots, widgets, layouts)
-✅ PyQt6 + PyVista integration
+✓ Why user interfaces matter in engineering
+✓ Historical evolution and modern landscape  
+✓ Desktop vs Web architectures
+✓ Qt fundamentals (signals, slots, widgets, layouts)
+✓ PyQt6 + PyVista integration
 
 **Workshop materials:**
 Access the complete hands-on Qt workshop at:

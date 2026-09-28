@@ -169,7 +169,7 @@ The event loop is Qt's heart. When you call `app.exec()`, Qt enters a loop that:
 ```python
 import time
 
-# ❌ This freezes the UI for 5 seconds
+# ✗ This freezes the UI for 5 seconds
 def slow_operation():
     time.sleep(5)  # Simulating computation
     print("Done!")

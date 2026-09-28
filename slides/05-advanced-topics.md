@@ -260,7 +260,7 @@ Only ONE thread can execute Python bytecode at a time
 - Protects internal data structures
 
 **Impact:**
-❌ Python threads DO NOT provide parallel speedup for CPU-bound tasks!
+✗ Python threads DO NOT provide parallel speedup for CPU-bound tasks!
 
 ---
 
@@ -349,7 +349,7 @@ account = BankAccount()
 
 | Aspect | Threads | Processes |
 |--------|---------|-----------|
-| **GIL Impact** | ❌ Limited by GIL | ✓ No GIL |
+| **GIL Impact** | ✗ Limited by GIL | ✓ No GIL |
 | **Memory** | Shared | Separate |
 | **Overhead** | Low | Higher |
 | **Data Sharing** | Easy | Complex |
@@ -546,7 +546,7 @@ results = asyncio.run(fetch_all(urls))
 
 ## Common Pitfalls
 
-❌ **Using threads for CPU work:**
+✗ **Using threads for CPU work:**
 ```python
 # Won't speed up due to GIL!
 threads = [threading.Thread(target=heavy_calc) for _ in range(8)]
@@ -558,7 +558,7 @@ with mp.Pool(8) as pool:
     results = pool.map(heavy_calc, data_chunks)
 ```
 
-❌ **Sharing data without locks:**
+✗ **Sharing data without locks:**
 ```python
 counter = 0  # Race condition!
 def increment():
@@ -670,8 +670,8 @@ Clear README, setup/usage instructions, presentation
 ✓ Test in fresh virtual environment before submission  
 ✓ Document any setup steps clearly  
 
-❌ Don't assume instructor has specific tools installed  
-❌ Don't use obscure packages without documentation  
+✗ Don't assume instructor has specific tools installed  
+✗ Don't use obscure packages without documentation  
 
 **Test procedure:**
 ```bash
@@ -798,5 +798,5 @@ python main.py  # Must work!
 **Documentation:**
 https://soberpe.github.io/visdat-course/
 
-**See you in January!** 🎄🎆🚀
+**See you in January!**
 

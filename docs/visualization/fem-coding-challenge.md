@@ -181,9 +181,9 @@ You should get:
 **Your task (10 minutes):**
 - Read their code carefully
 - Write down on paper:
-  - ✅ 2 things they did well
-  - 🔧 3 things that could be improved
-  - 💡 1 extension idea
+  - ✓ 2 things they did well
+  - 3 things that could be improved
+  - 1 extension idea
 
 **Don't change their code yet!**
 
@@ -352,12 +352,12 @@ described in [Submission Workflow](../tools-workflow/submission-workflow.md).
 
 By completing this workshop, you've:
 
-- ✅ Written FEM code from scratch (not copy-paste!)
-- ✅ Understood element stiffness matrix assembly
-- ✅ Applied boundary conditions correctly
-- ✅ Debugged and improved code through peer review
-- ✅ Visualized structural analysis results
-- ✅ Extended a basic solver to more complex scenarios
+- ✓ Written FEM code from scratch (not copy-paste!)
+- ✓ Understood element stiffness matrix assembly
+- ✓ Applied boundary conditions correctly
+- ✓ Debugged and improved code through peer review
+- ✓ Visualized structural analysis results
+- ✓ Extended a basic solver to more complex scenarios
 
 **Most importantly: You can now read and modify FEM code with confidence!**
 

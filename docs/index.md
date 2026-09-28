@@ -3,246 +3,80 @@ slug: /
 title: Visualisierung & Datenaufbereitung
 ---
 
-# 🎓 Visualisierung & Datenaufbereitung
+# Visualisierung & Datenaufbereitung
 
-<div class="hero hero--primary">
-  <div class="container">
-    <h1 class="hero__title">Welcome to VIS3VO</h1>
-    <p class="hero__subtitle">Visualization & Data Processing Course Materials</p>
-  </div>
-</div>
+Engineering data rarely arrives in a form you can use. It comes out of a test
+rig as a CSV file with the wrong units, out of a solver as a result file that no
+spreadsheet can open, or off a sensor at a sampling rate that drifts. Turning
+that into something a colleague can understand, and into a tool they can
+actually use, is the work this course is about.
 
-## 📚 Course Overview
+Over one semester you build the whole chain once: from the raw file through
+processing and analysis to a 2D plot, a 3D view of a mesh, and finally a desktop
+application with a user interface. Every step uses tools that are standard in
+engineering practice today, and every step is done by hand at least once, so
+that you know what the tools are doing for you.
 
-:::info Course Information
-**Course Title:** Visualization & Data Processing (VIS3VO)  
-**Instructor:** Stefan Oberpeilsteiner  
-**Academic Year:** 2025  
-**Format:** Hands-on programming and data visualization
+## The thread through the semester
+
+```mermaid
+flowchart LR
+  A["Measurement<br/>Simulation"] --> B["Data formats<br/>CSV, Excel, HDF5, VTU"]
+  B --> C["Processing<br/>NumPy, pandas"]
+  C --> D["2D visualization<br/>Matplotlib"]
+  C --> E["3D visualization<br/>VTK, PyVista"]
+  D --> F["Application<br/>PyQt"]
+  E --> F
+  F --> G["Performance<br/>parallel processing"]
+```
+
+The same datasets follow you along this chain. The beam you load as a mesh in
+the visualization block is the beam you display in your own Qt application a few
+weeks later, and the motion data you record with your phone is the data you
+filter, integrate and plot yourself.
+
+## What you will be able to do
+
+By the end of the semester you can take an unfamiliar engineering dataset, get
+it into a usable shape, choose a representation that answers the question at
+hand, and wrap the result in something another person can operate. You will have
+written a small finite element solver from scratch, reconstructed a trajectory
+from raw sensor data, and built a working viewer for simulation results.
+
+Along the way you will have used Git the way teams use it: branches, pull
+requests, review, and a repository whose history shows how the work actually
+happened.
+
+## How the course works
+
+The material is organized in three layers. The chapters on this site are the
+reference, complete and searchable. The slide decks in `slides/` carry the live
+sessions. The assignments are practical, and they build on each other.
+
+Assignments are handed in as pull requests in a private repository, reviewed,
+and merged once they are accepted. The details are described in
+[Course Organization](./organization.md) and in
+[Submission Workflow](./tools-workflow/submission-workflow.md).
+
+:::note Before the first assignment
+Read [Submission Workflow](./tools-workflow/submission-workflow.md) once. It
+explains which repository your work goes into, and how to keep your email
+address out of a commit history that lasts forever.
 :::
 
-This course provides a comprehensive introduction to data visualization and processing techniques using modern programming tools and methodologies.
+## What you need
 
-## 🗺️ Course Structure
+You should be able to write a simple program in some language, and know what a
+variable, a loop and a function are. Beyond that the course starts from the
+beginning: the tools are installed together in the first session, and Python is
+introduced from its basics.
 
-<div class="row">
-  <div class="col col--6">
-    <div class="card">
-      <div class="card__header">
-        <h3>🛠️ Tools & Workflow</h3>
-      </div>
-      <div class="card__body">
-        <p>Learn the essential tools and development workflows for data science projects.</p>
-        <ul>
-          <li>Version control with Git</li>
-          <li>Development environments</li>
-          <li>Project organization</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-  <div class="col col--6">
-    <div class="card">
-      <div class="card__header">
-        <h3>🧠 Programming Fundamentals</h3>
-      </div>
-      <div class="card__body">
-        <p>Understand core programming concepts and paradigms essential for data processing.</p>
-        <ul>
-          <li>Programming paradigms</li>
-          <li>Algorithm design</li>
-          <li>Software architecture</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</div>
+Everything used here is free and runs on Windows, macOS and Linux. You need a
+computer you can install software on, and a GitHub account.
 
-<div class="row">
-  <div class="col col--6">
-    <div class="card">
-      <div class="card__header">
-        <h3>🐍 Python Programming</h3>
-      </div>
-      <div class="card__body">
-        <p>Master Python for data analysis, visualization, and scientific computing.</p>
-        <ul>
-          <li>Data structures & algorithms</li>
-          <li>Scientific libraries (NumPy, Pandas)</li>
-          <li>Visualization with Matplotlib/Plotly</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-  <div class="col col--6">
-    <div class="card">
-      <div class="card__header">
-        <h3>⚡ C++ Programming</h3>
-      </div>
-      <div class="card__body">
-        <p>Learn C++ for high-performance data processing and computational tasks.</p>
-        <ul>
-          <li>Memory management</li>
-          <li>High-performance computing</li>
-          <li>Modern C++ features</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</div>
+## Where to start
 
-<div class="row">
-  <div class="col col--6">
-    <div class="card">
-      <div class="card__header">
-        <h3>🎨 3D Visualization</h3>
-        <div class="badge badge--secondary">Coming Soon</div>
-      </div>
-      <div class="card__body">
-        <p>3D visualization and data processing techniques.</p>
-        <ul>
-          <li>VTK (Visualization Tool Kit)</li>
-          <li>Application examples</li>
-          <li>3D data processing</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-  <div class="col col--6">
-    <div class="card">
-      <div class="card__header">
-        <h3>🖥️ GUI Programming</h3>
-        <div class="badge badge--secondary">Coming Soon</div>
-      </div>
-      <div class="card__body">
-        <p>Desktop applications for interactive 3D data visualization.</p>
-        <ul>
-          <li>PyQt integration with PyVista/VTK</li>
-          <li>Interactive 3D widgets</li>
-          <li>Real-time data manipulation</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="row">
-  <div class="col col--6">
-    <div class="card">
-      <div class="card__header">
-        <h3>⚙️ Cross-Platform Development</h3>
-        <div class="badge badge--secondary">Coming Soon</div>
-      </div>
-      <div class="card__body">
-        <p>Multi-platform programming strategies.</p>
-        <ul>
-          <li>CMake build tools</li>
-          <li>Development approaches</li>
-          <li>Platform compatibility</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-  <div class="col col--6">
-    <div class="card">
-      <div class="card__header">
-        <h3>🚀 Parallelization</h3>
-        <div class="badge badge--secondary">Coming Soon</div>
-      </div>
-      <div class="card__body">
-        <p>High-performance computing with parallel processing.</p>
-        <ul>
-          <li>Multi-threading with Python</li>
-          <li>Concurrent programming</li>
-          <li>Performance optimization</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="row">
-  <div class="col col--6">
-    <div class="card">
-      <div class="card__header">
-        <h3>💾 Efficient Data Management</h3>
-        <div class="badge badge--secondary">Coming Soon</div>
-      </div>
-      <div class="card__body">
-        <p>Challenges and solutions for large structured data.</p>
-        <ul>
-          <li>Big data strategies</li>
-          <li>Memory optimization</li>
-          <li>Storage solutions</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-  <div class="col col--6">
-    <div class="card">
-      <div class="card__header">
-        <h3>📚 Additional Topics</h3>
-        <div class="badge badge--secondary">Throughout Semester</div>
-      </div>
-      <div class="card__body">
-        <p>Various specialized topics developed during the course.</p>
-        <ul>
-          <li>Advanced visualization techniques</li>
-          <li>Industry best practices</li>
-          <li>Emerging technologies</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</div>
-
-## 🚀 Getting Started
-
-:::tip Start Here!
-Use the navigation menu on the left to explore the course materials. We recommend starting with the **Course Organization** section to understand the course structure and requirements.
-:::
-
-## 📋 Prerequisites
-
-**Programming Knowledge:** Basic understanding of programming concepts
-
-**Mathematics:** Linear algebra and statistics fundamentals  
-
-**Mindset:** Willingness to learn new tools and technologies
-
-**Environment:** Computer with internet access for development tools
-
-## 🎯 Learning Objectives
-
-By the end of this course, you will be able to:
-
-✅ Set up and use professional development tools  
-✅ Implement data processing algorithms in Python and C++  
-✅ Create effective data visualizations  
-✅ Apply software engineering best practices to data science projects  
-✅ Work collaboratively on data science projects using version control  
-✅ Design and optimize high-performance data processing pipelines
-
-## 🔧 Tools We'll Use
-
-**Development Environment:**  
-VS Code / JetBrains IDEs  
-Git for version control  
-Command line tools  
-
-**Python Ecosystem:**  
-NumPy, Pandas, Matplotlib  
-Jupyter Notebooks  
-Scientific computing libraries  
-
-**C++ Development:**  
-Modern C++ (C++17/20)  
-CMake build system  
-Performance profiling tools
-
----
-
-<div class="text--center">
-  <h2>🎯 Ready to Start Your Journey?</h2>
-  <p><strong>Click on "Course Organization" in the sidebar to begin!</strong></p>
-</div>
+Begin with [Course Organization](./organization.md) for the schedule and the
+assessment, then work through
+[Development Tools & Workflow](./tools-workflow/tools-workflow-overview.md) and
+the [Kickoff Assignment](./tools-workflow/kickoff-assignment.md).

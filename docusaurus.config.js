@@ -35,6 +35,17 @@ const config = {
     }]
   ],
   themeConfig: {
+    colorMode: {
+      respectPrefersColorScheme: true,
+    },
+    mermaid: {
+      theme: { light: 'neutral', dark: 'dark' },
+      options: {
+        fontFamily: "'IBM Plex Sans', system-ui, sans-serif",
+        fontSize: 15,
+        flowchart: { padding: 14, nodeSpacing: 45, rankSpacing: 60 },
+      },
+    },
     navbar: {
       title: 'VIS3VO',
       items: [
@@ -51,6 +62,10 @@ const config = {
     },
   },
   stylesheets: [
+    {
+      href: 'https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap',
+      type: 'text/css',
+    },
     {
       href: 'https://cdn.jsdelivr.net/npm/katex@0.13.24/dist/katex.min.css',
       type: 'text/css',

@@ -1,30 +1,179 @@
 /**
- * Any CSS included here will be global. The classic template
- * bundles Infima by default. Infima is a CSS framework designed to
- * work well for content-centric websites.
+ * Course site styling.
+ *
+ * The site is built on Infima, the CSS framework that ships with Docusaurus.
+ * Almost everything here is a variable override, so the theme keeps working
+ * when Docusaurus is updated. Fonts are loaded in docusaurus.config.js.
  */
 
-/* You can override the default Infima variables here. */
+/* ---------------------------------------------------------------- Colours */
+
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
-  --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --ifm-color-primary: #145f7d;
+  --ifm-color-primary-dark: #104b62;
+  --ifm-color-primary-darker: #0e4155;
+  --ifm-color-primary-darkest: #092a37;
+  --ifm-color-primary-light: #197497;
+  --ifm-color-primary-lighter: #1b7ea4;
+  --ifm-color-primary-lightest: #2095c2;
+
+  --vis-surface: #f6f7f8;
+  --vis-border: #dfe3e6;
+  --vis-muted: #5c6a72;
+
+  --ifm-background-surface-color: var(--vis-surface);
+  --ifm-code-background: #eef1f3;
+  --ifm-blockquote-color: var(--vis-muted);
+  --ifm-blockquote-border-color: var(--vis-border);
+  --ifm-toc-border-color: var(--vis-border);
+  --ifm-table-border-color: var(--vis-border);
+  --ifm-hr-border-color: var(--vis-border);
+  --docusaurus-highlighted-code-line-bg: rgba(20, 95, 125, 0.12);
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  --ifm-color-primary: #4eb3d4;
+  --ifm-color-primary-dark: #36a8cd;
+  --ifm-color-primary-darker: #30a0c4;
+  --ifm-color-primary-darkest: #2988a8;
+  --ifm-color-primary-light: #67bdda;
+  --ifm-color-primary-lighter: #73c2dd;
+  --ifm-color-primary-lightest: #90cfe4;
+
+  --ifm-background-color: #14181b;
+  --ifm-background-surface-color: #1a1f23;
+
+  --vis-surface: #1a1f23;
+  --vis-border: #2b3237;
+  --vis-muted: #9aa7ad;
+
+  --ifm-code-background: #22282d;
+  --ifm-blockquote-color: var(--vis-muted);
+  --ifm-blockquote-border-color: var(--vis-border);
+  --ifm-toc-border-color: var(--vis-border);
+  --ifm-table-border-color: var(--vis-border);
+  --ifm-hr-border-color: var(--vis-border);
+  --docusaurus-highlighted-code-line-bg: rgba(78, 179, 212, 0.16);
+}
+
+/* ------------------------------------------------------------ Typography */
+
+:root {
+  --ifm-font-family-base: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI',
+    Roboto, sans-serif;
+  --ifm-font-family-monospace: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular',
+    Menlo, Consolas, monospace;
+
+  --ifm-font-size-base: 17px;
+  --ifm-line-height-base: 1.7;
+  --ifm-heading-font-weight: 600;
+  --ifm-heading-line-height: 1.25;
+
+  --ifm-h1-font-size: 2.1rem;
+  --ifm-h2-font-size: 1.55rem;
+  --ifm-h3-font-size: 1.2rem;
+  --ifm-h4-font-size: 1.05rem;
+
+  --ifm-code-font-size: 0.875em;
+  --ifm-spacing-horizontal: 1.5rem;
+}
+
+/* Reading measure. Long lines of prose are hard to scan on a wide screen. */
+.theme-doc-markdown {
+  max-width: 46rem;
+}
+
+/* Docusaurus gives the first heading of a page its own, much larger size. */
+.markdown h1:first-child {
+  font-size: 2.4rem;
+  margin-bottom: 1.5rem;
+}
+
+.markdown h2 {
+  margin-top: 2.75rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--vis-border);
+}
+
+.markdown h3 {
+  margin-top: 2rem;
+}
+
+.markdown > p,
+.markdown li {
+  hyphens: auto;
+}
+
+/* ----------------------------------------------------------------- Chrome */
+
+.navbar {
+  border-bottom: 1px solid var(--vis-border);
+  box-shadow: none;
+}
+
+.navbar__title {
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.menu {
+  font-size: 0.925rem;
+}
+
+.menu__link--active:not(.menu__link--sublist) {
+  font-weight: 600;
+}
+
+.footer {
+  border-top: 1px solid var(--vis-border);
+  font-size: 0.9rem;
+}
+
+/* ------------------------------------------------------------------- Code */
+
+.theme-code-block {
+  box-shadow: none !important;
+  border: 1px solid var(--vis-border);
+  border-radius: 6px;
+}
+
+code {
+  border: none;
+  padding: 0.15rem 0.35rem;
+}
+
+/* --------------------------------------------------------------- Content */
+
+.markdown table {
+  display: table;
+  width: 100%;
+  font-size: 0.95rem;
+}
+
+.markdown table th {
+  background: var(--vis-surface);
+  font-weight: 600;
+}
+
+.markdown blockquote {
+  border-left-width: 3px;
+  font-size: 0.97rem;
+}
+
+.markdown img {
+  border: 1px solid var(--vis-border);
+  border-radius: 6px;
+}
+
+/* Admonitions: keep the colour cue, drop the heavy tinted block. */
+.theme-admonition {
+  border-width: 0 0 0 3px;
+  border-radius: 0 6px 6px 0;
+  box-shadow: none;
+}
+
+/* Mermaid diagrams are content, not decoration: give them room to breathe. */
+.docusaurus-mermaid-container {
+  margin: 2rem 0;
+  text-align: center;
 }

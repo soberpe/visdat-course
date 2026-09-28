@@ -1015,12 +1015,12 @@ if you encounter problems.
 
 This workshop demonstrated the complete pipeline for IMU-based motion tracking:
 
-1. ✅ Sensor data acquisition from smartphone
-2. ✅ Signal filtering to reduce noise
-3. ✅ Orientation estimation using Madgwick algorithm and quaternions
-4. ✅ Coordinate transformation from local to global frame
-5. ✅ Numerical integration to reconstruct trajectory
-6. ✅ Visualization and error analysis
+1. ✓ Sensor data acquisition from smartphone
+2. ✓ Signal filtering to reduce noise
+3. ✓ Orientation estimation using Madgwick algorithm and quaternions
+4. ✓ Coordinate transformation from local to global frame
+5. ✓ Numerical integration to reconstruct trajectory
+6. ✓ Visualization and error analysis
 
 **Key takeaways:**
 - IMU-only tracking suffers from drift due to integration error accumulation

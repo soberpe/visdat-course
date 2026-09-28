@@ -14,7 +14,7 @@ This section provides a comprehensive guide to data processing using pandas, Pyt
 
 This data processing module is organized into three focused documents:
 
-### 📊 [Pandas Fundamentals](./pandas-fundamentals)
+### [Pandas Fundamentals](./pandas-fundamentals)
 **Core concepts and essential operations**
 - Data structures (Series and DataFrame)
 - Data loading and inspection
@@ -27,7 +27,7 @@ This data processing module is organized into three focused documents:
 
 *Complete foundation for data processing with pandas - everything you need to get started and work effectively with engineering data.*
 
-### 🚀 [High-Performance Data Storage with HDF5](./hdf5-storage)
+### [High-Performance Data Storage with HDF5](./hdf5-storage)
 **Managing large engineering datasets efficiently**
 - Understanding the big data challenge in engineering
 - HDF5 format advantages and use cases
@@ -87,4 +87,4 @@ After this module: Data Visualization → 3D Analysis → Interactive Dashboards
 
 ---
 
-> **💡 Pro Tip**: Data processing is often 80% of the analysis effort. Invest time in building robust, reusable processing pipelines that you can apply across multiple projects and datasets.
+> ** Pro Tip**: Data processing is often 80% of the analysis effort. Invest time in building robust, reusable processing pipelines that you can apply across multiple projects and datasets.
