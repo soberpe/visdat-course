@@ -222,6 +222,25 @@ section .boxes b {
   margin-bottom: 4px;
 }
 
+/* On a slide that is full to the edge, the row moves up a little. */
+section .boxes.tight {
+  margin-top: 12px;
+}
+
+/* A box that carries a QR code puts it beside its text, not above it. */
+section .boxes .qr {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+section .boxes .qr img {
+  flex: none;
+  width: 128px;
+  height: 128px;
+  margin: 0;
+}
+
 /* ----------------------------------------------------------------- Timer */
 
 /*

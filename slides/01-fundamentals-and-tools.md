@@ -87,8 +87,8 @@ Then one minute each:
 2. When did a computer last save you **hours**? Excel counts
 3. What do you want to do **in January** that you cannot do today?
 
-<div class="boxes">
-<div><b>In the form</b>Your GitHub username. No account? Your neighbour helps, two minutes.</div>
+<div class="boxes tight">
+<div><b>In the form</b><span class="qr"><img src="../static/img/kickoff/forms-qr.png" alt="QR code leading to the course form">Your GitHub username. No account? Your neighbour helps.</span></div>
 <div><b>Three downloads, now</b><code>python.org</code> 3.13, not newer · <code>code.visualstudio.com</code> · <code>git-scm.com</code> · download only, do not install</div>
 </div>
 
@@ -103,8 +103,10 @@ answer than any self assessment.
 Question 3 is worth writing down carefully. It is the earliest anchor for the
 final project, and the semester is long.
 
-Have the form open and its link on the board before the round starts. Usernames
-collected in writing beat usernames spelled out loud.
+The QR code leads to the form, so the link does not have to be dictated and
+nobody has to type it. Usernames collected in writing beat usernames spelled
+out loud. The link behind the code is in tools/make-qr.py, and rerunning that
+script regenerates the image.
 
 The counter in the corner runs one minute per person. Click it to start, click
 it again to set it back to sixty. It is built from two rows of digits behind a
