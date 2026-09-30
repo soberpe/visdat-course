@@ -73,6 +73,12 @@ The details come with the assignment.
 
 # Who are you?
 
+<div class="timer">
+<input type="checkbox" id="timer-intro">
+<label for="timer-intro"><span class="tape tens"><b>6</b><b>5</b><b>4</b><b>3</b><b>2</b><b>1</b><b>0</b></span><span class="tape ones"><b>0</b><b>9</b><b>8</b><b>7</b><b>6</b><b>5</b><b>4</b><b>3</b><b>2</b><b>1</b><b>0</b></span></label>
+<div class="bar"></div><span class="hint">start / reset</span>
+</div>
+
 **Stand up.** One line across the room. Left: **never written code**. Right: **I use an agent daily**.
 
 Then one minute each:
@@ -99,6 +105,11 @@ final project, and the semester is long.
 
 Have the form open and its link on the board before the round starts. Usernames
 collected in writing beat usernames spelled out loud.
+
+The counter in the corner runs one minute per person. Click it to start, click
+it again to set it back to sixty. It is built from two rows of digits behind a
+window and four CSS animations, no script involved, which is why it also works
+in the preview inside the editor.
 -->
 
 ---

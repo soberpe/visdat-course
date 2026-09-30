@@ -17,6 +17,7 @@
  *   <div class="cols">  two columns
  *   <div class="boxes"> a row of labelled boxes
  *   <p class="note">    a quiet aside
+ *   <div class="timer"> a 60 second countdown, see the block further down
  */
 
 @import 'default';
@@ -219,6 +220,157 @@ section .boxes b {
   font-weight: 600;
   color: var(--vis-accent);
   margin-bottom: 4px;
+}
+
+/* ----------------------------------------------------------------- Timer */
+
+/*
+ * A 60 second countdown for timeboxing a round in class. It sits in the top
+ * right corner of the slide and costs no vertical space.
+ *
+ * It runs without a single line of JavaScript, which matters because the
+ * VS Code preview does not execute scripts. Two digit tapes, one per digit,
+ * sit behind a window one line high, and a step animation scrolls them. The
+ * checkbox holds the state and the label is the button: checked attaches the
+ * animations, unchecked removes them, so the second click resets the counter
+ * to 60 rather than pausing it. A render that never gets clicked, a PDF
+ * handout for instance, therefore shows a full bar and a clean T-60.
+ *
+ * Markup:
+ *   <div class="timer">
+ *   <input type="checkbox" id="unique-id">
+ *   <label for="unique-id">...two tapes...</label>
+ *   <div class="bar"></div><span class="hint">start / reset</span>
+ *   </div>
+ */
+
+section .timer {
+  position: absolute;
+  top: 52px;
+  right: 70px;
+  width: 150px;
+}
+
+/* The checkbox is the state, never the visible control. */
+section .timer input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+/*
+ * The height is fixed on purpose. Baseline alignment would move with the
+ * scrolling tape and the whole counter would creep down the slide while it
+ * runs.
+ */
+section .timer label {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  height: 1em;
+  font-family: var(--vis-mono);
+  font-size: 44px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--vis-accent);
+  cursor: pointer;
+}
+
+section .timer label::before {
+  content: 'T-';
+  font-size: 22px;
+  line-height: 1;
+  color: var(--vis-muted);
+  margin: 0 5px 7px 0;
+}
+
+/* One digit of the counter: a window exactly one line high. */
+section .timer .tape {
+  display: block;
+  height: 1em;
+  overflow: hidden;
+}
+
+section .timer .tape b {
+  display: block;
+  height: 1em;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* The div is the track, the pseudo element is the part that drains away. */
+section .timer .bar {
+  height: 3px;
+  margin-top: 8px;
+  background: var(--vis-border);
+}
+
+section .timer .bar::after {
+  content: '';
+  display: block;
+  height: 100%;
+  background: var(--vis-accent);
+  transform-origin: right center;
+}
+
+section .timer .hint {
+  display: block;
+  margin-top: 6px;
+  font-family: var(--vis-mono);
+  font-size: 13px;
+  text-align: right;
+  color: var(--vis-muted);
+}
+
+/*
+ * The one thing the click does: start the four animations. Scrolling a tape
+ * means shifting its first digit up, the rest follow. The tens digit changes
+ * after one second and then every ten, so it needs named keyframes; the ones
+ * digit is a plain ten step loop that runs six times.
+ */
+section .timer input:checked ~ label {
+  animation: vis-heat 60s step-end 1 forwards;
+}
+
+section .timer input:checked ~ label .tens b:first-child {
+  animation: vis-tens 60s step-end 1 forwards;
+}
+
+section .timer input:checked ~ label .ones b:first-child {
+  animation: vis-ones 10s steps(10, end) 6 forwards;
+}
+
+section .timer input:checked ~ .bar::after {
+  animation: vis-drain 60s linear 1 forwards;
+}
+
+@keyframes vis-tens {
+  0% { margin-top: 0; }
+  1.6667% { margin-top: -1em; }
+  18.3333% { margin-top: -2em; }
+  35% { margin-top: -3em; }
+  51.6667% { margin-top: -4em; }
+  68.3333% { margin-top: -5em; }
+  85% { margin-top: -6em; }
+  100% { margin-top: -6em; }
+}
+
+@keyframes vis-ones {
+  from { margin-top: 0; }
+  to { margin-top: -10em; }
+}
+
+@keyframes vis-drain {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}
+
+/* The last ten seconds are the ones the room reacts to. */
+@keyframes vis-heat {
+  0% { color: var(--vis-accent); }
+  83.3333% { color: #b3541e; }
+  100% { color: #b3541e; }
 }
 
 /* --------------------------------------------------------------- Layouts */
