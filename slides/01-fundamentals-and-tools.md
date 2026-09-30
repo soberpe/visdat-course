@@ -21,6 +21,100 @@ content is a map, not a syntax course. The syntax is in the script.
 
 ---
 
+<!-- _class: ask -->
+
+# I sat in this room.
+
+<p>Same degree, same lecture hall, one lecturer earlier.</p>
+
+<!--
+Ten minutes, told, not read. The beats:
+
+1. Mechanical engineering here at Wels, same as you. This lecture, under my
+   predecessor, is where programming stopped being a subject and started being
+   a tool.
+2. The moment that did it: realising that I no longer had to wait for a licence,
+   a module or a vendor. If I can describe the problem, I can build the thing
+   that solves it.
+3. That is what I want to hand on. Not everyone in this room will catch it, and
+   that is fine. For some of you it will change what you do for a living.
+4. We start at the basics and work up to applications that are genuinely worth
+   showing. Nothing today needs prior knowledge.
+
+Then straight into the tool generations, without a pause.
+-->
+
+---
+
+# Three times in two years
+
+<div class="boxes">
+<div><b>Forums</b>Search, find something close, adapt it. Hours per problem.</div>
+<div><b>Chat, copy, paste</b>Ask, paste back, fix what does not fit. Minutes.</div>
+<div><b>Agent beside the code</b>It suggests, I keep editing. Constant back and forth.</div>
+<div><b>Agent instead of code</b>I describe and review. I barely touch the code.</div>
+</div>
+
+**Next:** tools that reach into the engineering systems themselves, PDM, solver,
+measurement database. Not in engineering yet. Give it a year.
+
+> The tools raise the ceiling, not the floor.
+
+<!--
+This is the honest answer to "why learn this when AI writes code". Do not oversell
+the tools and do not dismiss them. The last line is the whole argument of the
+course, so say it slowly.
+
+If someone asks whether they may use AI: yes, and you will say how you used it.
+The details come with the assignment.
+-->
+
+---
+
+# Who are you?
+
+**Stand up.** One line across the room, and find your place on it.
+
+<div class="cols">
+<div>
+
+**Left**
+Never written a line of code.
+
+</div>
+<div>
+
+**Right**
+I work with an agent every day.
+
+</div>
+</div>
+
+Then, one minute each:
+
+1. Your name, and what you are working on **technically**
+2. When did a computer last save you **hours** of work? Anything counts, Excel included
+3. What do you want to be able to do **in January** that you cannot do today?
+
+<p class="note">And: your GitHub username in the form. No account yet? Your neighbour who has one helps you, it takes two minutes.</p>
+
+<!--
+The line first, two minutes. Everyone sees the spread, including themselves.
+Interview three people at different points, not everyone.
+
+Question 2 is the important one. It catches the people with the monster Excel
+who say they cannot program. Those are exactly the ones worth reaching.
+
+Question 3: write it down word for word. You read it back to them at their final
+presentation in January.
+
+Put the form link or QR code on the board now: replace this note with your own
+Forms link before class. Typing twenty usernames by hand from spoken spelling is
+where the invitations go wrong.
+-->
+
+---
+
 # Today
 
 1. **Organisation**: how the course runs, how you hand in, how it is graded
