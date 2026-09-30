@@ -3,6 +3,9 @@
   "markdown.marp.themes": ["./slides/theme/visdat.css"],
   "markdown.marp.enableHtml": true,
 
+  "// Marp line breaks": "Matches .marprc.yml, so the preview renders exactly like the exported deck. A wrapped paragraph in the source stays one paragraph on the slide.",
+  "markdown.marp.breaks": "off",
+
   "// Editor": "Keeps the Markdown sources diff-friendly.",
   "files.trimTrailingWhitespace": false,
   "files.insertFinalNewline": true,

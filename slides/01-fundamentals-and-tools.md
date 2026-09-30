@@ -122,26 +122,62 @@ these three, and almost nothing else at this level.
 
 ---
 
-# Two languages, two jobs
+# Compiled or interpreted
 
 <div class="cols">
 <div>
 
-**C++**
+**Compiled**
 
-Control over memory and layout, compiled, fast. The libraries you use in Python
-are written in it.
+A separate step turns your source into machine code. The compiler sees the whole
+program, checks types, and optimises.
 
-You will mostly **read** it, to understand what a library does.
+Fast to run, slower to change. C, C++, Rust, Fortran.
 
 </div>
 <div>
 
-**Python**
+**Interpreted**
 
-Quick to write, huge scientific ecosystem, glue between tools.
+The source is executed as it is read, statement by statement.
 
-You will mostly **write** it, including the final project.
+Fast to change, slower to run. Python, MATLAB, JavaScript.
+
+</div>
+</div>
+
+> This one difference explains most of what confuses people later: why NumPy is
+> fast, why `pip install` sometimes compiles, why CMake exists, and why Python
+> threads do not speed up computation.
+
+<!--
+Do not treat this as a language comparison. It is a category, and they will meet
+the consequences of it in every later block. Ask which of the two a solver like
+CalculiX is, and why.
+-->
+
+---
+
+# The two languages in this course
+
+<div class="cols">
+<div>
+
+**C++**, the compiled one
+
+Our representative for the whole class. Memory and layout under your control,
+and the libraries you use from Python are written in it.
+
+You read it, you compile it, and you use it where speed decides.
+
+</div>
+<div>
+
+**Python**, the interpreted one
+
+Quick to write, the scientific ecosystem, the glue between the tools.
+
+You write most of the semester in it, including the final project.
 
 </div>
 </div>

@@ -4,26 +4,51 @@ title: C++ Programming Overview
 
 # C++ Programming Overview
 
-## Introduction
+## Why this chapter exists
 
-C++ is a powerful, general-purpose programming language that builds upon C with object-oriented features. In the context of data visualization and processing, C++ excels in performance-critical applications and provides extensive ecosystem integration.
+Most of your work in this course happens in Python. C++ is here for a different
+reason: it is this course's representative of the **compiled languages**, and
+that category is one you cannot avoid as an engineer.
 
-## Why C++ in Data Processing?
+The difference is not a matter of taste. In a compiled language a separate step
+translates your source into machine code before anything runs. The compiler sees
+the whole program at once, checks the types, and optimises. The result runs fast
+and changes slowly. In an interpreted language the source is executed as it is
+read, which is the other way around: quick to change, slower to run.
 
-### Advantages
+Almost everything that puzzles people later follows from this one distinction.
+NumPy is fast because the loop you are not writing runs in compiled code. A
+`pip install` sometimes takes ten minutes and prints compiler errors because
+there was no prebuilt package for your system. CMake exists because compiling a
+large program is itself a problem worth automating. Python threads do not speed
+up computation because the interpreter holds a lock that compiled code does not
+need.
 
-- **Performance:** Near-metal execution speed for computational intensive tasks
-- **Memory Control:** Direct memory management for optimal resource usage
-- **Ecosystem Integration:** Seamless integration with scientific libraries (OpenCV, VTK, PCL)
-- **Cross-Platform:** Code runs on Windows, Linux, macOS
-- **Industry Standard:** Widely used in engineering and scientific computing
+:::note The category, not just the language
+What you learn here transfers. C, Rust and Fortran differ from C++ in syntax and
+in comfort, but they share the model: compile first, then run, with the types
+known in advance. Every solver you will meet in mechanical engineering, from
+CalculiX to Abaqus to the code behind ANSYS, is written in one of them.
+:::
 
-### Use Cases in This Course
+## Where C++ shows up in engineering
 
-- **Performance-Critical Algorithms:** Image processing, 3D computations
-- **System Integration:** Interfacing with hardware and sensors
-- **Library Development:** Creating reusable components
-- **Legacy Code Integration:** Working with existing C/C++ codebases
+You will meet compiled code in three roles, and it is worth knowing which one
+you are in.
+
+**Underneath your Python.** NumPy, SciPy, VTK, PyVista and Qt are compiled
+libraries with a Python surface. When you call `mesh.warp_by_vector(...)`, the
+work happens in C++. Understanding that explains both the speed and the error
+messages.
+
+**As a solver or a tool you drive.** Simulation software is compiled software.
+You will configure it, feed it input files and read its output, and occasionally
+you will need to understand why it was built the way it was.
+
+**As the part of your own program that has to be fast.** When a Python loop is
+genuinely the bottleneck and NumPy cannot vectorise it, one option is to write
+that piece in C++ and call it from Python. The advanced topics chapter on
+build systems shows how that is wired together.
 
 ## C++ Build Workflow
 

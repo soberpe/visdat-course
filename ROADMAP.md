@@ -37,11 +37,15 @@ Anregungen und Fehlermeldungen gerne als Issue in diesem Repository.
 
 ## Struktur des Kurses
 
-- [ ] **Rolle des C++-Strangs klären.** Die C++-Kapitel werden aktuell in keinem
-      Workshop und in keiner Abgabe angewendet. Zwei Wege stehen zur Auswahl:
-      ein kleines pybind11-Beispiel, das C++, CMake und den Performance-Teil zu
-      einer Geschichte verbindet, oder eine Reduktion auf ein Lesekapitel für
-      fremden Code.
+- [ ] **C++ anwendbar machen.** C++ steht in diesem Kurs stellvertretend für die
+      kompilierten Sprachen, und dieser Unterschied zu Python zieht sich durch
+      den ganzen Stoff: er erklärt, warum NumPy schnell ist, warum `pip install`
+      manchmal kompiliert, wozu CMake da ist und warum Python-Threads nichts
+      beschleunigen. Bisher bleibt der Strang aber theoretisch. Geplant ist ein
+      kleines pybind11-Beispiel, das eine heiße Schleife aus einer Python-Übung
+      nach C++ verlagert, mit CMake gebaut und gegen die Python-Variante
+      gemessen wird. Damit schließen sich C++, Build-Systeme und der
+      Performance-Teil zu einer Geschichte.
 - [ ] **IMU- und Qt-Workshop umbauen.** Beide geben die vollständige Lösung zum
       Mitschreiben vor. Der Mesh-Workshop macht es mit Live Coding, kaputtem
       Code und leerer Seite besser, und dieses Muster sollen die beiden anderen

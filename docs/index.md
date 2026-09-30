@@ -17,6 +17,12 @@ application with a user interface. Every step uses tools that are standard in
 engineering practice today, and every step is done by hand at least once, so
 that you know what the tools are doing for you.
 
+You work in two languages, and on purpose. Python for most of what you build,
+and C++ as this course's representative of the compiled languages, because the
+difference between compiling and interpreting explains why the fast libraries
+are fast, why simulation software is built the way it is, and where the limits
+of a Python script actually lie.
+
 ## The thread through the semester
 
 ```mermaid

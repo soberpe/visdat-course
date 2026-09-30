@@ -1,0 +1,9 @@
+# Marp configuration for the course decks.
+#
+# breaks: false turns off GitHub style hard line breaks, so a paragraph can be
+# wrapped across several source lines without a <br> appearing in the slide.
+# That keeps the Markdown readable and diffable. The same setting is applied to
+# the VS Code preview in .vscode/settings.json, so both look the same.
+options:
+  markdown:
+    breaks: false
