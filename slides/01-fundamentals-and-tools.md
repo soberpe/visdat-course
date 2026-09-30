@@ -73,30 +73,18 @@ The details come with the assignment.
 
 # Who are you?
 
-**Stand up.** One line across the room, and find your place on it.
+**Stand up.** One line across the room. Left: **never written code**. Right: **I use an agent daily**.
 
-<div class="cols">
-<div>
+Then one minute each:
 
-**Left**
-Never written a line of code.
+1. Your name, and what you work on **technically**
+2. When did a computer last save you **hours**? Excel counts
+3. What do you want to do **in January** that you cannot do today?
 
+<div class="boxes">
+<div><b>In the form</b>Your GitHub username. No account? Your neighbour helps, two minutes.</div>
+<div><b>Three downloads, now</b><code>python.org</code> 3.13, not newer · <code>code.visualstudio.com</code> · <code>git-scm.com</code> · download only, do not install</div>
 </div>
-<div>
-
-**Right**
-I work with an agent every day.
-
-</div>
-</div>
-
-Then, one minute each:
-
-1. Your name, and what you are working on **technically**
-2. When did a computer last save you **hours** of work? Anything counts, Excel included
-3. What do you want to be able to do **in January** that you cannot do today?
-
-<p class="note">And: your GitHub username in the form. No account yet? Your neighbour who has one helps you, it takes two minutes.</p>
 
 <!--
 The line first, two minutes. Everyone sees the spread, including themselves.
