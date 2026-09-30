@@ -36,8 +36,8 @@ Ten minutes, told, not read. The beats:
 2. The moment that did it: realising that I no longer had to wait for a licence,
    a module or a vendor. If I can describe the problem, I can build the thing
    that solves it.
-3. That is what I want to hand on. Not everyone in this room will catch it, and
-   that is fine. For some of you it will change what you do for a living.
+3. That is what I want to hand on. For some of you this changes what you end up
+   doing for a living.
 4. We start at the basics and work up to applications that are genuinely worth
    showing. Nothing today needs prior knowledge.
 
@@ -87,18 +87,18 @@ Then one minute each:
 </div>
 
 <!--
-The line first, two minutes. Everyone sees the spread, including themselves.
-Interview three people at different points, not everyone.
+The line comes first, two minutes. Everyone sees the spread at a glance, which
+is the whole point of doing it standing up.
 
-Question 2 is the important one. It catches the people with the monster Excel
-who say they cannot program. Those are exactly the ones worth reaching.
+Question 2 carries the most. Automating something in Excel is programming, and
+asking about an experience instead of a skill level gets a far more useful
+answer than any self assessment.
 
-Question 3: write it down word for word. You read it back to them at their final
-presentation in January.
+Question 3 is worth writing down carefully. It is the earliest anchor for the
+final project, and the semester is long.
 
-Put the form link or QR code on the board now: replace this note with your own
-Forms link before class. Typing twenty usernames by hand from spoken spelling is
-where the invitations go wrong.
+Have the form open and its link on the board before the round starts. Usernames
+collected in writing beat usernames spelled out loud.
 -->
 
 ---
@@ -426,9 +426,10 @@ python -c "import struct; print(struct.calcsize('P')*8)"  # 64
 <p class="note">On Windows, tick "Add python.exe to PATH" during installation.</p>
 
 <!--
-This slide exists because it costs an afternoon otherwise. The download button
-on python.org always offers the newest release, and that is the one that does
-not work. Say it, then watch what they actually download.
+This slide exists because the wrong version costs an afternoon. The download
+button on python.org always offers the newest release, and that is the one the
+packages do not support yet. Worth saying twice, and worth checking again during
+the installation block.
 -->
 
 ---
@@ -477,9 +478,9 @@ On GitHub, **Settings → Emails**: enable *Keep my email addresses private* and
 > Set this before your first commit, not after.
 
 <!--
-Last year several submissions carried the FH address with the matriculation
-number in every commit. It cannot be removed afterwards without rewriting
-history. Two minutes now saves that.
+A commit history is permanent, and the FH address contains the student ID. Once
+it is in, it cannot be taken out again without rewriting history, which is far
+more work than it sounds. Two minutes here prevents it.
 -->
 
 ---
