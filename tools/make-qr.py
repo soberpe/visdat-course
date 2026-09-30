@@ -20,11 +20,13 @@ import segno
 ROOT = Path(__file__).resolve().parent.parent
 
 # output path, relative to the repository root -> the URL it encodes
+#
+# The short link of the form, not its long response URL. Shorter text means a
+# coarser grid, and a coarse grid is what survives a projector and the back row.
+# The long form of the same link, in case the short one ever has to be rebuilt:
+# https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=c0uN-LJrmkurx-uW5aZAfDDTS6A6jlNGux0pczJABfZUQ1VGUFFWQkZKTDU1VEhWUkYyUUVLMVlQRS4u
 CODES = {
-    "static/img/kickoff/forms-qr.png": (
-        "https://forms.cloud.microsoft/Pages/ResponsePage.aspx"
-        "?id=c0uN-LJrmkurx-uW5aZAfDDTS6A6jlNGux0pczJABfZUQ1VGUFFWQkZKTDU1VEhWUkYyUUVLMVlQRS4u"
-    ),
+    "static/img/kickoff/forms-qr.png": "https://forms.cloud.microsoft/e/GFLB4sP5Dx",
 }
 
 # Error correction M keeps a fifth of the code redundant, which is what makes a
