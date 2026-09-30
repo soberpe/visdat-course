@@ -68,13 +68,30 @@ sudo apt install git
 Download and install VS Code from [code.visualstudio.com](https://code.visualstudio.com/)
 
 #### Python
-Download Python 3.8+ from [python.org](https://python.org/)
+
+Install **Python 3.13**, 64 bit, from [python.org](https://www.python.org/downloads/).
+
+:::warning Not the newest version, and not the free-threaded one
+Two traps that cost a whole afternoon if you walk into them.
+
+**Take 3.13, not 3.14 or newer.** The front page of python.org offers you the
+latest release. Some of the packages this course uses, VTK and PyTables among
+them, do not publish builds for it yet, and the installation then fails with a
+compiler error that looks far worse than the problem is.
+
+**Leave "free-threaded binaries" unticked** in the Windows installer. It is an
+experimental build of Python, and numba and VTK have no packages for it.
+:::
+
+During installation on Windows, tick **"Add python.exe to PATH"**. It saves you
+from typing the full path later.
 
 ```bash
 # Verify Python installation
-python --version
-# or
-python3 --version
+python --version         # expected: Python 3.13.x
+
+# Verify it is the 64 bit build
+python -c "import struct; print(struct.calcsize('P') * 8)"   # expected: 64
 ```
 
 ### Step 2: Configure Git

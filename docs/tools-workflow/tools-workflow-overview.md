@@ -196,8 +196,8 @@ marp presentation.md --html --output presentation.html
 
 1. **Git:** Download from [git-scm.com](https://git-scm.com/)
 2. **VS Code:** Download from [code.visualstudio.com](https://code.visualstudio.com/)
-3. **Python:** Download from [python.org](https://python.org/) (version 3.8+)
-4. **Node.js:** Download from [nodejs.org](https://nodejs.org/) (for documentation tools)
+3. **Python:** Download from [python.org](https://www.python.org/downloads/), version **3.13**, 64 bit. Not a newer release, see [Kickoff Assignment](./kickoff-assignment.md) for the reason.
+4. **Node.js:** Download from [nodejs.org](https://nodejs.org/), only needed if you want to build this site locally
 
 ### Git Configuration (First Time Setup)
 

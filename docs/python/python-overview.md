@@ -61,7 +61,15 @@ print(f"x={x}, y={y}, z={z}")
 
 ### Installation
 
-Download Python 3.8+ from [python.org](https://python.org/)
+This course uses **Python 3.13**, 64 bit, from
+[python.org](https://www.python.org/downloads/).
+
+:::warning Take 3.13, not the newest release
+The packages pinned in `requirements.txt` have builds for Python 3.11, 3.12 and
+3.13. VTK and PyTables do not publish builds for 3.14 yet, so a newer Python
+makes the installation fail. Avoid the free-threaded variant of the Windows
+installer for the same reason.
+:::
 
 ```bash
 # Verify Python installation
@@ -110,7 +118,7 @@ You can see the full Zen of Python by typing `import this` in the Python interpr
 
 ### Recommended Setup
 
-1. **Python Installation:** Python 3.8 or higher
+1. **Python Installation:** Python 3.13 (3.11 and 3.12 also work)
 2. **Code Editor:** VS Code with Python extension
 3. **Package Manager:** pip (included with Python)
 4. **Virtual Environments:** venv for project isolation

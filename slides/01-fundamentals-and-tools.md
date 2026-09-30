@@ -315,7 +315,43 @@ recognise the message when it happens to them.
 
 ---
 
-# Python and the virtual environment
+# Python 3.13, and nothing newer
+
+<div class="cols">
+<div>
+
+**Why not the latest**
+
+VTK and PyTables publish no builds for 3.14 yet. The install then fails with a
+compiler error that looks much worse than the problem is.
+
+</div>
+<div>
+
+**Also avoid**
+
+The "free-threaded binaries" option in the Windows installer. It is
+experimental, and numba and VTK have nothing for it.
+
+</div>
+</div>
+
+```bash
+python --version                                          # Python 3.13.x
+python -c "import struct; print(struct.calcsize('P')*8)"  # 64
+```
+
+<p class="note">On Windows, tick "Add python.exe to PATH" during installation.</p>
+
+<!--
+This slide exists because it costs an afternoon otherwise. The download button
+on python.org always offers the newest release, and that is the one that does
+not work. Say it, then watch what they actually download.
+-->
+
+---
+
+# The virtual environment
 
 ```bash
 python -m venv .venv                    # if python is on PATH

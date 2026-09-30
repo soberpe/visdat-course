@@ -1,3 +1,15 @@
+# Visualisierung & Datenaufbereitung: package versions for the course.
+#
+# Python 3.13, 64 bit, is the version to use. 3.11 and 3.12 also work.
+# 3.14 and newer do not: VTK 9.5.2 and PyTables 3.10.2 publish no builds for
+# them yet. The free-threaded builds of Python are not supported either,
+# because numba and VTK have no packages for them.
+#
+#   python -m venv .venv
+#   .venv\Scripts\activate          (Windows)
+#   source .venv/bin/activate        (macOS, Linux)
+#   pip install -r requirements.txt
+#
 AHRS==0.4.0
 aiohappyeyeballs==2.6.1
 aiohttp==3.13.2
