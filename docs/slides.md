@@ -7,13 +7,18 @@ title: Slides
 The slide decks of the lectures, straight from the browser. Use the arrow keys
 or click to move through a deck, and press <kbd>F</kbd> for full screen.
 
-| | Deck | Covers |
+| Session | Deck | Covers |
 |---|---|---|
-| 1 | [Programming Fundamentals & Tools](pathname:///decks/01-fundamentals-and-tools.html) | Organisation, paradigms, C++ and Python, Git, environment |
-| 2 | [Data Processing](pathname:///decks/02-data-processing.html) | pandas, data quality, calibration, integration, HDF5 |
-| 3 | [Visualization](pathname:///decks/03-visualization.html) | Matplotlib, colour maps, VTK, meshio, PyVista |
-| 4 | [User Interfaces](pathname:///decks/04-user-interfaces.html) | Qt, PyQt6, signals and slots, PyVista in Qt |
-| 5 | [Build Systems & Parallelization](pathname:///decks/05-advanced-topics.html) | CMake, the GIL, multiprocessing, Numba, final assignment |
+| 1 | [Programming Fundamentals & Tools](pathname:///decks/01-fundamentals-and-tools.html) | Organisation, paradigms, C++ and Python, Git |
+| 2 | [Environment & Kickoff](pathname:///decks/02-environment-and-kickoff.html) | Both repositories, Python 3.13, virtual environment, VS Code, kickoff assignment |
+| 3 | [Programming Basics](pathname:///decks/03-programming-basics.html) | Declaration and assignment, references and pointers, scope, classes |
+| 4 | [Data Processing](pathname:///decks/04-data-processing.html) | pandas, data quality, calibration, integration, HDF5 |
+| 6, 7 | [Visualization](pathname:///decks/06-visualization.html) | Matplotlib, colour maps, VTK, meshio, PyVista |
+| 10 | [User Interfaces](pathname:///decks/10-user-interfaces.html) | Qt, PyQt6, signals and slots, PyVista in Qt |
+| 12 | [Build Systems & Parallelization](pathname:///decks/12-advanced-topics.html) | CMake, the GIL, multiprocessing, Numba, final assignment |
+
+The number of a deck is the session it belongs to. The sessions in between
+are workshops and work sessions, which are described in the script.
 
 :::note The slides are not the script
 A deck carries a lecture. It shows the pictures, the code that gets typed live

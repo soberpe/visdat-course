@@ -11,12 +11,12 @@ footer: "FH OÖ Wels · Visualisierung & Datenaufbereitung"
 
 ## Turning your script into a tool somebody else can use
 
-Lecture 4 · Qt, PyQt6, PyVista
+Lecture 10 · Qt, PyQt6, PyVista
 
 <!--
 Three blocks. The first is short on purpose: the interesting part is blocks two
-and three, where they build something. The Qt workshop on the site is the
-homework and picks up exactly where block three stops.
+and three, where you build something. The Qt workshop in the next session
+picks up exactly where block three stops.
 -->
 
 ---
@@ -27,7 +27,7 @@ homework and picks up exactly where block three stops.
 2. **PyQt6**: windows, layouts, signals and slots, the event loop
 3. **PyVista in Qt**: the 3D view inside your own window
 
-<p class="note">Hands on afterwards: the Qt workshop on the course site, building an FEM viewer.</p>
+<p class="note">Next session: the Qt workshop on the course site, building an FEM viewer.</p>
 
 ---
 
@@ -36,8 +36,8 @@ homework and picks up exactly where block three stops.
 # Your viewer script works perfectly. Your colleague still cannot use it. Why?
 
 <!--
-Answers: they have no Python, they do not know which file to edit, they do not
-know what to change, they broke it. All correct. A user interface is not
+Typical answers: the colleague has no Python, does not know which file to
+edit, does not know what to change, or broke it. All correct. A user interface is not
 decoration, it is the difference between a script and a tool.
 -->
 
@@ -168,8 +168,8 @@ app.exec()                      # 4. hand control to the event loop
 ```
 
 <!--
-Type and run it. Then delete app.exec() and run again: the window flashes and
-disappears. That single experiment explains the event loop better than a
+Worth trying: run it, then delete app.exec() and run again. The window flashes
+and disappears. That single experiment explains the event loop better than a
 paragraph.
 -->
 
@@ -219,8 +219,8 @@ combo.currentTextChanged.connect(self.set_field)
 
 <!--
 The answer is the event loop: your function is running inside it, so nothing
-gets repainted until you return. Let them arrive at it. Then the rule: anything
-slow belongs in a QThread, and they will meet this in the final project.
+gets repainted until you return. Worth working out before reading on. Then the
+rule: anything slow belongs in a QThread, and the final project will need it.
 -->
 
 ---

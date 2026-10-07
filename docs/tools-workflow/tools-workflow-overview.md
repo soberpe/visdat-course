@@ -8,7 +8,7 @@ title: Development Tools & Workflow
 
 Modern software development relies on a robust set of tools that enable collaboration, version control, and reproducible workflows. This course emphasizes industry-standard practices that you'll encounter in professional engineering environments.
 
-> **Quick Reference:** The [slides of lecture 1](../slides.md) give a condensed overview and mark the live demos.
+> **Quick Reference:** The [slides of sessions 1 and 2](../slides.md) give a condensed overview and mark the live demos.
 
 ## Git & Version Control
 
@@ -72,7 +72,7 @@ visdat-course/            # public, course material, read only for you
 ├── data/                 # Sample datasets
 └── README.md             # Project overview
 
-visdat-abgaben-ws2627/    # private, your submissions
+visdat-abgaben-<semester>/  # private, your submissions
 └── submissions/
     └── your-github-username/
 ```
@@ -267,8 +267,9 @@ type ~/.ssh/id_ed25519.pub | clip
 
 ```bash
 # 1. Clone the submissions repository once
-git clone https://github.com/soberpe/visdat-abgaben-ws2627.git
-cd visdat-abgaben-ws2627
+# <semester> is the current semester, for example ws2627
+git clone https://github.com/soberpe/visdat-abgaben-<semester>.git
+cd visdat-abgaben-<semester>
 
 # 2. Get the current state
 git checkout main

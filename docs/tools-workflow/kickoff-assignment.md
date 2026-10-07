@@ -8,7 +8,7 @@ title: Kickoff Assignment
 
 Welcome to the Visualization & Data Processing course! This kickoff assignment will help you set up your development environment, familiarize yourself with the course workflow, and complete your first hands-on tasks.
 
-> **Quick Reference:** The [slides of lecture 1](../slides.md) give a condensed overview of today's material.
+> **Quick Reference:** The [slides of sessions 1 and 2](../slides.md) give a condensed overview of this material.
 
 ## Learning Objectives
 
@@ -174,9 +174,12 @@ to date during the semester with `git pull`.
 You receive an invitation by email in the first week. Accept it, then clone:
 
 ```bash
-git clone https://github.com/soberpe/visdat-abgaben-ws2627.git
-cd visdat-abgaben-ws2627
+git clone https://github.com/soberpe/visdat-abgaben-<semester>.git
+cd visdat-abgaben-<semester>
 ```
+
+`<semester>` stands for the current semester, for example `ws2627` for the
+winter semester 2026/27. The exact link is in your invitation email.
 
 ### Step 3: Protect Your Email Address
 
@@ -521,9 +524,14 @@ git pull
 
 ## Timeline
 
-- **Week 1:** Complete environment setup, clone both repositories
-- **Week 2:** Finish all documentation tasks
-- **Week 3:** Submit Pull Request and address any feedback
+The assignment is handed out in session 2 and is due two weeks later.
+
+- **Session 2, in class:** environment set up, both repositories cloned, your
+  branch created
+- **Session 3, in class:** first commits pushed, pull request open, even if the
+  work in it is not finished yet
+- **By the deadline:** all tasks done, automatic check passing, feedback
+  addressed
 
 ## Next Steps
 
@@ -541,7 +549,7 @@ After completing this assignment:
 
 2. **Explore the repository structure**
 3. **Read through other course materials**
-4. **Prepare for Week 2 content on data formats**
+4. **Prepare for the data processing session**
 
 ## Bonus Challenges (Optional)
 

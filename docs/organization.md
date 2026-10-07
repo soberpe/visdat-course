@@ -36,12 +36,31 @@ By the end of this course, students will be able to:
 
 ## Course Structure
 
-### Weekly Topics Overview
+### Sessions
 
-1. **Week 1-3:** Introduction & Tools (Git, Markdown, Python/C++ basics)
-2. **Week 4:** Data formats, Pandas/Polars, HDF5
-3. **Week 5:** 2D Visualization (Matplotlib/Plotly)
-4. **Upcoming weeks:** 3D content, interactive UIs, advanced topics
+The course has 15 sessions of three teaching units each. Most of them start
+with a lecture and continue hands on. Workshops and work sessions are hands on
+from the start. The dates are announced at the beginning of the semester.
+
+| Session | Topic | Format |
+|---|---|---|
+| 1 | Programming fundamentals and Git | Lecture |
+| 2 | Environment and kickoff assignment | Lecture and hands on |
+| 3 | Programming basics | Lecture and hands on |
+| 4 | Data processing | Lecture and hands on |
+| 5 | Motion tracking assignment | Work session |
+| 6 | 2D visualization | Lecture and hands on |
+| 7 | 3D visualization | Lecture and hands on |
+| 8 | Mesh visualization workshop | Workshop |
+| 9 | FEM coding challenge | Workshop |
+| 10 | User interfaces | Lecture and hands on |
+| 11 | Qt workshop | Workshop |
+| 12 | Build systems and parallelization | Lecture |
+| 13 | Final assignment | Work session |
+| 14 | Final assignment | Work session |
+| 15 | Final presentations | Presentations |
+
+The slides for each session are listed on the page [Slides](./slides.md).
 
 ### Learning Approach
 

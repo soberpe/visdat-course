@@ -4,597 +4,532 @@ title: Pandas Fundamentals
 
 # Pandas Fundamentals
 
-
 ## Introduction to Pandas
 
+Pandas was created in 2008 by Wes McKinney to address the lack of flexible,
+high-performance data analysis tools in Python. Before pandas, data
+manipulation in Python relied on basic lists, dictionaries, and NumPy arrays,
+which are powerful for numerical work but cumbersome for tabular, labeled, or
+time series data.
 
+**The leap:** Pandas introduced the DataFrame and the Series, bringing
+spreadsheet-like, labeled, and relational data handling to Python. This made
+tasks like filtering, grouping, joining, and time series analysis much easier
+and more expressive, and it is a large part of why Python became a leading
+language for data science and engineering.
 
-Pandas was created in 2008 by Wes McKinney to address the lack of flexible, high-performance data analysis tools in Python. Before pandas, data manipulation in Python relied on basic lists, dictionaries, and NumPy arrays, which are powerful for numerical work but cumbersome for tabular, labeled, or time series data.
+:::info The dataset used on this page
+All examples use `data/motorcycle_ride.csv` from the course repository, the log
+of a motorcycle ride of about nine minutes recorded at 100 Hz. The columns are
+described on the page [Sample Datasets](./sample-datasets.md). The file
+contains deliberate defects, such as gaps, missing values and impossible
+readings. Some examples on this page run into them on purpose.
+:::
 
-**The leap:** Pandas introduced the DataFrame and Series, bringing spreadsheet-like, labeled, and relational data handling to Python. This made tasks like filtering, grouping, joining, and time series analysis much easier and more expressive, and enabled Python to become a leading language for data science and engineering.
+Every code block on this page assumes these two imports:
 
-
-> **Info**
-> All code examples use the provided dummy sensor dataset (`sensor_data.csv`). Column names (e.g. `speed_kmh`, `lateral_g`, etc.) are illustrative and may differ in your own data.
+```python
+import numpy as np
+import pandas as pd
+```
 
 ## Core Data Structures
-Learn how pandas represents and organizes data. Series and DataFrames are the foundation for all analysis and manipulation.
 
-
+Pandas represents data with two objects. Everything else in the library is an
+operation on one of them, and every operation returns one of them again.
 
 ### Series: One-Dimensional Data
-A **Series** is a one-dimensional labeled array, similar to a column in a spreadsheet. Use Series for handling single columns or sensor channels with labels and fast operations.
 
-**Series Example:**
+A **Series** is a one-dimensional labeled array, similar to a column in a
+spreadsheet. A single sensor channel is a Series: a sequence of values with an
+index and a name.
+
 ```python
-import pandas as pd
-speed_series = pd.Series([10, 35, 50, 80, 120], name='speed_kmh')
-print(speed_series)
+speed = pd.Series([0.0, 12.4, 31.0, 48.7, 50.2], name="speed_kmh")
+print(speed)
+print(speed.mean())
 ```
 
 ### DataFrames: Two-Dimensional Data
-A **DataFrame** is a two-dimensional table of data, like an entire spreadsheet, with rows and columns. DataFrames are the core structure in pandas for working with tabular data.
 
-DataFrames allow you to organize, inspect, and manipulate data efficiently. Once you understand their structure, you can select, filter, and transform data for analysis.
+A **DataFrame** is a two-dimensional table, like an entire spreadsheet. Each
+column is a Series, and all columns share the same index. DataFrames are the
+structure you will work with most of the time.
 
-**DataFrame Example:**
 ```python
-data = {
-    'speed_kmh': [10, 35, 50, 80, 120],
-    'distance_m': [0, 100, 200, 300, 400],
-    'time_s': [0, 1, 2, 3, 4],
-    'brake_pressure_bar': [0, 10, 20, 30, 40],
-    'rpm': [1000, 3000, 5000, 7000, 9000]
-}
-telemetry = pd.DataFrame(data)
-print(telemetry)
-```
-
-### Data Selection and Filtering
-Select columns, rows, and filter data using conditions.
-```python
-# Column selection
-speed_data = telemetry['speed_kmh']
-position_data = telemetry[['distance_m', 'time_s']]
-
-# Row selection by index
-first_3_samples = telemetry.iloc[:3]
-specific_rows = telemetry.iloc[2:4]
-
-# Boolean indexing (filtering)
-high_speed = telemetry[telemetry['speed_kmh'] > 35]
-heavy_braking = telemetry[telemetry['brake_pressure_bar'] > 20]
-
-# Multiple conditions
-fast_braking = telemetry[(telemetry['speed_kmh'] > 30) & (telemetry['brake_pressure_bar'] > 10)]
-
-# Query method (alternative syntax)
-```python
-```
-
-
-### Data Modification
-Add, change, or remove columns to create new features or clean up your dataset.
-```python
-# Add new columns
-telemetry['speed_ms'] = telemetry['speed_kmh'] / 3.6  # Convert km/h to m/s
-telemetry['total_g'] = (telemetry.get('lateral_g', 0)**2 + telemetry.get('longitudinal_g', 0)**2)**0.5
-
-# Modify existing columns
-telemetry['time_minutes'] = telemetry['time_s'] / 60
-
-# Zero-start time (relative to first timestamp)
-telemetry['time_relative'] = telemetry['time_s'] - telemetry['time_s'].iloc[0]
-
-# Drop columns (example with hypothetical unused columns)
-# telemetry_reduced = telemetry.drop(['unused_column1', 'unused_column2'], axis=1)
-
-# Rename columns (example with existing columns)
-telemetry_renamed = telemetry.rename(columns={
-    'speed_kmh': 'velocity_kmh',
-    'time_s': 'timestamp_seconds',
-    'distance_m': 'position_meters'
+sample = pd.DataFrame({
+    "timestamp": [0.00, 0.01, 0.02, 0.03, 0.04],
+    "speed_kmh": [0.0, 12.4, 31.0, 48.7, 50.2],
+    "rpm": [1250, 2400, 3600, 3900, 4000],
+    "gear": [0, 1, 2, 3, 3],
 })
+print(sample)
+print(sample.dtypes)
 ```
 
-### Data Selection and Filtering
-Extract relevant rows and columns to focus your analysis on the data that matters.
+## Loading and Inspecting
+
+The first thing to do with a new file is to load it and look at it critically,
+before computing anything.
+
 ```python
-# Using the telemetry dataset for examples
-telemetry = pd.read_csv('data/sensor_data.csv')
+ride = pd.read_csv("data/motorcycle_ride.csv")
 
-# Column selection
-speed_data = telemetry['speed_kmh']
-position_data = telemetry[['distance_m', 'time_s']]
-
-# Row selection by index
-first_100_samples = telemetry.iloc[:100]
-specific_rows = telemetry.iloc[100:200]
-
-# Boolean indexing (filtering)
-high_speed = telemetry[telemetry['speed_kmh'] > 35]
-heavy_braking = telemetry[telemetry['brake_pressure_bar'] > 50]
-
-# Multiple conditions
-fast_braking = telemetry[(telemetry['speed_kmh'] > 30) & (telemetry['brake_pressure_bar'] > 40)]
-
-# Query method (alternative syntax)
-high_rpm = telemetry.query('rpm > 7000')
+print(ride.shape)       # rows and columns
+print(ride.head())      # the first five rows
+ride.info()             # data types and non-null counts
+print(ride.describe())  # min, max, mean and quartiles per column
 ```
 
+:::tip Read describe() like a reviewer
+`describe()` is where impossible values show up first. A minimum or maximum
+that is suspiciously round, or physically impossible, is rarely a measurement.
+In this file, three columns have exactly such a value. Finding them is one of
+the exercises of the data processing lecture.
+:::
 
-### Data Modification
-Add, change, or remove columns to create new features or clean up your dataset.
+## Selecting and Filtering
+
+Selection means picking columns, rows, or both. Filtering means keeping the
+rows that satisfy a condition.
+
 ```python
-# Using telemetry data for transformations
-telemetry = pd.read_csv('data/sensor_data.csv')
+ride = pd.read_csv("data/motorcycle_ride.csv")
 
-# Add new columns (using telemetry data)
-telemetry['speed_ms'] = telemetry['speed_kmh'] / 3.6  # Convert km/h to m/s
-telemetry['total_g'] = (telemetry['lateral_g']**2 + telemetry['longitudinal_g']**2)**0.5
+# Column selection: one column gives a Series, a list gives a DataFrame
+speed = ride["speed_kmh"]
+engine = ride[["timestamp", "rpm", "gear"]]
 
-# Modify existing columns
-telemetry['time_minutes'] = telemetry['time_s'] / 60
+# Row selection by position
+first_second = ride.iloc[:100]          # 100 Hz, so the first second
+some_rows = ride.iloc[1000:1010]
 
-# Zero-start time (relative to first timestamp)
-telemetry['time_relative'] = telemetry['time_s'] - telemetry['time_s'].iloc[0]
+# Boolean indexing: keep rows where the condition is True
+fast = ride[ride["speed_kmh"] > 90]
+braking = ride[ride["brake_front_bar"] > 5]
 
-# Drop columns (example with hypothetical unused columns)
-# telemetry_reduced = telemetry.drop(['unused_column1', 'unused_column2'], axis=1)
+# Multiple conditions need & and |, and parentheses around each condition
+hard_braking_fast = ride[(ride["speed_kmh"] > 80) & (ride["brake_front_bar"] > 8)]
 
-# Rename columns (example with existing columns)
-telemetry_renamed = telemetry.rename(columns={
-    'speed_kmh': 'velocity_kmh',
-    'time_s': 'timestamp_seconds',
-    'distance_m': 'position_meters'
-})
+# The query method expresses the same with a string
+leaning = ride.query("lean_deg > 20 or lean_deg < -20")
+print(len(fast), len(braking), len(hard_braking_fast), len(leaning))
 ```
 
+## Adding and Changing Columns
+
+New columns are created by assignment. The calculation runs on the whole
+column at once, there is no loop.
+
+```python
+ride = pd.read_csv("data/motorcycle_ride.csv")
+
+# Unit conversion
+ride["speed_ms"] = ride["speed_kmh"] / 3.6
+ride["time_min"] = ride["timestamp"] / 60
+
+# A derived physical quantity: in a steady bend, the lateral acceleration
+# follows from the lean angle as a_lat = g * tan(lean)
+ride["lateral_g"] = np.tan(np.radians(ride["lean_deg"]))
+
+# Renaming and dropping columns return a new DataFrame
+renamed = ride.rename(columns={"speed_kmh": "wheel_speed_kmh"})
+reduced = ride.drop(columns=["brake_rear_bar", "ride_mode"])
+print(reduced.columns.tolist())
+```
+
+:::warning Methods return new objects
+`rename`, `drop`, `dropna`, `fillna` and most other methods do not change the
+DataFrame you call them on. They return a new one. If you do not assign the
+result, nothing happened. This is the same reference semantics you know from
+Python variables in general.
+:::
 
 ## Data Cleaning
-Prepare your data by handling missing values and removing outliers for reliable analysis.
 
+Cleaning is a sequence of decisions. Each method below encodes an assumption
+about the signal, and the right choice depends on what the column measures.
 
 ### Handling Missing Values
-Deal with gaps in your data using strategies like dropping, filling, or interpolation.
+
 ```python
-# Using telemetry data for missing value examples
-telemetry = pd.read_csv('data/sensor_data.csv')
+ride = pd.read_csv("data/motorcycle_ride.csv")
 
-# Check for missing values
-missing_summary = telemetry.isnull().sum()
-print("Missing values per column:")
-print(missing_summary[missing_summary > 0])
+# Where are values missing?
+missing = ride.isna().sum()
+print(missing[missing > 0])
 
-# Strategy 1: Drop rows with any missing values
-telemetry_dropna = telemetry.dropna()
+# Strategy 1: drop every row with a missing value
+complete_rows = ride.dropna()
 
-# Strategy 2: Drop rows with too many missing values
-threshold = len(telemetry.columns) * 0.7  # Keep rows with at least 70% data
-telemetry_threshold = telemetry.dropna(thresh=threshold)
+# Strategy 2: hold the last value, for a slow signal, at most 3 s at 100 Hz
+coolant_filled = ride["coolant_c"].ffill(limit=300)
 
-# Strategy 3: Forward fill for short gaps
-telemetry_ffill = telemetry.fillna(method='ffill', limit=5)
+# Strategy 3: interpolate, for a smooth signal, at most 0.2 s
+lean_filled = ride["lean_deg"].interpolate(limit=20)
 
-# Strategy 4: Linear interpolation for sensor data
-telemetry_interpolated = telemetry.copy()
-telemetry_interpolated['speed_kmh'] = telemetry_interpolated['speed_kmh'].interpolate(method='linear')
-telemetry_interpolated['rpm'] = telemetry_interpolated['rpm'].interpolate(method='linear')
-
-# Strategy 5: Fill with specific values
-telemetry_filled = telemetry.fillna({
-    'speed_kmh': 0,
-    'steering_angle_deg': 0,
-    'throttle_percent': telemetry['throttle_percent'].mean()
-})
+# Strategy 4: fill with a fixed value, only if that value is justified
+throttle_filled = ride["throttle_pct"].fillna(0)   # assumes a closed throttle
 ```
 
+Each strategy is right for some signals and wrong for others. Holding the last
+value suits the coolant temperature, which changes slowly. It does not suit the
+throttle, which can jump within a tenth of a second. Interpolating suits the
+lean angle, which changes smoothly, but not across a long gap. Dropping rows is
+honest, but it creates holes in the time axis. Whatever you choose, write down
+which method you used and why.
 
-### Outlier Detection and Removal
-Identify and remove extreme values that could distort your analysis.
+### Outlier Detection
+
+The interquartile range (IQR) method flags values far outside the middle half
+of the data.
+
 ```python
-# Using telemetry data for transformations
-telemetry = pd.read_csv('data/sensor_data.csv')
+ride = pd.read_csv("data/motorcycle_ride.csv")
 
 def detect_outliers_iqr(data, column):
-    """Detect outliers using Interquartile Range method"""
-    Q1 = data[column].quantile(0.25)
-    Q3 = data[column].quantile(0.75)
-    IQR = Q3 - Q1
-    lower_bound = Q1 - 1.5 * IQR
-    upper_bound = Q3 + 1.5 * IQR
-    
-    outliers = data[(data[column] < lower_bound) | 
-                   (data[column] > upper_bound)]
-    return outliers, lower_bound, upper_bound
+    """Return the rows outside 1.5 IQR, and the bounds that were used."""
+    q1 = data[column].quantile(0.25)
+    q3 = data[column].quantile(0.75)
+    iqr = q3 - q1
+    lower = q1 - 1.5 * iqr
+    upper = q3 + 1.5 * iqr
+    outliers = data[(data[column] < lower) | (data[column] > upper)]
+    return outliers, lower, upper
 
-# Detect outliers using telemetry data
-telemetry = pd.read_csv('data/sensor_data.csv')
-outliers, lower, upper = detect_outliers_iqr(telemetry, 'lateral_g')
-print(f"Found {len(outliers)} outliers in lateral_g")
-print(f"Valid range: [{lower:.3f}, {upper:.3f}] g")
+outliers, lower, upper = detect_outliers_iqr(ride, "speed_kmh")
+print(f"speed_kmh: {len(outliers)} outliers outside [{lower:.1f}, {upper:.1f}]")
 
-# Remove outliers
-def remove_outliers_iqr(data, columns):
-    """Remove outliers from specified columns using IQR method"""
-    telemetry_clean = data.copy()
-    
-    for column in columns:
-        Q1 = telemetry_clean[column].quantile(0.25)
-        Q3 = telemetry_clean[column].quantile(0.75)
-        IQR = Q3 - Q1
-        lower = Q1 - 1.5 * IQR
-        upper = Q3 + 1.5 * IQR
-        
-        # Keep only values within bounds
-        mask = (telemetry_clean[column] >= lower) & (telemetry_clean[column] <= upper)
-        telemetry_clean = telemetry_clean[mask]
-    
-    return telemetry_clean
-
-# Apply to g-force channels
-gforce_columns = ['lateral_g', 'longitudinal_g']
-telemetry_clean = remove_outliers_iqr(telemetry, gforce_columns)
-print(f"Removed {len(telemetry) - len(telemetry_clean)} outlier samples")
+outliers, lower, upper = detect_outliers_iqr(ride, "lean_deg")
+print(f"lean_deg:  {len(outliers)} outliers outside [{lower:.1f}, {upper:.1f}]")
 ```
 
+On the wheel speed, the method finds a handful of samples, and they are indeed
+faulty. On the lean angle it flags thousands, because riding upright is what is
+usual and every bend is unusual. The method finds what is rare. It cannot tell
+whether a rare value is a fault or the most interesting part of the
+measurement.
 
-## Basic Statistical Operations
-Summarize your data and discover patterns using descriptive statistics and correlations.
+```python
+# Remove outliers only where you have checked that they are faults
+outliers, lower, upper = detect_outliers_iqr(ride, "speed_kmh")
+ride_clean = ride.drop(index=outliers.index)
+print(f"Removed {len(ride) - len(ride_clean)} samples")
+```
 
+:::warning Never delete silently
+Mark, count and report the values you remove. A script that drops outliers
+automatically will one day drop exactly the event the test was built to
+capture.
+:::
+
+## Statistics
 
 ### Descriptive Statistics
-Calculate means, medians, percentiles, and more to understand your data’s distribution.
+
 ```python
-# Using telemetry data for statistical examples
-telemetry = pd.read_csv('data/sensor_data.csv')
+ride = pd.read_csv("data/motorcycle_ride.csv")
+moving = ride[ride["speed_kmh"].between(3, 200)]   # riding, without error frames
 
-# Single column statistics
-print(f"Speed - Mean: {telemetry['speed_kmh'].mean():.2f} km/h")
-print(f"Speed - Median: {telemetry['speed_kmh'].median():.2f} km/h")
-print(f"Speed - Std: {telemetry['speed_kmh'].std():.2f} km/h")
-print(f"Speed - Min/Max: {telemetry['speed_kmh'].min():.1f} / {telemetry['speed_kmh'].max():.1f} km/h")
+print(f"Mean speed:   {moving['speed_kmh'].mean():.1f} km/h")
+print(f"Median speed: {moving['speed_kmh'].median():.1f} km/h")
+print(f"Std:          {moving['speed_kmh'].std():.1f} km/h")
 
-# Multiple columns
-stats_summary = telemetry[['speed_kmh', 'lateral_g', 'longitudinal_g', 'rpm']].describe()
-print(stats_summary)
+print(moving[["speed_kmh", "rpm", "throttle_pct", "lean_deg"]].describe())
 
-# Custom percentiles
-percentiles = telemetry['speed_kmh'].quantile([0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.99])
-print("Speed percentiles:")
-print(percentiles)
+print(moving["speed_kmh"].quantile([0.1, 0.5, 0.9, 0.99]))
 ```
 
+### Grouping
 
-### Correlation Analysis
-Find relationships between variables to reveal dependencies and trends.
+`groupby` splits the table by the values of one column, applies a calculation
+to each group, and combines the results.
+
 ```python
-# Using telemetry data for transformations
-telemetry = pd.read_csv('data/sensor_data.csv')
+ride = pd.read_csv("data/motorcycle_ride.csv")
 
-# Correlation matrix using telemetry data
-correlation_matrix = telemetry[['speed_kmh', 'lateral_g', 'longitudinal_g', 'steering_angle_deg']].corr()
-print("Correlation matrix:")
-print(correlation_matrix)
+per_gear = ride.groupby("gear").agg(
+    samples=("speed_kmh", "size"),
+    mean_speed=("speed_kmh", "mean"),
+    mean_rpm=("rpm", "mean"),
+)
+print(per_gear)
 
-# Specific correlations
-speed_steering_corr = telemetry['speed_kmh'].corr(telemetry['steering_angle_deg'])
-print(f"Speed-Steering correlation: {speed_steering_corr:.3f}")
+print(ride.groupby("ride_mode")["lean_deg"].agg(["min", "max"]))
 ```
 
+### Correlation
 
-## Data Transformation
-Apply mathematical operations, scaling, and categorization to create new insights from your data.
+```python
+ride = pd.read_csv("data/motorcycle_ride.csv")
+moving = ride[ride["speed_kmh"].between(3, 200)]
 
+columns = ["speed_kmh", "rpm", "throttle_pct", "accel_x", "lean_deg"]
+print(moving[columns].corr().round(2))
+```
 
+A correlation coefficient measures a linear relationship and nothing else. The
+lean angle and the speed are clearly related on a motorcycle, but the
+coefficient is close to zero, because the bike leans left as often as right.
 
+## Transforming Data
 
 ### Mathematical Operations
-Use arithmetic, trigonometric, and normalization functions to process and analyze sensor data.
+
+NumPy functions work directly on Series, element by element.
+
 ```python
-# Using telemetry data for transformations
-telemetry = pd.read_csv('data/sensor_data.csv')
+ride = pd.read_csv("data/motorcycle_ride.csv")
 
-# Element-wise operations
-telemetry['speed_squared'] = telemetry['speed_kmh'] ** 2
-telemetry['g_force_magnitude'] = np.sqrt(telemetry['lateral_g']**2 + telemetry['longitudinal_g']**2)
+ride["lean_rad"] = np.radians(ride["lean_deg"])
+ride["accel_g"] = ride["accel_x"] / 9.81
 
-# Trigonometric functions
-telemetry['steering_rad'] = np.radians(telemetry['steering_angle_deg'])
-telemetry['steering_sin'] = np.sin(telemetry['steering_rad'])
+# Magnitude of the horizontal acceleration, longitudinal and lateral combined
+ride["lateral_g"] = np.tan(ride["lean_rad"])
+ride["total_g"] = np.sqrt(ride["accel_g"] ** 2 + ride["lateral_g"] ** 2)
 
-# Logarithmic transformations
-telemetry['speed_log'] = np.log1p(telemetry['speed_kmh'])  # log(1+x) to handle zeros
-
-# Normalization
-telemetry['speed_normalized'] = (telemetry['speed_kmh'] - telemetry['speed_kmh'].mean()) / telemetry['speed_kmh'].std()
-
-# Min-max scaling
-telemetry['speed_scaled'] = (telemetry['speed_kmh'] - telemetry['speed_kmh'].min()) / (telemetry['speed_kmh'].max() - telemetry['speed_kmh'].min())
+# Standardisation and min-max scaling
+rpm = ride["rpm"]
+ride["rpm_standardised"] = (rpm - rpm.mean()) / rpm.std()
+ride["rpm_scaled"] = (rpm - rpm.min()) / (rpm.max() - rpm.min())
 ```
 
+### Binning and Categorisation
 
-
-
-### Binning and Categorization
-Group continuous data into categories for easier analysis and visualization.
 ```python
-# Using telemetry data for transformations
-telemetry = pd.read_csv('data/sensor_data.csv')
+ride = pd.read_csv("data/motorcycle_ride.csv")
 
-# Create speed categories using telemetry data
-speed_bins = [0, 30, 60, 100, 150, 300]
-speed_labels = ['Very Low', 'Low', 'Medium', 'High', 'Very High']
-telemetry['speed_category'] = pd.cut(telemetry['speed_kmh'], bins=speed_bins, labels=speed_labels)
+# Fixed bins with labels
+ride["speed_band"] = pd.cut(
+    ride["speed_kmh"],
+    bins=[-1, 3, 55, 85, 300],
+    labels=["standstill", "town", "country road", "fast"],
+)
 
-# Equal-width binning
-telemetry['lateral_g_quartiles'] = pd.qcut(telemetry['lateral_g'], q=4, labels=['Q1', 'Q2', 'Q3', 'Q4'])
+# Quantile bins: four groups with the same number of samples
+ride["rpm_quartile"] = pd.qcut(ride["rpm"], q=4, labels=["Q1", "Q2", "Q3", "Q4"])
 
-# Custom conditions
+# Conditions, checked in order, the first match wins
 conditions = [
-    (telemetry['speed_kmh'] < 50),
-    (telemetry['speed_kmh'] >= 50) & (telemetry['speed_kmh'] < 100),
-    (telemetry['speed_kmh'] >= 100)
+    ride["brake_front_bar"] > 1,
+    ride["lean_deg"].abs() > 10,
+    ride["throttle_pct"] > 30,
 ]
-choices = ['City', 'Highway', 'Racing']
-telemetry['driving_mode'] = np.select(conditions, choices, default='Unknown')
+ride["phase"] = np.select(conditions, ["braking", "cornering", "accelerating"],
+                          default="cruising")
+print(ride["phase"].value_counts())
 ```
 
-## File I/O Operations
-Read and write data in various formats to share results or work with other tools.
+## Reading and Writing Files
 
-### Reading Data
-Import data from CSV, Excel, and other formats with flexible options.
+### Reading
+
+`read_csv` has many options. The ones below are the ones you need most often
+with measurement files.
+
 ```python
-# CSV with custom parameters (using course dataset)
-telemetry = pd.read_csv('data/sensor_data.csv')
-
-# Excel with multiple sheets (using course dataset)
-sessions_excel = pd.read_excel('data/sensor_data.xlsx', sheet_name='Sessions')
-all_sheets = pd.read_excel('data/sensor_data.xlsx', sheet_name=None)  # All sheets
-
-# Example with custom CSV parameters (hypothetical)
-# df = pd.read_csv('custom_data.csv', 
-#                 sep=';',           # Different separator
-#                 decimal=',',       # European decimal format
-#                 encoding='utf-8',  # Character encoding
-#                 skiprows=2,        # Skip header rows
-#                 nrows=10000,       # Read only first 10k rows
-#                 usecols=['timestamp', 'speed', 'ax', 'ay'],  # Specific columns
-#                 dtype={'speed': 'float32'},  # Specify data types
-#                 parse_dates=['timestamp'])   # Parse dates
+ride = pd.read_csv(
+    "data/motorcycle_ride.csv",
+    usecols=["timestamp", "speed_kmh", "rpm", "ride_mode"],  # only these columns
+    dtype={"rpm": "int32", "ride_mode": "category"},          # explicit types
+    nrows=6000,                                               # the first minute
+)
+ride.info()
 ```
 
-### Writing Data
-Export your processed data for reporting, sharing, or further analysis.
+Files from European software often use a semicolon as separator and a comma
+as decimal mark. `sep=";"` and `decimal=","` read them correctly.
+
+### Writing
+
 ```python
-# CSV export (using telemetry data)
-telemetry.to_csv('processed_data.csv', 
-          index=False,           # Don't save index
-          float_format='%.6f',   # Control decimal places
-          sep=';',               # Custom separator
-          encoding='utf-8')      # Character encoding
+ride = pd.read_csv("data/motorcycle_ride.csv")
+first_minute = ride[ride["timestamp"] < 60]
 
-# Excel export
-telemetry.to_excel('analysis_results.xlsx', 
-           sheet_name='Processed_Data',
-           index=False,
-           float_format='%.3f')
+# CSV without the index, which is only a row number here
+first_minute.to_csv("ride_first_minute.csv", index=False)
 
-# Multiple sheets
-with pd.ExcelWriter('race_analysis.xlsx') as writer:
-    telemetry.to_excel(writer, sheet_name='Raw_Data', index=False)
+# Excel, with several sheets in one file
+summary = ride.groupby("gear")[["speed_kmh", "rpm"]].mean()
+with pd.ExcelWriter("ride_report.xlsx") as writer:
+    first_minute.to_excel(writer, sheet_name="First minute", index=False)
+    summary.to_excel(writer, sheet_name="Per gear")
 
-# JSON export
-telemetry.to_json('telemetry_export.json', 
-          orient='records',      # Array of objects
-          date_format='iso',     # ISO date format
-          indent=2)              # Pretty formatting
+# Reading it back: one sheet, or all sheets as a dictionary
+per_gear = pd.read_excel("ride_report.xlsx", sheet_name="Per gear")
+sheets = pd.read_excel("ride_report.xlsx", sheet_name=None)
+print(list(sheets))
+
+# JSON, one object per row
+first_minute.head(3).to_json("ride_sample.json", orient="records", indent=2)
 ```
 
+Excel is useful for handing results to colleagues, but it is a poor working
+format: it has a limit of about a million rows, and it changes data types
+silently. For large files, see [HDF5 Storage](./hdf5-storage.md).
 
-## Performance Tips
-Optimize memory usage and speed for large datasets and efficient workflows.
+## Performance
 
+### Memory
 
-### Memory Optimization
-Reduce memory footprint by adjusting data types and using efficient pandas features.
 ```python
-# Check memory usage (using telemetry data)
-telemetry = pd.read_csv('data/sensor_data.csv')
-print(f"Memory usage: {telemetry.memory_usage(deep=True).sum() / 1e6:.1f} MB")
+ride = pd.read_csv("data/motorcycle_ride.csv")
+print(f"Before: {ride.memory_usage(deep=True).sum() / 1e6:.1f} MB")
 
-# Optimize data types
-def optimize_dtypes(telemetry_data):
-    """Optimize DataFrame memory usage"""
-    original_size = telemetry_data.memory_usage(deep=True).sum()
-    
-    # Optimize float columns
-    for col in telemetry_data.select_dtypes(include=['float64']):
-        col_min = telemetry_data[col].min()
-        col_max = telemetry_data[col].max()
-        
-        if col_min > np.finfo(np.float32).min and col_max < np.finfo(np.float32).max:
-            telemetry_data[col] = pd.to_numeric(telemetry_data[col], downcast='float')
-    
-    # Optimize integer columns
-    for col in telemetry_data.select_dtypes(include=['int64']):
-        col_min = telemetry_data[col].min()
-        col_max = telemetry_data[col].max()
-        
-        if col_min > np.iinfo(np.int32).min and col_max < np.iinfo(np.int32).max:
-            telemetry_data[col] = pd.to_numeric(telemetry_data[col], downcast='integer')
-    
-    optimized_size = telemetry_data.memory_usage(deep=True).sum()
-    print(f"Memory reduced from {original_size/1e6:.1f} MB to {optimized_size/1e6:.1f} MB")
-    print(f"Reduction factor: {original_size/optimized_size:.1f}x")
-    
-    return telemetry_data
+def optimize_dtypes(data):
+    """Downcast numbers and turn repeated strings into categories."""
+    data = data.copy()
+    for col in data.select_dtypes(include="float64"):
+        data[col] = pd.to_numeric(data[col], downcast="float")
+    for col in data.select_dtypes(include="int64"):
+        data[col] = pd.to_numeric(data[col], downcast="integer")
+    for col in data.select_dtypes(include="object"):
+        data[col] = data[col].astype("category")
+    return data
 
-telemetry_optimized = optimize_dtypes(telemetry.copy())
+small = optimize_dtypes(ride)
+print(f"After:  {small.memory_usage(deep=True).sum() / 1e6:.1f} MB")
 ```
 
+Most of the saving comes from `ride_mode`. As Python strings, each of its
+values costs dozens of bytes. As a category, each value is a small integer
+code. float32 instead of float64 halves the rest, and its precision of about
+seven digits is more than any sensor in this file delivers.
 
-### Vectorized Operations
-Speed up calculations by using pandas’ built-in vectorized operations instead of slow loops.
+### Vectorised Operations
+
+A loop over rows runs in Python, one row at a time. A vectorised operation runs
+in compiled code over the whole column. The difference is often a factor of a
+hundred or more.
+
 ```python
-# Using telemetry data for vectorized operations
-telemetry = pd.read_csv('data/sensor_data.csv')
+import time
 
-# Avoid loops - use vectorized operations
-# BAD: Loop through rows
-results = []
-for index, row in telemetry.iterrows():
-    result = row['lateral_g'] * row['speed_kmh'] / 3.6
-    results.append(result)
-telemetry['bad_calculation'] = results
+ride = pd.read_csv("data/motorcycle_ride.csv")
 
-# GOOD: Vectorized operation
-telemetry['good_calculation'] = telemetry['lateral_g'] * telemetry['speed_kmh'] / 3.6
+# Slow: a Python loop over the rows
+t0 = time.perf_counter()
+values = []
+for _, row in ride.iterrows():
+    values.append(row["speed_kmh"] / 3.6 * np.tan(np.radians(row["lean_deg"])))
+t_loop = time.perf_counter() - t0
 
-# Use .apply() for complex operations
-def complex_calculation(row):
-    return np.sqrt(row['lateral_g']**2 + row['longitudinal_g']**2) * row['speed_kmh']
+# Fast: the same calculation on whole columns
+t0 = time.perf_counter()
+vectorised = ride["speed_kmh"] / 3.6 * np.tan(np.radians(ride["lean_deg"]))
+t_vec = time.perf_counter() - t0
 
-telemetry['complex_result'] = telemetry.apply(complex_calculation, axis=1)
-
-# Even better: Pure vectorized
-telemetry['complex_result_vectorized'] = np.sqrt(telemetry['lateral_g']**2 + telemetry['longitudinal_g']**2) * telemetry['speed_kmh']
+print(f"loop {t_loop:.2f} s, vectorised {t_vec:.4f} s")
 ```
 
-#### Applying a Function to Each Row: 3D Vector Transformation Example
-You can use `.apply()` to perform complex operations on each row of a DataFrame. For example, transforming a body-fixed vector to global coordinates using reference points and orientation angles:
-```python
-import pandas as pd
-import numpy as np
+#### When a Row-Wise Function Is Unavoidable
 
-# Example DataFrame: each row has a reference point, body-fixed vector, and orientation angles
+Sometimes each row needs a calculation that does not exist as a column
+operation. `apply` with `axis=1` calls a function once per row. It is as slow
+as a loop, but it keeps the code readable. The example transforms a
+body-fixed vector into global coordinates using a reference point and three
+orientation angles per row.
+
+```python
 df = pd.DataFrame({
-    'ref_x': [100, 200],
-    'ref_y': [50, 60],
-    'ref_z': [20, 30],
-    'body_x': [1, 0],
-    'body_y': [0, 1],
-    'body_z': [0, 0],
-    'yaw_deg': [30, 45],
-    'pitch_deg': [10, 0],
-    'roll_deg': [5, -10]
+    "ref_x": [100, 200], "ref_y": [50, 60], "ref_z": [20, 30],
+    "body_x": [1, 0], "body_y": [0, 1], "body_z": [0, 0],
+    "yaw_deg": [30, 45], "pitch_deg": [10, 0], "roll_deg": [5, -10],
 })
 
 def rotation_matrix(yaw_deg, pitch_deg, roll_deg):
-    yaw = np.radians(yaw_deg)
-    pitch = np.radians(pitch_deg)
-    roll = np.radians(roll_deg)
-    Rz = np.array([
-        [np.cos(yaw), -np.sin(yaw), 0],
-        [np.sin(yaw),  np.cos(yaw), 0],
-        [0, 0, 1]
-    ])
-    Ry = np.array([
-        [np.cos(pitch), 0, np.sin(pitch)],
-        [0, 1, 0],
-        [-np.sin(pitch), 0, np.cos(pitch)]
-    ])
-    Rx = np.array([
-        [1, 0, 0],
-        [0, np.cos(roll), -np.sin(roll)],
-        [0, np.sin(roll),  np.cos(roll)]
-    ])
-    return Rz @ Ry @ Rx
+    yaw, pitch, roll = np.radians([yaw_deg, pitch_deg, roll_deg])
+    rz = np.array([[np.cos(yaw), -np.sin(yaw), 0],
+                   [np.sin(yaw), np.cos(yaw), 0],
+                   [0, 0, 1]])
+    ry = np.array([[np.cos(pitch), 0, np.sin(pitch)],
+                   [0, 1, 0],
+                   [-np.sin(pitch), 0, np.cos(pitch)]])
+    rx = np.array([[1, 0, 0],
+                   [0, np.cos(roll), -np.sin(roll)],
+                   [0, np.sin(roll), np.cos(roll)]])
+    return rz @ ry @ rx
 
 def transform_row(row):
-    p_ref = np.array([row['ref_x'], row['ref_y'], row['ref_z']])
-    v_body = np.array([row['body_x'], row['body_y'], row['body_z']])
-    R = rotation_matrix(row['yaw_deg'], row['pitch_deg'], row['roll_deg'])
-    v_global = R @ v_body + p_ref
-    return pd.Series({'global_x': v_global[0], 'global_y': v_global[1], 'global_z': v_global[2]})
+    p_ref = np.array([row["ref_x"], row["ref_y"], row["ref_z"]])
+    v_body = np.array([row["body_x"], row["body_y"], row["body_z"]])
+    r = rotation_matrix(row["yaw_deg"], row["pitch_deg"], row["roll_deg"])
+    v_global = r @ v_body + p_ref
+    return pd.Series({"global_x": v_global[0], "global_y": v_global[1],
+                      "global_z": v_global[2]})
 
-# Apply transformation to each row
-df[['global_x', 'global_y', 'global_z']] = df.apply(transform_row, axis=1)
-print(df[['ref_x', 'ref_y', 'ref_z', 'body_x', 'body_y', 'body_z', 'global_x', 'global_y', 'global_z']])
+df[["global_x", "global_y", "global_z"]] = df.apply(transform_row, axis=1)
+print(df[["global_x", "global_y", "global_z"]])
 ```
-
 
 ## Best Practices
-Organize your code and document your workflow for reproducible, maintainable analysis.
 
+### Reusable Functions with Validation
 
-### Code Organization
-Write reusable functions and validate your data for robust analysis.
+Loading, checking and cleaning belong in functions, so that every analysis
+starts from the same, checked state.
+
 ```python
-# Create reusable functions
-def load_telemetry_data(filename):
-    """Load and basic preprocessing of telemetry data"""
-    telemetry_data = pd.read_csv(filename)
-    
-    # Basic validation
-    required_columns = ['time_s', 'speed_kmh', 'lateral_g', 'longitudinal_g', 'rpm']
-    missing_columns = set(required_columns) - set(telemetry_data.columns)
-    if missing_columns:
-        raise ValueError(f"Missing required columns: {missing_columns}")
-    
-    # Sort by timestamp
-    telemetry_data = telemetry_data.sort_values('time_s').reset_index(drop=True)
-    
-    return telemetry_data
+REQUIRED = ["timestamp", "speed_kmh", "rpm", "lean_deg", "accel_x"]
 
-def validate_sensor_data(telemetry_data):
-    """Validate sensor data ranges"""
-    validation_rules = {
-        'speed_kmh': (0, 350),           # km/h
-        'lateral_g': (-3, 3),            # g-force
-        'longitudinal_g': (-3, 3),       # g-force
-        'rpm': (0, 10000),               # engine RPM
-        'steering_angle_deg': (-720, 720)  # degrees
-    }
-    
-    issues = []
-    for column, (min_val, max_val) in validation_rules.items():
-        if column in telemetry_data.columns:
-            out_of_range = telemetry_data[(telemetry_data[column] < min_val) | (telemetry_data[column] > max_val)]
-            if len(out_of_range) > 0:
-                issues.append(f"{column}: {len(out_of_range)} values out of range [{min_val}, {max_val}]")
-    
-    return issues
-
-# Use the functions
-telemetry = load_telemetry_data('data/sensor_data.csv')
-validation_issues = validate_sensor_data(telemetry)
-if validation_issues:
-    print("Data validation issues:")
-    for issue in validation_issues:
-        print(f"  - {issue}")
-```
-
-
-### Documentation and Metadata
-Keep track of your processing steps and data quality for transparency and reproducibility.
-```python
-# Document your data processing steps (using telemetry data)
-telemetry_raw = pd.read_csv('data/sensor_data.csv')
-telemetry_processed = telemetry_raw.copy()  # After processing steps
-
-processing_log = {
-    'source_file': 'data/sensor_data.csv',
-    'processing_date': pd.Timestamp.now().isoformat(),
-    'steps': [
-        'loaded_raw_data',
-        'removed_outliers_iqr',
-        'interpolated_missing_values',
-        'applied_moving_average_filter',
-        'calculated_derived_parameters'
-    ],
-    'data_quality': {
-        'original_samples': len(telemetry_raw),
-        'final_samples': len(telemetry_processed),
-        'retention_rate': len(telemetry_processed) / len(telemetry_raw)
-    }
+# Physically possible range per column. Anything outside is not a measurement.
+LIMITS = {
+    "speed_kmh": (0, 250),
+    "rpm": (0, 12000),
+    "brake_front_bar": (0, 50),
+    "lean_deg": (-60, 60),
+    "coolant_c": (-20, 130),
 }
 
-# Save processing metadata
+def load_ride(filename):
+    """Load a ride log, check its columns and sort it by time."""
+    data = pd.read_csv(filename)
+    missing = set(REQUIRED) - set(data.columns)
+    if missing:
+        raise ValueError(f"Missing required columns: {missing}")
+    return data.sort_values("timestamp").reset_index(drop=True)
+
+def validate_ranges(data):
+    """Report every column with values outside its physical range."""
+    issues = []
+    for column, (low, high) in LIMITS.items():
+        bad = data[(data[column] < low) | (data[column] > high)]
+        if len(bad) > 0:
+            issues.append(f"{column}: {len(bad)} values outside [{low}, {high}]")
+    return issues
+
+ride = load_ride("data/motorcycle_ride.csv")
+for issue in validate_ranges(ride):
+    print(" -", issue)
+```
+
+A range check is less clever than an outlier test and often more useful. It
+does not flag the bends, because 30 degrees of lean is possible. It does flag
+the values that no motorcycle can produce.
+
+### Documenting What You Did
+
+```python
 import json
-with open('processing_log.json', 'w') as f:
+
+raw = pd.read_csv("data/motorcycle_ride.csv")
+processed = raw[raw["speed_kmh"] <= 250].copy()
+processed["coolant_c"] = processed["coolant_c"].ffill(limit=300)
+
+processing_log = {
+    "source_file": "data/motorcycle_ride.csv",
+    "processing_date": pd.Timestamp.now().isoformat(),
+    "steps": [
+        "removed speed_kmh above 250 (bus error frames)",
+        "coolant_c: forward fill, at most 3 s",
+    ],
+    "samples": {"raw": len(raw), "processed": len(processed)},
+}
+
+with open("processing_log.json", "w") as f:
     json.dump(processing_log, f, indent=2)
 ```
 
-This covers the fundamental pandas operations you'll need for most data processing tasks. The next documents will build on these basics with more advanced operations and specific use cases.
+This covers the pandas operations you need for most data processing tasks.
+The lecture on data processing builds on them with time indices, filtering,
+calibration and integration.

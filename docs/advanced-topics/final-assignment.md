@@ -74,7 +74,7 @@ in the submissions repository, next to the assignments you handed in during the
 semester:
 
 ```
-visdat-abgaben-ws2627/
+visdat-abgaben-<semester>/
 └── submissions/
     └── your-github-username/
         ├── 01-kickoff/               # Your earlier submissions

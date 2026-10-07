@@ -14,9 +14,10 @@ footer: "FH OÖ Wels · Visualisierung & Datenaufbereitung"
 Lecture 1 · Stefan Oberpeilsteiner
 
 <!--
-First session. Two things matter today: that everyone leaves with a working
-environment, and that everyone has opened one pull request. The programming
-content is a map, not a syntax course. The syntax is in the script.
+First session. It sets up how the course works and why, and it ends with the
+model behind Git. Installing everything and opening the first pull request is
+the next session. The programming content here is a map, not a syntax course.
+The syntax is in the script.
 -->
 
 ---
@@ -28,7 +29,7 @@ content is a map, not a syntax course. The syntax is in the script.
 <p>Same degree, same lecture hall, one lecturer earlier.</p>
 
 <!--
-Ten minutes, told, not read. The beats:
+The story behind this slide, in four beats:
 
 1. Mechanical engineering here at Wels, same as you. This lecture, under my
    predecessor, is where programming stopped being a subject and started being
@@ -40,8 +41,6 @@ Ten minutes, told, not read. The beats:
    doing for a living.
 4. We start at the basics and work up to applications that are genuinely worth
    showing. Nothing today needs prior knowledge.
-
-Then straight into the tool generations, without a pause.
 -->
 
 ---
@@ -61,9 +60,9 @@ measurement database. Not in engineering yet. Give it a year.
 > The tools raise the ceiling, not the floor.
 
 <!--
-This is the honest answer to "why learn this when AI writes code". Do not oversell
-the tools and do not dismiss them. The last line is the whole argument of the
-course, so say it slowly.
+This is the honest answer to "why learn this when AI writes code". The tools
+are neither oversold nor dismissed here. The last line is the whole argument
+of the course.
 
 If someone asks whether they may use AI: yes, and you will say how you used it.
 The details come with the assignment.
@@ -121,8 +120,7 @@ in the preview inside the editor.
 1. **Organisation**: how the course runs, how you hand in, how it is graded
 2. **Paradigms**: the three ways to structure a program, and why we mix them
 3. **Two languages**: what C++ is for, what Python is for
-4. **Git**: the model behind it, then the commands
-5. **Hands on**: environment, first pull request
+4. **Git**: the model behind it, the commands, and why branches
 
 <p class="note">Everything shown here is in the script. What is not in the script is the reasoning.</p>
 
@@ -133,10 +131,10 @@ in the preview inside the editor.
 # A colleague sends you a 2 GB result file and needs a plot by tomorrow. Where do you start?
 
 <!--
-Collect answers. Expect Excel, expect ParaView, expect "I'd ask what they want
-to see". The last one is the right instinct. Use this to frame the semester:
-the whole chain from that file to a picture someone can act on, and everything
-in between is what we practise.
+Typical answers are Excel, ParaView, and "I would ask what they want to see".
+The last one is the right instinct. It frames the semester: the whole chain
+from that file to a picture someone can act on, and everything in between is
+what we practise.
 -->
 
 ---
@@ -165,9 +163,10 @@ is practice for it.
 <p class="note">Details: Course Organization and Submission Workflow on the course site.</p>
 
 <!--
-Stress the private repository and why: their names, accounts and commit
-metadata are personal data and do not belong in a public repo. Invitations go
-out this week, so collect GitHub usernames today.
+The private repository matters: your name, your account and your commit
+metadata are personal data and do not belong in a public repository.
+Invitations go out this week, which is why the GitHub usernames are collected
+today.
 -->
 
 ---
@@ -246,9 +245,9 @@ Fast to change, slower to run. Python, MATLAB, JavaScript.
 > threads do not speed up computation.
 
 <!--
-Do not treat this as a language comparison. It is a category, and they will meet
-the consequences of it in every later block. Ask which of the two a solver like
-CalculiX is, and why.
+This is not a comparison of two languages. It is a category, and its
+consequences come back in every later block. A question to think about: which
+of the two is a solver like CalculiX, and why?
 -->
 
 ---
@@ -294,9 +293,9 @@ You write most of the semester in it, including the final project.
 # Your script worked yesterday. Today it does not, and you do not know what you changed.
 
 <!--
-Everyone has lived this. That is the entire motivation for version control, and
-it lands better than "industry standard". Follow up: what did you do last time?
-Usually a folder called "final_v3_really_final".
+Everyone has lived this. That is the entire motivation for version control,
+and it is a better one than "industry standard". What did you do the last time
+it happened? Usually the answer is a folder called "final_v3_really_final".
 -->
 
 ---
@@ -329,9 +328,9 @@ git push                         # publish it
 Then: change a file, run `git status` again, and read the output together.
 
 <!--
-Type it, do not paste. Make a deliberate mistake: commit without add, and let
-them see that nothing happened. The point is that status answers every question
-they will have for the next three weeks.
+Typed live, not pasted, with one deliberate mistake: a commit without add,
+and nothing happens. The point is that git status answers almost every question
+that comes up in the first weeks with Git.
 -->
 
 ---
@@ -352,206 +351,9 @@ git checkout -b submission/kickoff/octocat
 
 ---
 
-# Two repositories
+# Next time
 
-<div class="cols">
-<div>
+Environment and the kickoff assignment: the two repositories, Python, a
+virtual environment, and your first pull request.
 
-**visdat-course**, public
-
-Script, slides, sample data. You clone it and read from it. You never push to it.
-
-</div>
-<div>
-
-**visdat-abgaben-ws2627**, private
-
-Your submissions, one folder per student named after your GitHub account. You
-are invited as a collaborator.
-
-</div>
-</div>
-
-<p class="note">Invitation comes by email this week. Give me your GitHub username today.</p>
-
----
-
-<!-- _class: live -->
-
-# Your first pull request, end to end
-
-```bash
-git clone https://github.com/soberpe/visdat-abgaben-ws2627.git
-cd visdat-abgaben-ws2627
-git checkout -b submission/kickoff/octocat
-
-mkdir -p submissions/octocat/01-kickoff
-# write the file, then
-git add submissions/octocat
-git commit -m "Add kickoff introduction"
-git push -u origin submission/kickoff/octocat
-```
-
-Then on GitHub: open the pull request, watch the automatic check run.
-
-<!--
-Do this on the projector with a throwaway account or your own folder. Show the
-check going red once on purpose, by touching a file outside the folder, so they
-recognise the message when it happens to them.
--->
-
----
-
-<!-- _class: section -->
-
-# Environment
-
-## Everything installed before you leave the room
-
----
-
-# Python 3.13, and nothing newer
-
-<div class="cols">
-<div>
-
-**Why not the latest**
-
-VTK and PyTables publish no builds for 3.14 yet. The install then fails with a
-compiler error that looks much worse than the problem is.
-
-</div>
-<div>
-
-**Also avoid**
-
-The "free-threaded binaries" option in the Windows installer. It is
-experimental, and numba and VTK have nothing for it.
-
-</div>
-</div>
-
-```bash
-python --version                                          # Python 3.13.x
-python -c "import struct; print(struct.calcsize('P')*8)"  # 64
-```
-
-<p class="note">On Windows, tick "Add python.exe to PATH" during installation.</p>
-
-<!--
-This slide exists because the wrong version costs an afternoon. The download
-button on python.org always offers the newest release, and that is the one the
-packages do not support yet. Worth saying twice, and worth checking again during
-the installation block.
--->
-
----
-
-# The virtual environment
-
-```bash
-python -m venv .venv                    # if python is on PATH
-C:\Python313\python.exe -m venv .venv   # Windows, when it is not
-
-.venv\Scripts\activate                  # Windows
-source .venv/bin/activate               # macOS, Linux
-
-pip install -r requirements.txt
-```
-
-A virtual environment keeps this course's packages out of your system Python,
-and makes `requirements.txt` mean something.
-
-<p class="note">In VS Code: Ctrl+Shift+P, "Python: Create Environment", does the same thing with fewer chances to get it wrong.</p>
-
----
-
-# VS Code extensions
-
-Python, Pylance, Python Debugger, Python Environments
-C/C++ and C/C++ Themes
-Git Graph, GitHub Pull Requests and Issues
-Marp for VS Code
-
-<p class="note">Open the course repository as a folder and the Marp theme is configured for you.</p>
-
----
-
-# Protect your email address
-
-```bash
-git config --global user.name "Your Real Name"
-git config --global user.email 12345678+username@users.noreply.github.com
-```
-
-On GitHub, **Settings → Emails**: enable *Keep my email addresses private* and
-*Block command line pushes that expose my email*.
-
-> Your FH address contains your student ID, and a commit history is permanent.
-> Set this before your first commit, not after.
-
-<!--
-A commit history is permanent, and the FH address contains the student ID. Once
-it is in, it cannot be taken out again without rewriting history, which is far
-more work than it sounds. Two minutes here prevents it.
--->
-
----
-
-<!-- _class: section -->
-
-# Kickoff assignment
-
-## Due in two weeks
-
----
-
-# What to do
-
-1. Install Git, VS Code and Python, configure your identity
-2. Clone both repositories, accept the invitation
-3. Create your folder `submissions/<your-github-username>/01-kickoff/`
-4. Write a short profile and an introduction, in Markdown
-5. Build a 4 to 5 slide Marp deck about yourself
-6. Open the pull request and get the automatic check to pass
-
-<p class="note">Full description: Kickoff Assignment on the course site.</p>
-
----
-
-# Grading
-
-| Criterion | Points |
-|---|---|
-| Environment set up and working | 20 |
-| Git workflow: branch, commits, pull request | 25 |
-| Documentation quality | 25 |
-| Marp presentation | 20 |
-| Instructions followed | 10 |
-
-<p class="note">Commit history counts. Six small commits tell me more than one big one, and they help you more too.</p>
-
----
-
-# Hands on, the rest of today
-
-1. **Environment**, 30 minutes: Git, VS Code, Python, identity, SSH key
-2. **Repositories**, 20 minutes: clone both, create your branch
-3. **The assignment**, remaining time: write, commit, push, open the pull request
-
-Work in pairs. Raise a hand early rather than late.
-
----
-
-# Next week
-
-Data formats and processing: CSV, Excel, HDF5, and pandas on real sensor data.
-
-```python
-import pandas as pd
-
-df = pd.read_csv("data/sensor_data.csv")
-df.describe()
-```
-
-<p class="note">Bring your laptop with the environment working. We start with data, not with installation.</p>
+<p class="note">Before next time: create a GitHub account if you do not have one, and accept the invitation to the submissions repository as soon as it arrives.</p>

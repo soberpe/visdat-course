@@ -8,6 +8,7 @@ module.exports = {
       label: 'Programming Fundamentals',
       items: [
         'programming/paradigms',
+        'programming/basics-exercises',
       ],
     },
     {

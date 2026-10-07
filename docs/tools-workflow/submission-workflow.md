@@ -19,7 +19,10 @@ This is the repository behind the site you are reading. It holds the script, the
 slides and the sample datasets. You clone it to have the data available locally.
 You do not change anything in it. If you find a mistake, open an issue.
 
-**Submissions**, private: `soberpe/visdat-abgaben-ws2627`
+**Submissions**, private: `soberpe/visdat-abgaben-<semester>`
+
+`<semester>` stands for the current semester, for example `ws2627` for the
+winter semester 2026/27. The exact link is in your invitation email.
 
 This is where your work goes. You are invited as a collaborator at the start of
 the semester, so you work in it directly and do not need a fork. It is private,
@@ -85,7 +88,7 @@ Create a new branch for every assignment, and create it from an up to date
 `main`:
 
 ```bash
-cd visdat-abgaben-ws2627
+cd visdat-abgaben-<semester>
 
 git checkout main
 git pull

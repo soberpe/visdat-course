@@ -11,7 +11,7 @@ footer: "FH OÖ Wels · Visualisierung & Datenaufbereitung"
 
 ## Why installing a package compiles C++, and why your script uses one core
 
-Lecture 5 · CMake, threading, multiprocessing, Numba
+Lecture 12 · CMake, threading, multiprocessing, Numba
 
 <!--
 Last lecture before the project phase. Two topics that look unrelated and are
@@ -42,10 +42,10 @@ the final assignment.
 # Why does `pip install` sometimes take ten minutes and print C++ errors?
 
 <!--
-Because there is no wheel for their platform, so pip builds from source, and
+Because there is no prebuilt wheel for your platform, so pip builds from source, and
 that build is driven by CMake. This is the honest reason a Python course spends
-half an hour on build systems: they will hit it, and the error messages are
-unreadable without knowing what is happening.
+half an hour on build systems: sooner or later everyone hits it, and the error
+messages are unreadable without knowing what is happening.
 -->
 
 ---
@@ -189,8 +189,9 @@ fast_solver.optimize(data)
 # Your script runs for twenty minutes at 12 percent CPU. You have eight cores. Where are the other seven?
 
 <!--
-Let them guess. The answer is the GIL for CPU work, or waiting on I/O. 12
-percent of eight cores is roughly one core, which is the signature of both.
+Worth a guess before reading on. The answer is the GIL for CPU work, or
+waiting on I/O. 12 percent of eight cores is roughly one core, which is the
+signature of both.
 Distinguishing the two cases is the whole content of this block.
 -->
 
@@ -254,8 +255,8 @@ print(f"threaded:   {time.perf_counter() - t0:.2f}s")
 
 <!--
 The two numbers come out nearly identical, sometimes the threaded one is
-slower. Nothing convinces like watching it. Have the task manager open on the
-second screen so they see one core at 100 percent.
+slower. Nothing convinces like watching it: with the task manager open, one
+core sits at 100 percent while the others idle.
 -->
 
 ---
@@ -397,9 +398,9 @@ python -m cProfile -s cumtime my_script.py | head -20
 > that actually costs the time, and it is usually not the one you suspected.
 
 <!--
-This is the most useful slide of the block, so do not rush it. Run the profiler
-on something from the data processing lecture and show that the time goes into
-read_csv, not into the loop everyone was worried about.
+This is the most useful slide of the block. Run the profiler on something from
+the data processing lecture, and the time usually goes into read_csv, not into
+the loop everyone was worried about.
 -->
 
 ---

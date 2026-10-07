@@ -11,12 +11,13 @@ footer: "FH OÖ Wels · Visualisierung & Datenaufbereitung"
 
 ## From a table of numbers to a picture someone can act on
 
-Lecture 3 · Matplotlib, VTK, meshio, PyVista
+Lectures 6 and 7 · Matplotlib, VTK, meshio, PyVista
 
 <!--
-Three blocks today. First 2D with matplotlib, then 3D with the VTK family.
+Two sessions: first 2D with matplotlib, then 3D with the VTK family.
 Everything shown here is in the script, so nobody has to copy code from the
-screen. What is not in the script is the reasoning, and that is what we do here.
+screen. What is not in the script is the reasoning, and that is what the
+lecture is for.
 -->
 
 ---
@@ -26,7 +27,7 @@ screen. What is not in the script is the reasoning, and that is what we do here.
 1. **2D**: the structure behind every matplotlib figure, and how to choose a plot
 2. **Colour and honesty**: why the default stress plot misleads you
 3. **3D**: VTK, meshio and PyVista, and which one to reach for
-4. **Live**: from `sensor_data.csv` and `beam_stress.vtu` to a figure
+4. **Live**: from `motorcycle_ride.csv` and `beam_stress.vtu` to a figure
 
 <p class="note">Script: Visualization chapter. Data: <code>data/</code> in the course repository.</p>
 
@@ -37,9 +38,10 @@ screen. What is not in the script is the reasoning, and that is what we do here.
 # You have 200 000 rows of sensor data. What do you look at first?
 
 <!--
-Let them answer. Expected: mean, min, max, "I'd plot it". Push for the second
-one, and ask what exactly they would plot, and against what. The point of the
-block: a plot is a question you ask of the data, not decoration afterwards.
+The usual answers are mean, min, max, and "I would plot it". The second one is
+the interesting one, as soon as it gets specific: plot what exactly, and
+against what? The point of the block: a plot is a question you ask of the
+data, not decoration afterwards.
 -->
 
 ---
@@ -61,9 +63,9 @@ ax.set_xlabel("Time [s]")
 <p class="note">Know which of the three you are holding, and every example in the documentation becomes readable.</p>
 
 <!--
-This is the single most useful idea of the 2D block. Draw it on the board once
-while saying it. Ask: in `plt.plot(...)`, which of the three are you addressing?
-Answer: none explicitly, pyplot picks one for you, which is exactly the problem.
+This is the single most useful idea of the 2D part. A question to check it:
+in `plt.plot(...)`, which of the three are you addressing? None explicitly.
+pyplot picks one for you, which is exactly the problem.
 -->
 
 ---
@@ -110,19 +112,19 @@ Says what it acts on. Use it in scripts.
 ```python
 import pandas as pd, matplotlib.pyplot as plt
 
-df = pd.read_csv("data/sensor_data.csv")
+df = pd.read_csv("data/motorcycle_ride.csv")
 fig, ax = plt.subplots(figsize=(9, 4))
-ax.plot(df["time"], df["accel_z"])
+ax.plot(df["timestamp"], df["accel_x"])
 plt.show()
 ```
 
 Then, together: what is wrong with this figure?
 
 <!--
-Type this live, do not paste. The result is deliberately raw: no axis labels, no
-units, default colour, 200k points drawn over each other. Collect what is
-missing from the room before fixing anything. Expect: labels, units, the line is
-a solid block. Then fix it in the next block.
+Typed live, not pasted. The result is deliberately raw: no axis labels, no
+units, default colour, 55,000 points drawn over each other. Before fixing
+anything, it is worth listing what is missing: labels, units, and a line that
+has become a solid block. The next block fixes it.
 -->
 
 ---
@@ -148,7 +150,7 @@ a solid block. Then fix it in the next block.
 <p>Every FE postprocessor shows you rainbow colours by default.</p>
 
 <!--
-Let it sit for a moment. The answer: rainbow is not perceptually uniform. Equal
+Worth a moment before reading on. The answer: rainbow is not perceptually uniform. Equal
 steps in stress become unequal steps in perceived colour, so the yellow-green
 band reads as a sharp edge where the field is smooth, and real gradients in the
 red end disappear. People find "hot spots" that are artefacts of the palette.
@@ -198,9 +200,9 @@ ax.pcolormesh(X, Y, stress, cmap="viridis")
 - The file saved by the script, not by a screenshot
 
 <!--
-This is the checklist for the assignment too. Point out that "the script saves
-the figure" is what makes a result reproducible, and that a screenshot of a plot
-is the visualization equivalent of typing results into a Word file by hand.
+This is the checklist for the assignment too. "The script saves the figure"
+is what makes a result reproducible. A screenshot of a plot is the
+visualization equivalent of typing results into a Word file by hand.
 -->
 
 ---
@@ -211,19 +213,19 @@ is the visualization equivalent of typing results into a Word file by hand.
 
 ```python
 fig, ax = plt.subplots(figsize=(9, 4))
-ax.plot(df["time"], df["accel_z"], linewidth=0.8)
+ax.plot(df["timestamp"], df["accel_x"], linewidth=0.8)
 ax.set_xlabel("Time [s]")
-ax.set_ylabel("Acceleration z [m/s²]")
-ax.set_title("Raw acceleration, sensor 1")
+ax.set_ylabel("Longitudinal acceleration [m/s²]")
+ax.set_title("Raw acceleration, motorcycle ride")
 ax.grid(alpha=0.3)
 fig.tight_layout()
-fig.savefig("figures/accel_raw.png", dpi=150)
+fig.savefig("figures/accel_raw.png", dpi=150)   # the folder must exist
 ```
 
 <!--
-Same data as before, six lines more. Do it step by step and let them say what
-comes next. End on savefig and the figures/ folder, which is what the assignment
-expects.
+Same data as before, six lines more, one step at a time. It ends on savefig
+and the figures/ folder, which is what the assignment expects: the script
+produces the figure, not a screenshot.
 -->
 
 ---
@@ -241,8 +243,9 @@ expects.
 # Your solver produced 1.2 million elements. Now what?
 
 <!--
-Bridge into 3D. Answers will include ParaView. Good: ParaView is VTK with a GUI.
-Today we do the same thing from Python, which is what lets you automate it.
+The bridge into 3D. A common answer is ParaView, and a good one: ParaView is
+VTK with a GUI. Here we do the same thing from Python, which is what lets you
+automate it.
 -->
 
 ---
@@ -417,9 +420,9 @@ mesh.plot(show_edges=True)
 ```
 
 <!--
-Run meshio info first and read the output together: how many points, which cell
-types. Then convert and open it. The empty array_names list is the teaching
-moment: the geometry survived, the results did not.
+meshio info comes first, and its output is worth reading line by line: how
+many points, which cell types. Then convert and open it. The empty array_names
+list is the important moment: the geometry survived, the results did not.
 -->
 
 ---
@@ -487,9 +490,10 @@ p.show()
 ```
 
 <!--
-Show the deformation factor first at 1, where nothing is visible, then at 100.
-Ask what the factor does to the picture and what it does to the truth. Then
-switch the colour map to jet once, to make the earlier point visible.
+Try the deformation factor first at 1, where nothing is visible, then at 100.
+The factor changes the picture, but what does it do to the truth? Then switch
+the colour map to jet once, and the earlier point about colour maps becomes
+visible.
 -->
 
 ---
