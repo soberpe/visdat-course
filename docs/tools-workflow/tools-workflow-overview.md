@@ -293,12 +293,35 @@ git push -u origin submission/data-processing/octocat
 
 ### Continuous Integration
 
-Our repositories use automated checks:
+Continuous integration (CI) means that a server runs automatic checks every
+time something is pushed. On GitHub, this is done by GitHub Actions, which is
+configured with YAML files in the folder `.github/workflows/` of a repository.
+Both course repositories use it, for different purposes.
 
-- **Code Quality:** Linting and formatting checks
-- **Tests:** Automated testing of code examples
-- **Documentation:** Ensure documentation builds correctly
-- **Security:** Scan for potential security issues
+**Submissions repository.** Every pull request runs the submission check. It
+verifies the form of a submission, not its content:
+
+- All changed files are inside your own folder under `submissions/`, and the
+  folder is named after your GitHub username in lowercase.
+- No file is larger than 5 MB.
+- No template placeholder such as `[Your Name]` is left in your files.
+
+The check also reports warnings, which do not block the merge: when commits
+carry the example identity from the kickoff assignment, and when the branch
+does not follow the scheme `submission/<assignment>/<your-github-username>`.
+Whether your code works and your documentation is good is decided in the
+review. The details are on the page
+[Submission Workflow](./submission-workflow.md#the-automatic-check).
+
+**Course material repository.** Every push to `main` builds this site and the
+slide decks and publishes them on GitHub Pages. If the build fails, for
+example because a link points to a page that does not exist, nothing is
+published and the previous version stays online.
+
+:::tip Reading a failed check
+A red cross next to a commit or a pull request links to the log of the run.
+Read the summary first. It usually names the file and the problem.
+:::
 
 ## Best Practices
 
