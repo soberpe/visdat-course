@@ -230,26 +230,28 @@ class Logger:
 
 </details>
 
-### Exercise 9: Calibrating Real Data
+### Exercise 9: Calibrating a Sensor
 
 Write a class `Sensor` with the attributes `name`, `unit` and `offset`, and two
 methods.
 
-- `zero(self, values)` sets `offset` to the mean of `values`.
-- `calibrate(self, values)` returns `values` minus `offset`.
+- `zero(self, values)` sets `offset` to the mean of a list of values.
+- `calibrate(self, value)` returns `value` minus `offset`.
 
-Then use it on the motorcycle ride in `data/motorcycle_ride.csv`. During the
-first 15 seconds, the bike stands still with the engine idling, so the
-longitudinal acceleration `accel_x` should be zero there. Zero the sensor on
-that part, calibrate the whole column, and print the offset and the mean of the
-calibrated values during those 15 seconds.
+Then use it on these readings of a longitudinal acceleration sensor on a
+motorcycle. The first list was recorded while the bike stood still, so the
+true value there is zero. Zero the sensor on that list, print the offset, and
+print every reading of the second list next to its calibrated value.
+
+```python
+at_rest = [0.27, 0.22, 0.29, 0.24, 0.26]
+riding = [1.85, 2.40, 0.31, -3.75, -5.10]
+```
 
 <details>
 <summary>Solution</summary>
 
 ```python
-import pandas as pd
-
 class Sensor:
     def __init__(self, name, unit, offset=0.0):
         self.name = name
@@ -257,33 +259,35 @@ class Sensor:
         self.offset = offset
 
     def zero(self, values):
-        self.offset = values.mean()
+        self.offset = sum(values) / len(values)
 
-    def calibrate(self, values):
-        return values - self.offset
+    def calibrate(self, value):
+        return value - self.offset
 
-ride = pd.read_csv("data/motorcycle_ride.csv")
-at_rest = ride["timestamp"] < 15
+at_rest = [0.27, 0.22, 0.29, 0.24, 0.26]
+riding = [1.85, 2.40, 0.31, -3.75, -5.10]
 
 accel = Sensor("accel_x", "m/s²")
-accel.zero(ride.loc[at_rest, "accel_x"])
-ride["accel_x_cal"] = accel.calibrate(ride["accel_x"])
-
+accel.zero(at_rest)
 print(f"offset: {accel.offset:.3f} {accel.unit}")
-print(f"mean at rest after calibration: {ride.loc[at_rest, 'accel_x_cal'].mean():.6f}")
+
+for raw in riding:
+    print(f"{raw:6.2f} -> {accel.calibrate(raw):6.2f}")
 ```
 
-The offset comes out at about 0.25 m/s². After calibration, the mean during
-the first 15 seconds is zero, up to rounding. The methods work on a whole
-pandas Series at once, because `-` and `mean()` are defined for Series as well
-as for single numbers.
+The offset comes out at 0.256 m/s², and every calibrated value is that much
+smaller than the raw one. The sensor reported an acceleration while the bike
+stood still, and the calibration removes exactly that.
 
-Why the offset is still not perfect over the whole ride is a question for the
-data processing lecture.
+In the data processing session, the same idea is applied to a whole column of
+a real recording at once, with pandas.
 
 </details>
 
 ## pandas
+
+This exercise uses pandas, which is introduced in the data processing session.
+Come back to it afterwards.
 
 ### Exercise 10: Which DataFrame Changed?
 

@@ -85,7 +85,9 @@ git commit -m "Add kickoff introduction"
 git push -u origin submission/kickoff/octocat
 ```
 
-Then on GitHub: open the pull request, watch the automatic check run.
+Then on GitHub: open the pull request, watch the automatic check run. Every
+later push to the branch updates the open pull request, and the check runs
+again.
 
 <!--
 Shown live on the projector, including one failing check: touching a file
@@ -172,13 +174,16 @@ and makes `requirements.txt` mean something.
 
 # Protect your email address
 
+On GitHub, **Settings → Emails**: enable *Keep my email addresses private* and
+*Block command line pushes that expose my email*. Then copy the noreply
+address shown there.
+
 ```bash
 git config --global user.name "Your Real Name"
 git config --global user.email 12345678+username@users.noreply.github.com
 ```
 
-On GitHub, **Settings → Emails**: enable *Keep my email addresses private* and
-*Block command line pushes that expose my email*.
+<p class="note">Copy your own address, number included. The number is your account ID: with a wrong one, your commits appear under someone else's account.</p>
 
 > Your FH address contains your student ID, and a commit history is permanent.
 > Set this before your first commit, not after.
@@ -203,12 +208,13 @@ more work than it sounds. Two minutes here prevents it.
 
 1. Install Git, VS Code and Python, configure your identity
 2. Clone both repositories, accept the invitation
-3. Create your folder `submissions/<your-github-username>/01-kickoff/`
+3. Create your folder `submissions/<your-github-username>/01-kickoff/`, **all
+   lowercase**
 4. Write a short profile and an introduction, in Markdown
 5. Build a 4 to 5 slide Marp deck about yourself
 6. Open the pull request and get the automatic check to pass
 
-<p class="note">Full description: Kickoff Assignment on the course site.</p>
+<p class="note">Lowercase even if GitHub shows your username with capitals. Full description: Kickoff Assignment on the course site.</p>
 
 ---
 

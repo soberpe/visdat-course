@@ -188,13 +188,22 @@ email privacy before your first commit:
 
 1. On GitHub, go to **Settings → Emails** and enable *Keep my email addresses
    private* and *Block command line pushes that expose my email*
-2. Copy the `@users.noreply.github.com` address shown there
+2. Copy the `@users.noreply.github.com` address shown there, exactly as it is
 3. Configure git with your real name and that address:
 
 ```bash
 git config --global user.name "Your Real Name"
 git config --global user.email 12345678+username@users.noreply.github.com
 ```
+
+:::warning Copy the number, do not invent it
+The noreply address starts with a number, your GitHub account ID. GitHub
+assigns every commit to an account by this number. With a wrong one, for
+example the `12345678` from the line above, your commits appear under a
+stranger's account, and that stranger shows up as a contributor. Copy your own
+address from **Settings → Emails**, where it stands ready under *Keep my email
+addresses private*.
+:::
 
 :::warning Not your university address
 Your FH address contains your student ID, and a commit history is forever. Use
@@ -233,7 +242,7 @@ same repository without conflicts.
    code .
    ```
 
-2. Create your folder, named after your GitHub username in lowercase:
+2. Create your folder, named after your GitHub username in **lowercase**:
    ```bash
    mkdir -p submissions/[your-github-username]/01-kickoff
 
@@ -241,9 +250,26 @@ same repository without conflicts.
    mkdir -p submissions/octocat/01-kickoff
    ```
 
-   :::warning Exactly your username, in lowercase
-   The automatic check compares the folder name with the author of your pull
-   request. If the folder is spelled differently, the check fails.
+   :::warning Lowercase, even if your username has capitals
+   GitHub shows your username the way you registered it, for example
+   `Octocat`. Your folder is always written in lowercase: `octocat`. The
+   automatic check compares the folder name with the author of your pull
+   request, and a single capital letter makes it fail.
+   :::
+
+   :::tip Folder already created with capitals?
+   Do not rename it in the Explorer or in VS Code. Windows does not distinguish
+   upper and lower case in file names, so Git does not notice the change, and
+   the check keeps failing. Rename it with Git instead, in two steps, and commit
+   once:
+
+   ```bash
+   git mv submissions/Octocat submissions/octocat-tmp
+   git mv submissions/octocat-tmp submissions/octocat
+   git commit -m "Rename my folder to lowercase"
+   ```
+
+   The result is one clean commit with the correct folder name.
    :::
 
 3. Create the file `submissions/[your-folder]/01-kickoff/about.md` with your
@@ -454,6 +480,10 @@ git push -u origin submission/kickoff/[your-github-username]
 2. Click "Compare & pull request" (should appear after pushing)
 3. Set the base branch to `main`
 4. Set the compare branch to your assignment branch
+
+You do not have to wait until everything is finished. An open pull request
+updates itself: every further push to your branch appears in it automatically,
+and the automatic check runs again each time.
 
 ### Step 3: Fill Out the Pull Request Template
 

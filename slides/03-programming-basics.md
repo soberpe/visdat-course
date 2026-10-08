@@ -293,26 +293,30 @@ C++.
 
 ---
 
-# Why this matters in pandas
+# Why this matters for data
 
 ```python
-df = pd.read_csv("data/motorcycle_ride.csv")
+readings = [0.31, 0.25, 0.28]
 
-clean = df                  # no copy: two names, one DataFrame
-clean["speed_kmh"] = 0      # df has changed as well
+clean = readings              # no copy: two names, one list
+clean.append(9.99)            # readings has changed as well
 
-clean = df.copy()           # an independent copy
+clean = readings.copy()       # an independent copy
 
-df.dropna()                 # returns a new DataFrame, df is unchanged
-df = df.dropna()            # rebinding the name keeps the result
+sorted(readings)              # returns a new list, readings is unchanged
+readings = sorted(readings)   # rebinding the name keeps the result
+result = readings.sort()      # sorts in place, and result is None
 ```
 
-<p class="note">Most pandas methods return a new object. If you do not assign the result, nothing happened.</p>
+<p class="note">pandas, in the data processing session, follows the same rules: most of its methods return a new object, and if you do not assign it, nothing happened.</p>
 
 <!--
 Both mistakes on this slide are among the most frequent ones in data
-processing code, and both are silent: no error, just a wrong result. The data
-processing lecture uses exactly these operations.
+processing code, and both are silent: no error, just a wrong result.
+
+sorted and sort show the two styles side by side. sorted returns a new list
+and leaves the old one alone. sort changes the list itself and returns None,
+so result = readings.sort() leaves you with None in your hands.
 -->
 
 ---
@@ -392,9 +396,54 @@ Neither 0 nor 1: the call raises UnboundLocalError. An assignment anywhere in
 a function makes the name local in the whole function. count += 1 reads count
 before it was assigned locally, and fails.
 
-There is a keyword, global, that makes this work. Better is to avoid the
+The next slide shows two ways out. Better than the first is to avoid the
 situation: pass the value in and return the new one. A function whose result
 depends only on its arguments can be tested, reused and understood on its own.
+-->
+
+---
+
+# Two ways out
+
+<div class="cols">
+<div>
+
+```python
+count = 0
+
+def increment():
+    global count
+    count += 1
+
+increment()
+print(count)   # 1
+```
+
+</div>
+<div>
+
+```python
+def increment(count):
+    return count + 1
+
+count = 0
+count = increment(count)
+print(count)   # 1
+```
+
+</div>
+</div>
+
+`global count` tells Python that the function means the module's `count`. The
+version on the right needs no shared state at all, and that is the one to
+prefer.
+
+<!--
+global works, and it is worth knowing because it explains the error on the
+previous slide. But a function that changes a global variable can only be
+understood together with the rest of the program. The version on the right
+can be read, tested and reused on its own: its result depends only on its
+argument.
 -->
 
 ---
@@ -533,24 +582,22 @@ Inheritance is a strong tool and easy to overuse. A good test: the sentence
 # You already use objects
 
 ```python
-import pandas as pd
+readings = [0.31, 0.25, 0.28]
 
-df = pd.read_csv("data/motorcycle_ride.csv")
-
-type(df)            # pandas.core.frame.DataFrame: an object of a class
-df.shape            # an attribute: part of its state
-df.describe()       # a method: returns a new DataFrame
-df["speed_kmh"]     # a Series, an object of another class
+type(readings)          # list: an object of a class
+readings.append(0.30)   # a method: an operation on the object
+len(readings)           # a function that receives the object
+"accel_x".upper()       # str is a class too, upper() is one of its methods
 ```
 
-`DataFrame` is a class, written by other people. Everything on this page
-works the same way for it as for the `Sensor` class.
+`list` and `str` are classes, written by other people. Everything on this page
+works the same way for them as for the `Sensor` class, and for the DataFrame of
+pandas in the data processing session.
 
 <!--
-This is the bridge to the data processing lecture. The pandas documentation is
-organised exactly like this: a page per class, and on it the attributes and
-the methods. Once that structure is clear, the documentation becomes
-navigable.
+The documentation of every library is organised like this: a page per class,
+and on it the attributes and the methods. Once that structure is clear, the
+documentation of pandas, NumPy or Qt becomes navigable.
 -->
 
 ---
@@ -573,7 +620,7 @@ navigable.
 1. **Kickoff assignment** first: your branch, your folder, your commits
 2. **Programming Basics Exercises** on the course site: predict first, then
    run, then explain the difference
-3. **The `Sensor` class** on the motorcycle ride, the last exercise
+3. **The `Sensor` class** on a list of readings, the last exercise
 
 Before you leave, your kickoff pull request is open, even if the work in it is
 not finished yet.

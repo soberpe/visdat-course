@@ -52,6 +52,12 @@ submissions/
     └── final/
 ```
 
+Lowercase applies even if GitHub shows your username with capitals. A folder
+that was created with capitals has to be renamed with `git mv`, because Windows
+does not pass a change of case on to Git. The
+[kickoff assignment](./kickoff-assignment.md#task-1-create-your-submission-folder)
+shows the two commands.
+
 All students submit into the same repository. If several people changed the same
 file, their submissions would conflict and none of them could be merged. The
 folder rule avoids this: your changes never overlap with anyone else's, so your
@@ -70,13 +76,22 @@ GitHub account settings:
 
 1. **Settings → Emails**: enable *Keep my email addresses private* and
    *Block command line pushes that expose my email*.
-2. Copy the `@users.noreply.github.com` address shown there.
+2. Copy the `@users.noreply.github.com` address shown there, exactly as it is.
 3. Use it for your commits:
 
 ```bash
 git config --global user.name "Your Real Name"
 git config --global user.email 12345678+username@users.noreply.github.com
 ```
+
+:::warning Copy the number, do not invent it
+The noreply address starts with a number, your GitHub account ID. GitHub
+assigns every commit to an account by this number. With a wrong one, for
+example the `12345678` from the line above, your commits appear under a
+stranger's account, and that stranger shows up as a contributor. Copy your own
+address from **Settings → Emails**, where it stands ready under *Keep my email
+addresses private*.
+:::
 
 Your name should be your real name, so that your work can be attributed to you.
 Your university address does not belong in a commit history, because it contains
@@ -113,7 +128,8 @@ request limited to the work it is about.
    ```bash
    git push -u origin submission/kickoff/your-github-username
    ```
-3. Open a pull request from your branch to `main`.
+3. Open a pull request from your branch to `main`. You can open it early: it
+   updates itself with every further push to the branch.
 4. Fill in the pull request template. It appears automatically, so you only have
    to replace the placeholders.
 5. Wait for the automatic check and for the review.
