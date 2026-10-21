@@ -70,7 +70,7 @@ reason this course exists.
 <div><b>Outliers</b>A spike. Is it a fault, or is it the event you are looking for?</div>
 </div>
 
-<p class="note">Every one of these is invisible in <code>df.head()</code>. You have to go looking.</p>
+<p class="note">Every one of these is invisible in the first rows of the file. You have to go looking.</p>
 
 ---
 
