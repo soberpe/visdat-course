@@ -294,7 +294,7 @@ Come back to it afterwards.
 ```python
 import pandas as pd
 
-df = pd.read_csv("data/motorcycle_ride.csv")
+df = pd.read_csv("../visdat-course/data/motorcycle_ride.csv")
 work = df
 work = work.dropna()
 df["speed_ms"] = df["speed_kmh"] / 3.6

@@ -48,7 +48,8 @@ with the course requirements as `tables`.
 import numpy as np
 import pandas as pd
 
-ride = pd.read_csv("data/motorcycle_ride.csv", dtype={"ride_mode": "category"})
+ride = pd.read_csv("../visdat-course/data/motorcycle_ride.csv",
+                   dtype={"ride_mode": "category"})
 ```
 
 The examples use the motorcycle ride described on the page
@@ -73,7 +74,7 @@ use.
 
 ```python
 ride.to_hdf(
-    "data/motorcycle_ride.h5",
+    "motorcycle_ride.h5",
     key="ride01",                  # name of the dataset inside the file
     mode="w",                      # overwrite the file
     format="table",                # queryable layout
@@ -85,16 +86,16 @@ ride.to_hdf(
 
 ```python
 # Everything
-everything = pd.read_hdf("data/motorcycle_ride.h5", key="ride01")
+everything = pd.read_hdf("motorcycle_ride.h5", key="ride01")
 print(len(everything))
 
 # Only one minute, selected while reading
-minute = pd.read_hdf("data/motorcycle_ride.h5", key="ride01",
+minute = pd.read_hdf("motorcycle_ride.h5", key="ride01",
                      where="timestamp >= 60 & timestamp < 120")
 print(len(minute))
 
 # Only fast sections, and only two columns
-fast = pd.read_hdf("data/motorcycle_ride.h5", key="ride01",
+fast = pd.read_hdf("motorcycle_ride.h5", key="ride01",
                    where="speed_kmh > 90 & speed_kmh < 200",
                    columns=["timestamp", "speed_kmh"])
 print(len(fast))

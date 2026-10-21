@@ -33,7 +33,7 @@ All packages should import without errors.
 
 ## Workshop Data
 
-We'll use the sample FEM beam data from the course repository: `data/beam_stress.vtu`. This file contains a finite element mesh with complete FEM results including displacement (U), stress (S), von Mises stress (S_MISES), strain (E), and reaction forces (RF).
+We'll use the sample FEM beam data from the course repository: `data/beam_stress.vtu`. This file contains a finite element mesh with complete FEM results including displacement (U), stress (S), von Mises stress (S_Mises), strain (E), and reaction forces (RF).
 
 You can verify the available fields:
 
@@ -41,11 +41,11 @@ You can verify the available fields:
 import pyvista as pv
 
 # Load the beam mesh with results (adjust path to your repository location)
-mesh = pv.read('data/beam_stress.vtu')
+mesh = pv.read('../visdat-course/data/beam_stress.vtu')
 
 # Check available fields
 print("Available fields:", list(mesh.point_data.keys()))
-# Output: ['U', 'S', 'S_MISES', 'E', 'RF', ...]
+# Output: ['U', 'S', 'S_Mises', 'S_Principal', 'E', 'E_Mises', 'E_Principal', 'RF']
 ```
 
 ## Block 1: Application Structure and File Loading (45 min)

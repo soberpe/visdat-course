@@ -41,7 +41,7 @@ Use `mesh.array_names` to see all available fields.
 **Tasks:**
 1. Quick installation check: `pip install pyvista numpy meshio`
 2. Import and verify: `pv.Report()`
-3. Load mesh: `data/beam_stress.vtu`
+3. Load mesh: `../visdat-course/data/beam_stress.vtu`
 4. Explore structure:
    - Print mesh info
    - Check `.array_names` for available fields
@@ -207,7 +207,7 @@ class StressAnalyzer:
         pl.show()
 
 # Usage
-analyzer = StressAnalyzer('data/beam_stress.vtu')
+analyzer = StressAnalyzer('../visdat-course/data/beam_stress.vtu')
 stats = analyzer.calculate_statistics()
 print(f"Safety factor: {stats['safety_factor']:.2f}")  # Should be > 1.0 for safe!
 analyzer.visualize_critical(threshold=100.0)
@@ -283,8 +283,8 @@ def visualize_comparison(original, modified):
     pl.show()
 
 # Load two versions
-original = load_and_process_mesh('data/beam_stress.vtu')
-modified = pv.read('data/beam_stress.vtu')
+original = load_and_process_mesh('../visdat-course/data/beam_stress.vtu')
+modified = pv.read('../visdat-course/data/beam_stress.vtu')
 
 # Modify one mesh (simulate design change)
 modified['S_Mises'] = modified['S_Mises'] * 1.2  # 20% increase
@@ -404,7 +404,7 @@ class MeshReport:
         pl.show()
 
 # Generate report
-report = MeshReport('data/beam_stress.vtu')
+report = MeshReport('../visdat-course/data/beam_stress.vtu')
 zones = report.analyze_zones(num_zones=5)
 
 # Print summary
@@ -461,7 +461,7 @@ You must write everything from scratch!
 ### Challenge 1: Basic Visualization
 
 **Given:**
-- File: `data/beam_stress.vtu`
+- File: `../visdat-course/data/beam_stress.vtu`
 - Target:
 
 <div align="center">
@@ -486,7 +486,7 @@ You must write everything from scratch!
 ### Challenge 2: Advanced Techniques
 
 **Given:**
-- Same mesh: `data/beam_stress.vtu`
+- Same mesh: `../visdat-course/data/beam_stress.vtu`
 - Target:
 
 <div align="center">

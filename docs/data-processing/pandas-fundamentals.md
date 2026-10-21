@@ -21,7 +21,9 @@ language for data science and engineering.
 :::info The dataset used on this page
 All examples use `data/motorcycle_ride.csv` from the course repository, the log
 of a motorcycle ride of about nine minutes recorded at 100 Hz. The columns are
-described on the page [Sample Datasets](./sample-datasets.md). The file
+described on the page [Sample Datasets](./sample-datasets.md). The code reads
+it from your submissions repository, with the course clone next to it, as
+`../visdat-course/data/motorcycle_ride.csv`. The file
 contains deliberate defects, such as gaps, missing values and impossible
 readings. Some examples on this page run into them on purpose.
 :::
@@ -73,7 +75,7 @@ The first thing to do with a new file is to load it and look at it critically,
 before computing anything.
 
 ```python
-ride = pd.read_csv("data/motorcycle_ride.csv")
+ride = pd.read_csv("../visdat-course/data/motorcycle_ride.csv")
 
 print(ride.shape)       # rows and columns
 print(ride.head())      # the first five rows
@@ -94,7 +96,7 @@ Selection means picking columns, rows, or both. Filtering means keeping the
 rows that satisfy a condition.
 
 ```python
-ride = pd.read_csv("data/motorcycle_ride.csv")
+ride = pd.read_csv("../visdat-course/data/motorcycle_ride.csv")
 
 # Column selection: one column gives a Series, a list gives a DataFrame
 speed = ride["speed_kmh"]
@@ -122,7 +124,7 @@ New columns are created by assignment. The calculation runs on the whole
 column at once, there is no loop.
 
 ```python
-ride = pd.read_csv("data/motorcycle_ride.csv")
+ride = pd.read_csv("../visdat-course/data/motorcycle_ride.csv")
 
 # Unit conversion
 ride["speed_ms"] = ride["speed_kmh"] / 3.6
@@ -153,7 +155,7 @@ about the signal, and the right choice depends on what the column measures.
 ### Handling Missing Values
 
 ```python
-ride = pd.read_csv("data/motorcycle_ride.csv")
+ride = pd.read_csv("../visdat-course/data/motorcycle_ride.csv")
 
 # Where are values missing?
 missing = ride.isna().sum()
@@ -185,7 +187,7 @@ The interquartile range (IQR) method flags values far outside the middle half
 of the data.
 
 ```python
-ride = pd.read_csv("data/motorcycle_ride.csv")
+ride = pd.read_csv("../visdat-course/data/motorcycle_ride.csv")
 
 def detect_outliers_iqr(data, column):
     """Return the rows outside 1.5 IQR, and the bounds that were used."""
@@ -228,7 +230,7 @@ capture.
 ### Descriptive Statistics
 
 ```python
-ride = pd.read_csv("data/motorcycle_ride.csv")
+ride = pd.read_csv("../visdat-course/data/motorcycle_ride.csv")
 moving = ride[ride["speed_kmh"].between(3, 200)]   # riding, without error frames
 
 print(f"Mean speed:   {moving['speed_kmh'].mean():.1f} km/h")
@@ -246,7 +248,7 @@ print(moving["speed_kmh"].quantile([0.1, 0.5, 0.9, 0.99]))
 to each group, and combines the results.
 
 ```python
-ride = pd.read_csv("data/motorcycle_ride.csv")
+ride = pd.read_csv("../visdat-course/data/motorcycle_ride.csv")
 
 per_gear = ride.groupby("gear").agg(
     samples=("speed_kmh", "size"),
@@ -261,7 +263,7 @@ print(ride.groupby("ride_mode")["lean_deg"].agg(["min", "max"]))
 ### Correlation
 
 ```python
-ride = pd.read_csv("data/motorcycle_ride.csv")
+ride = pd.read_csv("../visdat-course/data/motorcycle_ride.csv")
 moving = ride[ride["speed_kmh"].between(3, 200)]
 
 columns = ["speed_kmh", "rpm", "throttle_pct", "accel_x", "lean_deg"]
@@ -279,7 +281,7 @@ coefficient is close to zero, because the bike leans left as often as right.
 NumPy functions work directly on Series, element by element.
 
 ```python
-ride = pd.read_csv("data/motorcycle_ride.csv")
+ride = pd.read_csv("../visdat-course/data/motorcycle_ride.csv")
 
 ride["lean_rad"] = np.radians(ride["lean_deg"])
 ride["accel_g"] = ride["accel_x"] / 9.81
@@ -297,7 +299,7 @@ ride["rpm_scaled"] = (rpm - rpm.min()) / (rpm.max() - rpm.min())
 ### Binning and Categorisation
 
 ```python
-ride = pd.read_csv("data/motorcycle_ride.csv")
+ride = pd.read_csv("../visdat-course/data/motorcycle_ride.csv")
 
 # Fixed bins with labels
 ride["speed_band"] = pd.cut(
@@ -329,7 +331,7 @@ with measurement files.
 
 ```python
 ride = pd.read_csv(
-    "data/motorcycle_ride.csv",
+    "../visdat-course/data/motorcycle_ride.csv",
     usecols=["timestamp", "speed_kmh", "rpm", "ride_mode"],  # only these columns
     dtype={"rpm": "int32", "ride_mode": "category"},          # explicit types
     nrows=6000,                                               # the first minute
@@ -343,7 +345,7 @@ as decimal mark. `sep=";"` and `decimal=","` read them correctly.
 ### Writing
 
 ```python
-ride = pd.read_csv("data/motorcycle_ride.csv")
+ride = pd.read_csv("../visdat-course/data/motorcycle_ride.csv")
 first_minute = ride[ride["timestamp"] < 60]
 
 # CSV without the index, which is only a row number here
@@ -373,7 +375,7 @@ silently. For large files, see [HDF5 Storage](./hdf5-storage.md).
 ### Memory
 
 ```python
-ride = pd.read_csv("data/motorcycle_ride.csv")
+ride = pd.read_csv("../visdat-course/data/motorcycle_ride.csv")
 print(f"Before: {ride.memory_usage(deep=True).sum() / 1e6:.1f} MB")
 
 def optimize_dtypes(data):
@@ -405,7 +407,7 @@ hundred or more.
 ```python
 import time
 
-ride = pd.read_csv("data/motorcycle_ride.csv")
+ride = pd.read_csv("../visdat-course/data/motorcycle_ride.csv")
 
 # Slow: a Python loop over the rows
 t0 = time.perf_counter()
@@ -498,7 +500,7 @@ def validate_ranges(data):
             issues.append(f"{column}: {len(bad)} values outside [{low}, {high}]")
     return issues
 
-ride = load_ride("data/motorcycle_ride.csv")
+ride = load_ride("../visdat-course/data/motorcycle_ride.csv")
 for issue in validate_ranges(ride):
     print(" -", issue)
 ```
@@ -512,12 +514,12 @@ the values that no motorcycle can produce.
 ```python
 import json
 
-raw = pd.read_csv("data/motorcycle_ride.csv")
+raw = pd.read_csv("../visdat-course/data/motorcycle_ride.csv")
 processed = raw[raw["speed_kmh"] <= 250].copy()
 processed["coolant_c"] = processed["coolant_c"].ffill(limit=300)
 
 processing_log = {
-    "source_file": "data/motorcycle_ride.csv",
+    "source_file": "../visdat-course/data/motorcycle_ride.csv",
     "processing_date": pd.Timestamp.now().isoformat(),
     "steps": [
         "removed speed_kmh above 250 (bus error frames)",

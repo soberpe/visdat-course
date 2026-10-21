@@ -645,7 +645,7 @@ motorcycle ride.
 ```python
 import pandas as pd
 
-df = pd.read_csv("data/motorcycle_ride.csv")
+df = pd.read_csv("../visdat-course/data/motorcycle_ride.csv")
 df.describe()
 ```
 

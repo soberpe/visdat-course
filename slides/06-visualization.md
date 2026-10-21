@@ -203,13 +203,13 @@ meshio info conrod.inp
 # Convert and inspect
 
 ```bash
-meshio info data/conrod.inp
-meshio convert data/conrod.inp /tmp/conrod.vtu
+meshio info ../visdat-course/data/conrod.inp
+meshio convert ../visdat-course/data/conrod.inp conrod.vtu
 ```
 
 ```python
 import pyvista as pv
-mesh = pv.read("/tmp/conrod.vtu")
+mesh = pv.read("conrod.vtu")
 print(mesh)                  # points, cells, bounds
 print(mesh.array_names)      # which fields came along
 mesh.plot(show_edges=True)
@@ -217,8 +217,10 @@ mesh.plot(show_edges=True)
 
 <!--
 meshio info comes first, and its output is worth reading line by line: how
-many points, which cell types. Then convert and open it. The empty array_names
-list is the important moment: the geometry survived, the results did not.
+many points, which cell types. Then convert and open it. array_names is the
+important moment: it lists only the node and element sets of the input file,
+which meshio turns into data. No displacement, no stress. The geometry
+survived, the results did not, because an .inp file never contained any.
 -->
 
 ---
@@ -229,8 +231,8 @@ list is the important moment: the geometry survived, the results did not.
 import pyvista as pv
 import numpy as np
 
-mesh = pv.read("data/beam_stress.vtu")
-mesh["utilisation"] = mesh["S_MISES"] / 235.0      # fields are numpy arrays
+mesh = pv.read("../visdat-course/data/beam_stress.vtu")
+mesh["utilisation"] = mesh["S_Mises"] / 235.0      # fields are numpy arrays
 mesh.plot(scalars="utilisation", cmap="viridis", show_edges=True)
 ```
 
@@ -256,7 +258,7 @@ clipped = mesh.clip("x")
 
 # isosurfaces
 iso = mesh.contour(
-    scalars="S_MISES",
+    scalars="S_Mises",
     isosurfaces=8)
 ```
 
@@ -275,12 +277,12 @@ iso = mesh.contour(
 # The beam, properly
 
 ```python
-mesh = pv.read("data/beam_stress.vtu")
+mesh = pv.read("../visdat-course/data/beam_stress.vtu")
 print(mesh.array_names)
 
 p = pv.Plotter()
 p.add_mesh(mesh.warp_by_vector("U", factor=100),
-           scalars="S_MISES", cmap="viridis",
+           scalars="S_Mises", cmap="viridis",
            show_edges=True, scalar_bar_args={"title": "von Mises [MPa]"})
 p.show()
 ```

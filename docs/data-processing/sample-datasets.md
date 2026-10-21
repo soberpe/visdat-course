@@ -7,6 +7,10 @@ title: Sample Datasets
 The `data/` folder of the course repository holds the files used in the
 exercises, the demos and the code snippets of this documentation.
 
+You work in your submissions repository, with the course clone next to it, so
+the examples read the files from there, for example
+`../visdat-course/data/motorcycle_ride.csv`.
+
 ## Motorcycle ride
 
 **File:** `data/motorcycle_ride.csv`
