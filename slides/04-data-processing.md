@@ -38,7 +38,7 @@ exercise.
 # Today
 
 1. **What goes wrong** with measurement data, and how to find it
-2. **pandas**: the two objects you need, and the operations that matter
+2. **pandas**: why it exists, the two objects you need, the operations that matter
 3. **Plots**: the structure behind every matplotlib figure, and how to choose one
 4. **Engineering**: calibration, filtering, integration, and the drift that follows
 5. **A figure for someone else**: colour, honesty, and saving it from the script
@@ -74,6 +74,71 @@ reason this course exists.
 
 ---
 
+# pandas: from a hedge fund to your test rig
+
+<div class="cols">
+<div>
+
+**Where it comes from**
+
+Started in 2008 by Wes McKinney at the investment firm AQR, for financial time
+series. Open source since 2009. The name comes from *panel data*, the
+econometric term for labelled data over time.
+
+</div>
+<div>
+
+**What it is built on**
+
+NumPy. Every column is an array, and the arithmetic runs in compiled code, not
+in a Python loop. pandas adds what NumPy lacks: names, mixed types, missing
+values and time.
+
+</div>
+</div>
+
+<p class="note">Price ticks and sensor samples are the same problem: values over time, with gaps and uneven spacing.</p>
+
+<!--
+pandas was written because nothing in Python handled labelled time series
+well, and spreadsheets did not scale. The finance origin is the reason why
+time handling is so strong in pandas: resampling, rolling windows and time
+zones were needed from the first day. That is exactly what measurement data
+needs too.
+
+The standard reference is the book by its author, Python for Data Analysis,
+which is also freely readable online. Since pandas 2.0 the columns can also be
+stored in Apache Arrow instead of NumPy, which matters for text and for
+exchange with other tools. For this course, NumPy underneath is the picture to
+keep.
+-->
+
+---
+
+# Why everyone uses it
+
+<div class="boxes">
+<div><b>Names</b>Columns by name, not by position. Code you can still read a month later.</div>
+<div><b>Time</b>Resampling, rolling windows, time zones. It was born from time series, and it shows.</div>
+<div><b>Formats</b>CSV, Excel, HDF5, Parquet, SQL, JSON. One line each, in and out.</div>
+<div><b>Ecosystem</b>matplotlib plots it, SciPy and scikit-learn take its columns, every tutorial assumes it.</div>
+</div>
+
+<p class="note">Not the fastest any more: Polars beats it on very large tables. pandas is the one you find in every colleague's script.</p>
+
+<!--
+The last point is the decisive one in practice. A library is popular because
+it is popular: the answers on the web, the examples in the documentation of
+other packages, the scripts in your future company. Knowing pandas well is
+the entry ticket to all of that.
+
+Polars is worth knowing by name. It is written in Rust, runs on all cores and
+is much faster on tens of millions of rows. The concepts carry over, the
+syntax does not.
+-->
+
+---
+
 # Two objects, that is all
 
 <div class="cols">
@@ -82,6 +147,8 @@ reason this course exists.
 **Series**: one labelled column
 
 ```python
+import pandas as pd
+
 s = pd.Series([48.2, 49.0, 49.7],
               name="speed_kmh")
 ```
