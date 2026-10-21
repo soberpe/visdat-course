@@ -11,7 +11,7 @@ footer: "FH OÖ Wels · Visualisierung & Datenaufbereitung"
 
 ## Why installing a package compiles C++, and why your script uses one core
 
-Lecture 12 · CMake, threading, multiprocessing, Numba
+Lecture 11 · CMake, threading, multiprocessing, Numba
 
 <!--
 Last lecture before the project phase. Two topics that look unrelated and are

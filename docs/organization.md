@@ -47,15 +47,15 @@ from the start. The dates are announced at the beginning of the semester.
 | 1 | Programming fundamentals and Git | Lecture |
 | 2 | Environment and kickoff assignment | Lecture and hands on |
 | 3 | Programming basics | Lecture and hands on |
-| 4 | Data processing | Lecture and hands on |
+| 4 | Data processing and 2D visualization | Lecture and hands on |
 | 5 | Motion tracking assignment | Work session |
-| 6 | 2D visualization | Lecture and hands on |
-| 7 | 3D visualization | Lecture and hands on |
-| 8 | Mesh visualization workshop | Workshop |
-| 9 | FEM coding challenge | Workshop |
-| 10 | User interfaces | Lecture and hands on |
-| 11 | Qt workshop | Workshop |
-| 12 | Build systems and parallelization | Lecture |
+| 6 | 3D visualization | Lecture and hands on |
+| 7 | Mesh visualization workshop | Workshop |
+| 8 | FEM coding challenge | Workshop |
+| 9 | User interfaces | Lecture and hands on |
+| 10 | Qt workshop | Workshop |
+| 11 | Build systems and parallelization | Lecture |
+| 12 | Final assignment | Work session |
 | 13 | Final assignment | Work session |
 | 14 | Final assignment | Work session |
 | 15 | Final presentations | Presentations |

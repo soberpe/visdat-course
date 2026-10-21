@@ -11,7 +11,7 @@ footer: "FH OÖ Wels · Visualisierung & Datenaufbereitung"
 
 ## Turning your script into a tool somebody else can use
 
-Lecture 10 · Qt, PyQt6, PyVista
+Lecture 9 · Qt, PyQt6, PyVista
 
 <!--
 Three blocks. The first is short on purpose: the interesting part is blocks two

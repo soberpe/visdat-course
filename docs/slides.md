@@ -12,10 +12,10 @@ or click to move through a deck, and press <kbd>F</kbd> for full screen.
 | 1 | [Programming Fundamentals & Tools](pathname:///decks/01-fundamentals-and-tools.html) | Organisation, paradigms, C++ and Python, Git |
 | 2 | [Environment & Kickoff](pathname:///decks/02-environment-and-kickoff.html) | Both repositories, Python 3.13, virtual environment, VS Code, kickoff assignment |
 | 3 | [Programming Basics](pathname:///decks/03-programming-basics.html) | Declaration and assignment, references and pointers, scope, classes |
-| 4 | [Data Processing](pathname:///decks/04-data-processing.html) | pandas, data quality, calibration, integration, HDF5 |
-| 6, 7 | [Visualization](pathname:///decks/06-visualization.html) | Matplotlib, colour maps, VTK, meshio, PyVista |
-| 10 | [User Interfaces](pathname:///decks/10-user-interfaces.html) | Qt, PyQt6, signals and slots, PyVista in Qt |
-| 12 | [Build Systems & Parallelization](pathname:///decks/12-advanced-topics.html) | CMake, the GIL, multiprocessing, Numba, final assignment |
+| 4 | [Data Processing & 2D Visualization](pathname:///decks/04-data-processing.html) | pandas, data quality, calibration, integration, Matplotlib, colour maps, HDF5 |
+| 6 | [3D Visualization](pathname:///decks/06-visualization.html) | VTK, meshio, PyVista |
+| 9 | [User Interfaces](pathname:///decks/09-user-interfaces.html) | Qt, PyQt6, signals and slots, PyVista in Qt |
+| 11 | [Build Systems & Parallelization](pathname:///decks/11-advanced-topics.html) | CMake, the GIL, multiprocessing, Numba, final assignment |
 
 The number of a deck is the session it belongs to. The sessions in between
 are workshops and work sessions, which are described in the script.
