@@ -20,7 +20,10 @@ motion tracking work session that follows needs both, clean data and figures
 saved by a script. The 3D half follows in session 6.
 
 The data files are in data/ in the course repository, so everyone has them
-locally after a git pull. One sensor file carries the whole session, from
+locally after a git pull. You work in your submissions repository, so the code
+reads them from the course clone next to it: ../visdat-course/data/. The path
+is relative to the root of the submissions repository, which is where the
+terminal in VS Code starts. One sensor file carries the whole session, from
 loading to plotting to storage. It is the log of a motorcycle ride of about
 nine minutes, recorded at 100 Hz.
 
@@ -41,7 +44,7 @@ exercise.
 5. **A figure for someone else**: colour, honesty, and saving it from the script
 6. **Storage**: why CSV stops working and what replaces it
 
-<p class="note">Data: <code>data/motorcycle_ride.csv</code> in the course repository, the log of a nine minute ride at 100 Hz.</p>
+<p class="note">Data: <code>../visdat-course/data/motorcycle_ride.csv</code>, the log of a nine minute ride at 100 Hz, read from the course clone next to your submissions repository.</p>
 
 ---
 
@@ -110,7 +113,7 @@ documentation becomes navigable.
 ```python
 import pandas as pd
 
-df = pd.read_csv("data/motorcycle_ride.csv")
+df = pd.read_csv("../visdat-course/data/motorcycle_ride.csv")
 print(df.shape)
 df.head()
 df.info()          # dtypes and missing values
@@ -592,11 +595,11 @@ expects: the script produces the figure, not a screenshot.
 
 ```python
 # write, with a column you can query
-df.to_hdf("data/motorcycle_ride.h5", key="ride01", format="table",
+df.to_hdf("motorcycle_ride.h5", key="ride01", format="table",
           data_columns=["timestamp"])
 
 # read only what you need, without loading the file
-part = pd.read_hdf("data/motorcycle_ride.h5", key="ride01",
+part = pd.read_hdf("motorcycle_ride.h5", key="ride01",
                    where="timestamp >= 60 & timestamp < 120")
 ```
 
@@ -611,7 +614,8 @@ slice of it without touching the rest.
 
 ```python
 import time
-ride = pd.read_csv("data/motorcycle_ride.csv", dtype={"ride_mode": "category"})
+ride = pd.read_csv("../visdat-course/data/motorcycle_ride.csv",
+                   dtype={"ride_mode": "category"})
 big = pd.concat([ride] * 20, ignore_index=True)    # three hours of riding
 big.to_csv("ride_3h.csv", index=False)
 big.to_hdf("ride_3h.h5", key="ride", format="table")
@@ -647,6 +651,10 @@ because the logger writes short numbers like 0.0, and in binary every float64
 takes 8 bytes. complevel=5 in to_hdf shrinks the file to about a third, but
 reading it is then slower again. Speed or size: compression is a trade, not a
 free improvement.
+
+Delete the two ride_3h files afterwards. They land in the root of the
+submissions repository, outside your own folder, and at around 60 MB each
+they are far beyond the 5 MB rule.
 -->
 
 ---

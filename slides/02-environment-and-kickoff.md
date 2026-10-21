@@ -145,19 +145,20 @@ the installation block.
 # The virtual environment
 
 ```bash
+cd visdat-abgaben-<semester>            # where you work
 python -m venv .venv                    # if python is on PATH
 C:\Python313\python.exe -m venv .venv   # Windows, when it is not
 
 .venv\Scripts\activate                  # Windows
 source .venv/bin/activate               # macOS, Linux
 
-pip install -r requirements.txt
+pip install -r ../visdat-course/requirements.txt
 ```
 
-A virtual environment keeps this course's packages out of your system Python,
-and makes `requirements.txt` mean something.
+The environment lives where you work, in the submissions repository. The
+package list comes from the course repository, so clone the two side by side.
 
-<p class="note">In VS Code: Ctrl+Shift+P, "Python: Create Environment", does the same thing with fewer chances to get it wrong.</p>
+<p class="note">In VS Code, Ctrl+Shift+P, "Python: Create Environment" creates the same .venv. Run the pip line afterwards, the package list is not in this folder.</p>
 
 ---
 

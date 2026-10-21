@@ -160,6 +160,19 @@ the script, the slides and the sample datasets, and you only read from it. Your
 as a collaborator. [Submission Workflow](./submission-workflow.md) explains the
 split in detail.
 
+Clone both into the same parent folder, so that they sit side by side:
+
+```
+visdat/
+├── visdat-course/
+└── visdat-abgaben-<semester>/
+```
+
+You work in the submissions repository, and your scripts read the sample data
+from the course clone with a relative path such as
+`../visdat-course/data/motorcycle_ride.csv`. That only works when the two
+folders are neighbours.
+
 ### Step 1: Clone the Course Material
 
 ```bash
@@ -171,7 +184,8 @@ to date during the semester with `git pull`.
 
 ### Step 2: Accept the Invitation and Clone the Submissions Repository
 
-You receive an invitation by email in the first week. Accept it, then clone:
+You receive an invitation by email in the first week. Accept it, then clone it
+from the same parent folder as the course material:
 
 ```bash
 git clone https://github.com/soberpe/visdat-abgaben-<semester>.git
@@ -181,7 +195,27 @@ cd visdat-abgaben-<semester>
 `<semester>` stands for the current semester, for example `ws2627` for the
 winter semester 2026/27. The exact link is in your invitation email.
 
-### Step 3: Protect Your Email Address
+### Step 3: Create the Virtual Environment
+
+The environment belongs where you work, in the submissions repository. The list
+of packages stays in the course repository, so there is only one of it:
+
+```bash
+# inside visdat-abgaben-<semester>
+python -m venv .venv
+
+.venv\Scripts\activate          # Windows
+source .venv/bin/activate       # macOS, Linux
+
+pip install -r ../visdat-course/requirements.txt
+```
+
+When you open the submissions repository as a folder in VS Code, it finds the
+environment on its own. The folder `.venv` is listed in `.gitignore` and is
+never committed. If `requirements.txt` changes during the semester, pull the
+course repository and run the `pip install` line again.
+
+### Step 4: Protect Your Email Address
 
 Git writes your name and email address into every commit, permanently. Switch on
 email privacy before your first commit:
@@ -210,7 +244,7 @@ Your FH address contains your student ID, and a commit history is forever. Use
 the noreply address.
 :::
 
-### Step 4: Create Your Working Branch
+### Step 5: Create Your Working Branch
 
 Create a new branch for every assignment, named
 `submission/<assignment>/<your-github-username>`:
