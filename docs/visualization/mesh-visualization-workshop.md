@@ -28,6 +28,12 @@ The mesh file `beam_stress.vtu` contains actual finite element analysis results 
 Use `mesh.array_names` to see all available fields.
 :::
 
+:::note No submission
+This workshop is practice. Nothing is submitted and there is no pull request.
+Keep your scripts anyway: the FEM coding challenge and the final assignment
+build on exactly this kind of code.
+:::
+
 ---
 
 ## Block 1: Live Coding Session (45 min)
@@ -540,7 +546,12 @@ Pick ONE of these to implement:
 </div>
 
 **Option C: Multiple Meshes**
-- Load 2-3 different meshes
+- Load both course meshes, `beam_stress.vtu` and `conrod.inp`. If you have a
+  mesh of your own, for example from a project or your thesis, you are welcome
+  to use it as well.
+- Read `conrod.inp` with meshio and convert it, as shown in the lecture.
+  `pv.read()` takes the extension `.inp` for a different format (AVS UCD) and
+  returns a mesh without cells.
 - Combine them in one scene
 - Use different colors for each
 - Animate rotation (bonus!)
@@ -553,7 +564,7 @@ Pick ONE of these to implement:
 
 </div>
 
-**Deliverable:**
+**Result (for yourself, not submitted):**
 - Working code
 - Screenshot or saved animation
 - 2 sentences explaining what you learned

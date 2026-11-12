@@ -46,9 +46,8 @@ submissions/
     ├── 01-kickoff/
     ├── 02-data-processing/
     ├── 03-imu-workshop/
-    ├── 04-mesh-visualization/
-    ├── 05-fem-challenge/
-    ├── 06-qt-workshop/
+    ├── 04-fem-challenge/
+    ├── 05-qt-workshop/
     └── final/
 ```
 

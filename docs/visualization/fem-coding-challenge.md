@@ -10,7 +10,7 @@ sidebar_position: 7
 
 ---
 
-## Block 4: Pair Programming - 1D Beam FEM (45 min)
+## Block 1: Pair Programming - 1D Bar FEM (45 min)
 
 ### Setup: Find Your Coding Partner (5 min)
 
@@ -136,7 +136,7 @@ K_global[___:___, ___:___] += k1  # Where to add?
 
 "Print the results: for each node, print its number and displacement."
 
-**Then together:** "Now import PyVista. Create two sets of points: original nodes and deformed nodes. Use pv.Line for both. Plot them with different colors and labels."
+**Then together:** "Now import PyVista. Create two sets of points: original nodes and deformed nodes. Use pv.Line for both. Draw the deformed bar a little below the original one. Plot them with different colors and labels."
 
 ```python
 # Driver: Complete this
@@ -150,25 +150,39 @@ import pyvista as pv
 original_points = np.column_stack([nodes, np.zeros(3), np.zeros(3)])
 original_line = pv.Line(original_points[0], original_points[-1], resolution=2)
 
-# Deformed (scale by 100 to see it!)
-scale = 100
+# Deformed: the displacements are below one micrometre, so they need a
+# large scale factor to become visible on a bar that is 2 m long
+scale = 1e5
 deformed = nodes + scale * u
-# Continue - create deformed_line and plot both!
+# Continue - create deformed_line at y = -0.2 and plot both!
 ```
+
+:::tip Why the deformed bar is drawn below the original
+A bar under tension only moves along its own axis. Drawn at the same height,
+the deformed line would lie exactly on top of the original one and you would
+see nothing but a slightly longer line. Shifting it down in $y$ keeps both
+visible. Remember that the scale factor is part of the picture: say in the plot
+title by how much the deformation is magnified.
+:::
 
 ---
 
 ### Expected Results
 
 You should get:
-- $u_1 \approx 5 \times 10^{-6}$ m (5 microns)
-- $u_2 \approx 1 \times 10^{-5}$ m (10 microns)
+- $u_1 = 5 \times 10^{-7}$ m (0.5 micrometres)
+- $u_2 = 1 \times 10^{-6}$ m (1 micrometre)
+
+You can check this by hand. The bar stiffness is $EA = 200 \times 10^9 \cdot
+0.01 = 2 \times 10^9$ N, so a bar of length 1 m stretches by
+$FL/EA = 1000 / (2 \times 10^9) = 5 \times 10^{-7}$ m, and the second element
+adds the same amount again.
 
 **If not, debug together!**
 
 ---
 
-## Block 5: Code Review & Improvement (45 min)
+## Block 2: Code Review & Improvement (45 min)
 
 ### Phase 1: Musical Chairs (15 min)
 
@@ -221,7 +235,7 @@ Ideas might include:
 
 ---
 
-## Block 6: Extension Challenges (45 min)
+## Block 3: Extension Challenges (45 min)
 
 ### Instructions
 
@@ -258,7 +272,7 @@ Pick **ONE** challenge and implement it from scratch:
 - Solve and visualize
 - Compare to Challenge A
 
-**Question:** How does the deflection shape change?
+**Question:** How does the displacement along the bar change?
 
 ---
 
@@ -330,17 +344,17 @@ Pick **ONE** challenge and implement it from scratch:
 
 ## Submission
 
-By end of Block 6, push to the submissions repository, on a branch named
+By the end of Block 3, push to the submissions repository, on a branch named
 `submission/fem-challenge/<your-github-username>`:
 
 ```
-submissions/<your-github-username>/05-fem-challenge/
-├── fem_1d_beam.py          (Your original FEM from Block 4)
-├── fem_improved.py         (After code review, Block 5)
-├── fem_challenge_X.py      (Your chosen challenge, Block 6)
-├── visualization_1.png     (From Block 4)
-├── visualization_2.png     (From Block 5)
-└── visualization_3.png     (From Block 6)
+submissions/<your-github-username>/04-fem-challenge/
+├── fem_1d_bar.py           (Your original FEM from Block 1)
+├── fem_improved.py         (After code review, Block 2)
+├── fem_challenge_X.py      (Your chosen challenge, Block 3)
+├── visualization_1.png     (From Block 1)
+├── visualization_2.png     (From Block 2)
+└── visualization_3.png     (From Block 3)
 ```
 
 Create a Pull Request with title: `FEM Challenge - [Your Name]`. The workflow is
