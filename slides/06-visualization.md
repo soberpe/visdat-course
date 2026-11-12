@@ -238,6 +238,13 @@ mesh.plot(scalars="utilisation", cmap="viridis", show_edges=True)
 
 <p class="note">A field is a numpy array on the mesh. Everything you know about numpy applies.</p>
 
+<!--
+The scale bar ends at about 0.03. The beam reaches 6.9 MPa von Mises, which is
+three percent of the 235 MPa of S235. That is not a bug in the code, and it is
+worth asking the room what it means: an oversized beam, a small test load, or
+the wrong units? Reading a result includes checking whether it is plausible.
+-->
+
 ---
 
 # Scalars, vectors, deformation
@@ -251,7 +258,7 @@ mesh["Temperature"] = t_array
 
 # deform by a vector field
 warped = mesh.warp_by_vector(
-    "U", factor=50)
+    "U", factor=1000)
 
 # cut it open
 clipped = mesh.clip("x")
@@ -281,15 +288,17 @@ mesh = pv.read("../visdat-course/data/beam_stress.vtu")
 print(mesh.array_names)
 
 p = pv.Plotter()
-p.add_mesh(mesh.warp_by_vector("U", factor=100),
+p.add_mesh(mesh.warp_by_vector("U", factor=1000),
            scalars="S_Mises", cmap="viridis",
            show_edges=True, scalar_bar_args={"title": "von Mises [MPa]"})
 p.show()
 ```
 
 <!--
-Try the deformation factor first at 1, where nothing is visible, then at 100.
-The factor changes the picture, but what does it do to the truth? Then switch
+Try the deformation factor at 1, 100 and 1000. The largest displacement is
+0.05 mm on a beam of 600 mm, so at 1 nothing moves, at 100 the beam bends by
+barely 5 mm, and only at 1000 is the bending clearly visible. The factor
+changes the picture, but what does it do to the truth? Then switch
 the colour map to jet once, and the point about colour maps from session 4
 becomes visible on a real stress field.
 -->
