@@ -347,8 +347,8 @@ block, and it is where the final assignment usually starts.
 
 # Next
 
-## Mesh visualization workshop
+## User interfaces, then the mesh workshop
 
-<p>Live coding, then broken code to repair, then a blank page.</p>
+<p>First the window around the plotter, then live coding, broken code to repair and a blank page.</p>
 
-<p>Bring the beam, and your own colour map decision.</p>
+<p>For the workshop, bring the beam and your own colour map decision.</p>

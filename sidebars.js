@@ -73,6 +73,7 @@ module.exports = {
       label: 'User Interfaces',
       items: [
         'user-interfaces/ui-overview',
+        'user-interfaces/ui-live-coding',
         'user-interfaces/pyqt-basics',
         'user-interfaces/pyvista-qt-integration',
         'user-interfaces/qt-workshop',

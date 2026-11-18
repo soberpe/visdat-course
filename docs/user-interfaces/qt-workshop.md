@@ -5,7 +5,7 @@ sidebar_position: 4
 
 # Qt Workshop: Build an FEM Visualization Application
 
-This workshop is the session after the lecture on user interfaces. You build a complete FEM (Finite Element Method) results viewer that combines PyQt6 and PyVista, and you put the concepts from the lecture into practice.
+This workshop builds on the lecture on user interfaces and on the mesh visualization workshop. You build a complete FEM (Finite Element Method) results viewer that combines PyQt6 and PyVista, and you put the concepts from the lecture into practice.
 
 **Suggested approach**: Complete the three blocks progressively, taking breaks between sections. Each block builds on the previous one, creating increasingly sophisticated functionality.
 
