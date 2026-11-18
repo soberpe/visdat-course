@@ -38,7 +38,9 @@ build on exactly this kind of code.
 
 ## Block 1: Live Coding Session (45 min)
 
-**Format**: Instructor codes live, students type along (NO copy-paste!)
+**Format**: The instructor codes live, part by part. The complete code of every part is
+below the tasks, so nobody has to type along: copy it, run it, and spend the time on
+understanding what it does and trying variations. From Block 2 on, you write the code yourself.
 
 ### Part 1: Setup & Mesh Fundamentals
 
@@ -59,6 +61,32 @@ build on exactly this kind of code.
 - Cells = connectivity (how points connect)
 - Arrays = data at points or cells
 - **Key insight:** Mesh = geometry + data!
+
+<details>
+<summary>The code of part 1</summary>
+
+```python title="mesh_demo.py"
+import numpy as np
+import pyvista as pv
+
+# pv.Report() lists the versions and the graphics driver. Run it once if
+# something does not work, and include it when you ask for help.
+print(pv.Report())
+
+mesh = pv.read("../visdat-course/data/beam_stress.vtu")
+
+print(mesh)                  # type, number of points and cells, bounds
+print(mesh.array_names)      # the fields that came from the solver
+
+print(mesh.points.shape)     # one row of x, y, z per point
+print(mesh.n_cells)          # number of elements
+
+stress = mesh["S_Mises"]     # a field is a numpy array
+print(type(stress), stress.shape)
+print(stress[:5])
+```
+
+</details>
 
 ---
 
@@ -97,10 +125,34 @@ build on exactly this kind of code.
 
 **Note on non-blocking mode:**
 - For animations or continuous updates, PyVista offers non-blocking alternatives
-- These require additional packages (`pyvistaqt` with Qt, or `trame` for web-based)
-- Not covered in this workshop - blocking mode is sufficient for most tasks!
+- One of them is `pyvistaqt`, which you have seen in the lecture on user interfaces. Another is `trame`, for the browser
+- Not needed in this workshop - blocking mode is sufficient for most tasks!
 
 **Key insight:** Blocking mode is standard. You build your visualization, then display it at the end.
+
+<details>
+<summary>The code of part 2</summary>
+
+```python title="mesh_demo.py"
+import pyvista as pv
+
+mesh = pv.read("../visdat-course/data/beam_stress.vtu")
+
+# The quick way: one line. Rotate, zoom and pan with the mouse,
+# r resets the camera, w shows the wireframe, q closes the window.
+mesh.plot()
+print("After plot")          # appears only once the window is closed
+
+# The manual way: build a plotter, then show it.
+pl = pv.Plotter()
+pl.add_mesh(mesh, show_edges=True)
+pl.set_background("white")
+pl.camera_position = "iso"   # also try "xy", "xz" and "yz"
+pl.show()
+print("After show")          # this waits for the window as well
+```
+
+</details>
 
 ---
 
@@ -111,7 +163,7 @@ build on exactly this kind of code.
 **Progressive construction:**
 1. Basic: `Plotter()` → `add_mesh()` → `show()`
 2. Add coloring: Use `scalars='S_Mises'` and `cmap='coolwarm'`
-3. Add context: `add_scalar_bar(title='Stress [MPa]')`
+3. Add context: a scalar bar with a title, `scalar_bar_args={'title': 'Stress [MPa]'}`
 4. Set view: `camera_position='iso'`
 
 **Data analysis:**
@@ -130,6 +182,71 @@ build on exactly this kind of code.
 
 **Key concept:** Test each step before adding complexity
 
+<details>
+<summary>The code of part 3</summary>
+
+```python title="mesh_demo.py"
+import numpy as np
+import pyvista as pv
+
+mesh = pv.read("../visdat-course/data/beam_stress.vtu")
+
+# Build the picture step by step: plotter, mesh, colour, scalar bar, view.
+pl = pv.Plotter()
+pl.add_mesh(
+    mesh,
+    scalars="S_Mises",
+    cmap="coolwarm",
+    scalar_bar_args={"title": "Stress [MPa]"},
+)
+pl.camera_position = "iso"
+pl.show()
+
+# The field is a numpy array, so the analysis is plain numpy.
+stress = mesh["S_Mises"]
+print(f"min  {stress.min():.2f} MPa")
+print(f"max  {stress.max():.2f} MPa")
+print(f"mean {stress.mean():.2f} MPa")
+
+i_max = np.argmax(stress)
+print("maximum at", mesh.points[i_max])
+
+# Keep only the cells with high stress.
+threshold_val = 0.5 * stress.max()
+high = mesh.threshold(value=threshold_val, scalars="S_Mises")
+print(f"{high.n_cells} of {mesh.n_cells} cells above {threshold_val:.2f} MPa")
+
+# Layering: the whole beam transparent, the critical region opaque on top.
+pl = pv.Plotter()
+pl.add_mesh(mesh, color="lightgrey", opacity=0.3)
+pl.add_mesh(
+    high,
+    scalars="S_Mises",
+    cmap="coolwarm",
+    scalar_bar_args={"title": "Stress [MPa]"},
+)
+pl.camera_position = "iso"
+pl.show()
+```
+
+</details>
+
+<details>
+<summary>Time permitting: slice and clip</summary>
+
+```python title="mesh_demo.py"
+import pyvista as pv
+mesh = pv.read("../visdat-course/data/beam_stress.vtu")
+pl = pv.Plotter()
+sliced = mesh.slice(normal="x")       # a cut surface through the middle
+clipped = mesh.clip(normal="y")       # one half of the beam removed
+pl.add_mesh(clipped, scalars="S_Mises", cmap="coolwarm", show_edges=True)
+pl.add_mesh(sliced, color="black", line_width=3)
+pl.show()
+```
+
+</details>
+
 ---
 
 ### Part 4: Multi-Panel Layouts
@@ -145,10 +262,65 @@ build on exactly this kind of code.
 **Experimentation:**
 5. Try different colormaps: `'plasma'`, `'viridis'`, `'jet'`
 6. Show edges: `show_edges=True, edge_color='black'`
-7. Save output: `.screenshot('my_viz.png')`
-8. Optional: Link cameras across subplots with `.link_views()`
+7. Use the same colour scale in both panels: `clim=[0, stress.max()]`. Otherwise
+   the same colour means a different stress on the left and on the right
+8. Save output: `pl.show(screenshot='my_viz.png')`. After `show()` the window is
+   closed, so a separate `pl.screenshot()` comes too late
+9. Optional: Link cameras across subplots with `.link_views()`
 
 **Challenge:** Create a clear visualization showing failure location!
+
+<details>
+<summary>The code of part 4</summary>
+
+```python title="mesh_demo.py"
+import pyvista as pv
+
+mesh = pv.read("../visdat-course/data/beam_stress.vtu")
+stress = mesh["S_Mises"]
+threshold_val = 0.5 * stress.max()
+high = mesh.threshold(value=threshold_val, scalars="S_Mises")
+
+# One colour scale for both panels, so that the same colour means the same
+# stress on the left and on the right.
+clim = [0, stress.max()]
+
+pl = pv.Plotter(shape=(1, 2), window_size=(1400, 600))
+
+# Left: the whole beam
+pl.subplot(0, 0)
+pl.add_mesh(
+    mesh,
+    scalars="S_Mises",
+    cmap="plasma",               # also try "viridis" and "jet"
+    clim=clim,
+    show_edges=True,
+    edge_color="black",
+    scalar_bar_args={"title": "Stress [MPa]"},
+)
+pl.add_text("Full mesh", font_size=10)
+
+# Right: only the high stress region
+pl.subplot(0, 1)
+pl.add_mesh(mesh, color="lightgrey", opacity=0.3)
+pl.add_mesh(
+    high,
+    scalars="S_Mises",
+    cmap="plasma",
+    clim=clim,
+    scalar_bar_args={"title": "Stress [MPa]"},
+)
+pl.add_text(f"S_Mises > {threshold_val:.1f} MPa", font_size=10)
+
+pl.link_views()                  # rotate one, the other follows
+pl.camera_position = "iso"
+
+# The screenshot is taken when the window closes. After show() the
+# plotter is gone, so pl.screenshot() would come too late.
+pl.show(screenshot="my_viz.png")
+```
+
+</details>
 
 ---
 
@@ -216,7 +388,7 @@ class StressAnalyzer:
 analyzer = StressAnalyzer('../visdat-course/data/beam_stress.vtu')
 stats = analyzer.calculate_statistics()
 print(f"Safety factor: {stats['safety_factor']:.2f}")  # Should be > 1.0 for safe!
-analyzer.visualize_critical(threshold=100.0)
+analyzer.visualize_critical(threshold=5.0)  # MPa
 ```
 
 **Your task**: Run this code and analyze the results. Something is wrong!
