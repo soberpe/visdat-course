@@ -366,32 +366,32 @@ that manages the memory.
 
 ---
 
-# Predict the output
+<!-- _class: live -->
 
-<div class="timer">
-<input type="checkbox" id="timer-ui-3">
-<label for="timer-ui-3"><span class="tape tens"><b>6</b><b>5</b><b>4</b><b>3</b><b>2</b><b>1</b><b>0</b></span><span class="tape ones"><b>0</b><b>9</b><b>8</b><b>7</b><b>6</b><b>5</b><b>4</b><b>3</b><b>2</b><b>1</b><b>0</b></span></label>
-<div class="bar"></div><span class="hint">start / reset</span>
-</div>
+# Step 4a: slow work in the slot
 
 ```python
+def slow_pi(n):
+    total = 0.0
+    for i in range(1, n):
+        total += 1.0 / (i * i)
+    return math.sqrt(6 * total)      # 1/1² + 1/2² + ... = π²/6
+
 def compute(self):
     self.label.setText("Computing...")
-    time.sleep(5)          # five seconds of real work
-    self.label.setText("Done")
+    result = slow_pi(50_000_000)
+    self.label.setText(f"pi ≈ {result:.8f}")
 ```
 
-Step 4 adds this behind a second button. What does the label show during
-the five seconds?
+Click Compute, then try to move the window.
 
 <!--
-It never shows "Computing...". The label keeps its old text and jumps straight
-to "Done", and for five seconds the window cannot even be moved.
+The window does not move, and the label never shows "Computing...". It keeps
+its old text and jumps straight to the result. Fifty million terms of the series
+take a few seconds, and during those seconds the program does nothing else.
 
-setText only notes that the label has to be repainted. The repainting is done
-by the event loop, and the event loop is waiting for compute to return. The
-same happens when a slot loads a 200 MB mesh: the whole window freezes until
-the loading is done.
+This is the problem, not the solution. The next slide explains why it happens,
+and step 4b shows where slow work belongs.
 -->
 
 ---
@@ -409,11 +409,65 @@ print("closed")     # runs only after the last window closes
 4. Repeat
 
 > Your code runs **inside** this loop. While your function is busy, nothing is
-> repainted. That is the freeze, and `QThread` is the answer.
+> repainted. So a slot must return quickly, and the slow work happens elsewhere.
 
 <!--
-The rule: anything slow does not belong in a slot. It goes into a QThread, and
-the slot only starts it. The final project will need this.
+setText only notes that the label has to be repainted. The repainting is done
+by the event loop in step 3 of this list, and the event loop is waiting for
+compute to return. The same happens when a slot loads a 200 MB mesh.
+-->
+
+---
+
+<!-- _class: live -->
+
+# Step 4b: the work in its own thread
+
+```python
+class Worker(QObject):
+    finished = pyqtSignal(float)            # a signal of our own
+    def run(self):
+        self.finished.emit(slow_pi(50_000_000))
+
+def compute(self):
+    self.label.setText("Computing...")
+    self.worker_thread = QThread()
+    self.worker = Worker()
+    self.worker.moveToThread(self.worker_thread)
+    self.worker_thread.started.connect(self.worker.run)
+    self.worker.finished.connect(self.show_result)
+    self.worker_thread.start()
+```
+
+<!--
+compute now only starts the work and returns at once. The label shows
+"Computing...", the window can be moved, and the result arrives as a signal.
+The complete step on the script page also disables the button while the worker
+runs and stops the thread when it is done.
+
+The worker is not faster than before. Python runs only one thread at a time
+(the GIL) and switches between them every few milliseconds. That is enough to
+keep the window responsive. Using several cores at once is the topic of the
+session on parallelization.
+-->
+
+---
+
+<!-- _class: ask -->
+
+# The worker could set the label itself. Why does it send a signal instead?
+
+<!--
+Widgets belong to the main thread and may only be changed there. A signal sent
+from the worker thread to an object in the main thread is delivered through the
+main thread's event loop, so show_result runs in the right thread, at a moment
+when the event loop is free. Signals and slots are not only a way to connect a
+button to a function, they are also how threads talk to each other safely.
+
+And why self.worker_thread instead of a local name? With a local name, the
+thread object is deleted when compute returns, while the thread still runs, and
+the program ends abruptly. The lifetime rule from step 3, with a harder
+consequence.
 -->
 
 ---
@@ -581,7 +635,8 @@ Same mesh, different shape. Animations.
   just a function, passed **without** parentheses
 - An object lives as long as something **refers** to it: a name, `self`, or a
   parent widget
-- Your code runs **inside the event loop**, so slow work freezes the window
+- Your code runs **inside the event loop**: slow work goes into a
+  `QThread` and comes back as a signal
 - **QtInteractor** puts the PyVista view into your own window, and
   `closeEvent` cleans it up
 

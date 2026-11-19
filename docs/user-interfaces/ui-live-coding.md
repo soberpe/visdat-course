@@ -169,14 +169,33 @@ The difference is the layout: `addWidget` gives the button a **parent**, and fro
 then on the parent keeps it alive. A window without a parent has only its Python
 references.
 
-## Step 4: The window that freezes
+## Step 4: Slow work, and where it belongs
 
-```python title="ui_demo.py" {1,17-18,24,29-32}
-import time
+Sooner or later a button starts something that takes time: loading a large
+mesh, running a solver, exporting a video. This step first shows what happens
+when such work runs directly in a slot, and then moves it to where it belongs.
+
+The work here is a plain Python loop that approximates π from the series
+$1/1^2 + 1/2^2 + 1/3^2 + \dots = \pi^2/6$. Fifty million terms take a few
+seconds and give π to seven decimal places, so it is real work with a result
+you can check.
+
+### 4a: The work in the slot
+
+```python title="ui_demo.py" {1,8-13,25-26,32,37-40}
+import math
 
 from PyQt6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton
 )
+
+
+def slow_pi(n):
+    """Approximate pi from 1/1² + 1/2² + 1/3² + ... = pi²/6."""
+    total = 0.0
+    for i in range(1, n):
+        total += 1.0 / (i * i)
+    return math.sqrt(6 * total)
 
 
 class Greeter(QWidget):
@@ -202,8 +221,8 @@ class Greeter(QWidget):
 
     def compute(self):
         self.label.setText("Computing...")
-        time.sleep(5)  # stands for five seconds of real work
-        self.label.setText("Done")
+        result = slow_pi(50_000_000)
+        self.label.setText(f"pi ≈ {result:.8f}")
 
 
 if __name__ == "__main__":
@@ -213,22 +232,129 @@ if __name__ == "__main__":
     app.exec()
 ```
 
-The new button calls `compute`, which pretends to work for five seconds.
+**Try this:** click Compute and try to move the window. It does not move, and
+the label never shows "Computing...". It keeps its old text and then jumps
+straight to the result. `compute` runs **inside** the event loop from step 1.
+`setText` only notes that the label has to be repainted, and the repainting
+happens when the event loop gets control back, which is after the computation.
 
-**Try this:** before you click, decide what the label will show during the five
-seconds. Then click and try to move the window.
+### 4b: The work in its own thread
 
-The label never shows "Computing...". It keeps the old text and jumps straight
-to "Done". The window cannot be moved either, and if you keep clicking, Windows
-may mark it as not responding. The reason is the event loop from step 1: `compute`
-runs **inside** it. `setText` only notes that the label has to be repainted, and
-the repainting happens when the event loop gets control back, which is after
-`compute` has returned.
+```python title="ui_demo.py" {3,17-18,20-22,34-35,41,48,50-52,54-57,59,61-62,64-65}
+import math
 
-:::warning The rule that follows
-Anything slow does not belong in a slot. Loading a large mesh or running a
-computation goes into a background thread, `QThread`, and the slot only starts
-it. Your final project will need this.
+from PyQt6.QtCore import QObject, QThread, pyqtSignal
+from PyQt6.QtWidgets import (
+    QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton
+)
+
+
+def slow_pi(n):
+    """Approximate pi from 1/1² + 1/2² + 1/3² + ... = pi²/6."""
+    total = 0.0
+    for i in range(1, n):
+        total += 1.0 / (i * i)
+    return math.sqrt(6 * total)
+
+
+class Worker(QObject):
+    finished = pyqtSignal(float)    # a signal of our own, carrying the result
+
+    def run(self):
+        result = slow_pi(50_000_000)
+        self.finished.emit(result)
+
+
+class Greeter(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Greeter")
+
+        self.label = QLabel("Enter your name:")
+        self.name_input = QLineEdit()
+        button = QPushButton("Greet")
+        button.clicked.connect(self.greet)
+        self.compute_button = QPushButton("Compute")
+        self.compute_button.clicked.connect(self.compute)
+
+        layout = QVBoxLayout(self)
+        layout.addWidget(self.label)
+        layout.addWidget(self.name_input)
+        layout.addWidget(button)
+        layout.addWidget(self.compute_button)
+
+    def greet(self):
+        self.label.setText(f"Hello, {self.name_input.text()}!")
+
+    def compute(self):
+        self.label.setText("Computing...")
+        self.compute_button.setEnabled(False)
+
+        self.worker_thread = QThread()
+        self.worker = Worker()
+        self.worker.moveToThread(self.worker_thread)
+
+        self.worker_thread.started.connect(self.worker.run)
+        self.worker.finished.connect(self.show_result)
+        self.worker.finished.connect(self.worker_thread.quit)
+        self.worker_thread.finished.connect(self.compute_done)
+
+        self.worker_thread.start()
+
+    def show_result(self, value):
+        self.label.setText(f"pi ≈ {value:.8f}")
+
+    def compute_done(self):
+        self.compute_button.setEnabled(True)
+
+
+
+if __name__ == "__main__":
+    app = QApplication([])
+    window = Greeter()
+    window.show()
+    app.exec()
+```
+
+The computation now lives in a class of its own, `Worker`, and runs in a second
+thread. `compute` only starts it and returns at once, so the event loop keeps
+running: the label shows "Computing...", the window can be moved, and the button
+stays disabled until the result is there.
+
+**The Python behind it:**
+
+- `finished = pyqtSignal(float)` declares a signal of our own, which carries a
+  float. It is defined in the class body, just like the `clicked` signal of a
+  button is defined in `QPushButton`.
+- The worker never touches the label. It emits `finished` with the result, and
+  `show_result` sets the text. Widgets belong to the main thread and may only be
+  changed there. A signal sent from one thread to an object in another is
+  delivered through the receiver's event loop, so `show_result` runs in the main
+  thread, at a moment when the event loop is free.
+- `self.worker_thread` and `self.worker` are attributes, not local names. With
+  local names, both objects would be deleted as soon as `compute` returns, while
+  the thread is still running, and the program ends abruptly without an error
+  message. It is the lifetime rule from step 3 again, with a harder consequence.
+- The four `connect` lines describe the whole sequence: the thread starts, the
+  worker runs, the result goes to the label and stops the thread, and the
+  stopped thread enables the button again.
+
+If you close the window while the computation runs, the program ends and the
+result is lost. A real application would let the worker stop early, which goes
+beyond this step.
+
+:::tip The rule
+Anything slow does not belong in a slot. The slot starts the work in a
+`QThread`, and the result comes back as a signal. Your final project needs
+exactly this pattern as soon as it loads a large mesh.
+:::
+
+:::info Threads do not make Python faster
+The loop in the worker is not faster than before. Python lets only one thread
+execute Python code at a time (the GIL), and switches between the threads every
+few milliseconds. That is enough to keep the window responsive, but it is not
+parallel computation. How to actually use several cores is the topic of
+[Parallelization](../advanced-topics/parallelization.md).
 :::
 
 ## Step 5: A main window with a 3D view
